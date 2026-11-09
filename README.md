@@ -1,5 +1,18 @@
 # Temis
 
+> **Designed for Clio, built to be general, light by default.**
+>
+> Temis exists so that [Clio](https://github.com/i-montes/clio), my agent, can make its small
+> decisions (tools, safety, memory) without calling a large model at every step. Most of its
+> training is about those decisions, but it keeps a general base, so it also handles typed questions
+> it has never seen.
+>
+> Being light is a design rule, not a phase: Temis must run on **any CPU**, in milliseconds, with
+> nothing but `onnxruntime`, `tokenizers` and `numpy` (a 309 MB int8 model; about 23 ms per decision
+> on a laptop CPU). A GPU is used when there is one, never required. It gets better through data
+> and training, not by growing: large models that need a GPU are out of scope, even when they
+> score higher on general benchmarks.
+
 **Temis** is a **small, general** model for typed decisions, in TypeSafe/Jev's format (`choice`,
 `score`, `noul`). It runs on any machine (CPU, CoreML or CUDA) through ONNX and keeps learning as it
 is used.
