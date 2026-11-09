@@ -45,3 +45,12 @@ def cap_share(rows: list[dict], source: str, max_share: float, seed: int = 0) ->
         return list(rows)
     keep = set(random.Random(seed).sample(idx, allowed))
     return [r for i, r in enumerate(rows) if r.get("source") != source or i in keep]
+
+
+def agree(jev_dist: list[float], options: list[str], label: str | None) -> bool:
+    """A hard case enters training only if the second opinion (another model, docs/prompt_segunda_opinion.md)
+    picks the same option as Jev's argmax. No second opinion: it enters on Jev alone."""
+    if label is None:
+        return True
+    top = options[max(range(len(jev_dist)), key=jev_dist.__getitem__)]
+    return str(label) == top

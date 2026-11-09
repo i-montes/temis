@@ -31,3 +31,9 @@ def test_import_agent_families_unchanged():
 
 def test_import_keeps_contrast_pair_reference():
     assert parse_line(line(contrast_of="refund_seal_01"), "gpt")["contrast_of"] == "refund_seal_01"
+
+
+def test_agree_with_second_opinion():
+    from temis.data.balance import agree
+    assert agree([0.2, 0.7, 0.1], ["a", "b", "c"], "b") and not agree([0.2, 0.7, 0.1], ["a", "b", "c"], "a")
+    assert agree([0.2, 0.7, 0.1], ["a", "b", "c"], None)  # no second opinion: the case goes in
