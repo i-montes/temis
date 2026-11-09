@@ -1,6 +1,7 @@
 # Temis: plan de mejora en JevBench sin dejar de ser liviano
 
-Fecha: 2026-11-09. Estado: **propuesta para revisión de Iván**; nada de esto está implementado.
+Fecha: 2026-11-09. Estado: aprobado por Iván el 2026-11-09. **Fase 0 y el código de las fases 1–2 están
+implementados** (`docs/plans/2026-11-09-antes-de-entrenar.md`); faltan los datos (C2–C4) y la corrida.
 Parte de Temis 1.0.11 (mmBERT-base, int8 309 MB) con 57,1 % en los 231 ítems públicos de JevBench
 (easy 100 %, standard 65 %, hard 33 %).
 

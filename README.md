@@ -115,6 +115,11 @@ also needs the sealed and judge items.
 - JevBench measures general decisions (insurance, finance, rules, support), not Clio's. On what
   Temis was trained for (memory, tools, security) 2.0.0 gets 88 % on Clio's benchmark.
 - Per-item answers, summaries and run manifests for both versions: [`benchmarks/jevbench/`](benchmarks/jevbench/).
+- `scripts/eval_jevbench.py` reproduces this locally (57.6 % for 1.0.11 with the same calibration)
+  and adds an estimate of the v1.5 rules (noul abstention band, score by expected level) plus bias
+  probes. It runs after every training but never decides which version goes live, and the public
+  items are never trained on. The improvement plan is in
+  [docs/specs/2026-11-09-plan-jevbench.md](docs/specs/2026-11-09-plan-jevbench.md).
 
 ## Using it
 
@@ -229,6 +234,9 @@ python -m scripts.build_targets                              # calibrate the tea
 python -m scripts.train --name v1                            # train (MPS/CUDA/CPU)
 python -m scripts.export_onnx --name v1                      # ONNX fp32 + int8
 python -m scripts.evaluate --model runs/v1/onnx              # typed-decisions test (official metrics)
+python -m scripts.build_hardlike                            # internal hard-like set (procedural, held-out tasks)
+python -m scripts.eval_hardlike --model runs/v1/onnx         # part of the promotion gate
+python -m scripts.eval_jevbench --model runs/v1/onnx --fetch --probes  # JevBench public items, local (reported only)
 python -m scripts.import_queue                               # fill the doubtful queue
 python -m scripts.retrain                                    # Jev labels what's new, train, evaluate, promote
 python -m scripts.nightly                                    # automatic loop (off: runs/nightly.stop)

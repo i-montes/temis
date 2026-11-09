@@ -6,8 +6,10 @@
 1. user labels (data/decisor.db) -> data/user_targets.jsonl (gold, x3 weight by repetition);
    reviewer answers -> data/reviewer_targets.jsonl (soft, weight 1)
 2. fine-tune a new version starting from the active model, replaying data/targets.jsonl
-3. export ONNX, evaluate on typed-decisions test
-4. activate it only if validation KL and test accuracy are not worse than the active version's
+3. export ONNX, evaluate on typed-decisions test, Clio, the personal test, the internal hard-like set
+   and JevBench's public items (reported only)
+4. activate it only if validation KL, test accuracy, Clio, the hard-like set and the option-rotation
+   flip rate are not worse than the active version's
 5. refresh the review queue and free disk space from old versions
 
 This is how the model is trained now: the automatic nightly loop is off (runs/nightly.stop),
@@ -47,13 +49,15 @@ def main() -> None:
     if base:
         arch = json.loads((act.parent / "meta.json").read_text()).get("base", "jhu-clsp/mmBERT-small")
         args += ["--init", base, "--base", arch, "--epochs", "2", "--lr", "2.5e-5", "--head-lr", "2e-4"]
-    args += ["--bs", "8", "--accum", "2", "--max-len", "640"]
+    args += ["--bs", "8", "--accum", "2", "--max-len", "640", "--long-max-len", "1536", "--long-bs", "4"]
     run(*args)
     run("scripts.export_onnx", "--name", name)
     run("scripts.calibrate", "--name", name)
     run("scripts.evaluate", "--model", f"runs/{name}/onnx")
     run("scripts.eval_clio", "--model", f"runs/{name}/onnx")
     run("scripts.eval_user", "--model", f"runs/{name}/onnx")
+    run("scripts.eval_hardlike", "--model", f"runs/{name}/onnx")
+    run("scripts.eval_jevbench", "--model", f"runs/{name}/onnx", "--calibration", "jevbench", "--probes")
 
     new_meta = json.loads(Path(f"runs/{name}/meta.json").read_text())
     new_eval = json.loads(Path(f"runs/{name}/eval_td_test.json").read_text())
@@ -64,10 +68,16 @@ def main() -> None:
         old_eval = json.loads(old_eval_p.read_text()) if old_eval_p.exists() else {"accuracy": 0}
         dkl = new_meta["val"]["all"]["kl"] - old_meta["val"]["all"]["kl"]
         dacc = new_eval["accuracy"] - old_eval["accuracy"]
-        clio = lambda d: json.loads((d / "eval_clio.json").read_text())["mean"] if (d / "eval_clio.json").exists() else 0.0  # noqa: E731
+        read = lambda d, f, k: (json.loads((d / f).read_text()).get(k) if (d / f).exists() else None)  # noqa: E731
+        clio = lambda d: read(d, "eval_clio.json", "mean") or 0.0  # noqa: E731
         dclio = clio(Path(f"runs/{name}")) - clio(act.parent)
-        promote = dkl <= 0.01 and dacc >= -0.005 and dclio >= -0.01
-        why = f"val KL {dkl:+.4f}, test acc {dacc:+.4f}, clio {dclio:+.4f} vs {base}"
+        new_hard, old_hard = read(Path(f"runs/{name}"), "eval_hardlike.json", "accuracy"), read(act.parent, "eval_hardlike.json", "accuracy")
+        dhard = (new_hard - old_hard) if (new_hard is not None and old_hard is not None) else 0.0
+        flip = (read(Path(f"runs/{name}"), "eval_jevbench.json", "probes") or {}).get("rotation_flip_rate")
+        jev = read(Path(f"runs/{name}"), "eval_jevbench.json", "accuracy")
+        promote = dkl <= 0.01 and dacc >= -0.005 and dclio >= -0.01 and dhard >= -0.01 and (flip is None or flip <= 0.05)
+        why = (f"val KL {dkl:+.4f}, test acc {dacc:+.4f}, clio {dclio:+.4f}, hard-like {dhard:+.4f}, "
+               f"flip {flip if flip is None else round(flip, 3)} vs {base}; jevbench public {jev} (reported only)")
     new_meta["notes"] = ("promoted: " if promote else "kept previous: ") + why
     Path(f"runs/{name}/meta.json").write_text(json.dumps(new_meta, indent=2))
     if promote:
