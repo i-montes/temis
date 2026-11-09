@@ -29,8 +29,9 @@ def _providers(prefer: str | None) -> list[str]:
 class Decider:
     def __init__(self, model_dir: str | Path, int8: bool = True, provider: str | None = None,
                  threads: int = 4, calibration: str = "accuracy") -> None:
-        """calibration: "accuracy" (a 70 % answer is right ~70 % of the time; default) or "soft"
-        (matches the teachers' distributions, which is what the KL benchmarks measure)."""
+        """calibration: "accuracy" (a 70 % answer is right ~70 % of the time; default), "soft"
+        (matches the teachers' distributions, which is what the KL benchmarks measure) or "jevbench"
+        (by type and number of options, decisive on yes/no; see temis/calibration.py)."""
         import onnxruntime as ort
         d = Path(model_dir)
         self.config = json.loads((d / "config.json").read_text())
@@ -47,8 +48,11 @@ class Decider:
         self.encoder = Encoder(str(d / "tokenizer.json"), max(int(self.config.get("max_len", 1024)), self.long_max_len))
         self.temps_soft = self.config.get("temperatures", {})
         acc = self.config.get("temperatures_accuracy")
+        jev = self.config.get("temperatures_jevbench")
+        if calibration == "jevbench" and not jev:
+            calibration = "accuracy"  # not fitted yet: fall back
         self.calibration = calibration if (calibration == "soft" or acc) else "soft"
-        self.temps = acc if self.calibration == "accuracy" else self.temps_soft
+        self.temps = {"soft": self.temps_soft, "accuracy": acc, "jevbench": jev}[self.calibration] or {}
 
     def logits(self, qs: list[Question], state_text: str, context: str | None = None) -> list[np.ndarray]:
         encs = [self.encoder.encode(q, state_text, context, max_len=2048 if context else self.long_max_len) for q in qs]
@@ -72,7 +76,8 @@ class Decider:
         return res
 
     def probabilities(self, q: Question, logits: np.ndarray) -> np.ndarray:
-        z = logits / float(self.temps.get(q.kind, 1.0))
+        from temis.calibration import pick_temperature
+        z = logits / pick_temperature(self.temps, q.kind, q.n)
         z = z - z.max()
         p = np.exp(z)
         return p / p.sum()
