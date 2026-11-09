@@ -185,7 +185,8 @@ def test_temis_versions(tmp_path, monkeypatch):
     assert N.assign("b", base, fine_tune=False) == "1.1.0"              # fresh run -> minor
     assert N.assign("c", base, fine_tune=True) == "1.1.1"
     assert N.assign("b", base, fine_tune=False) == "1.1.0"              # idempotent
-    assert N.assign("d", "some/new-base", fine_tune=False) == "2.0.0"   # new base -> major
+    assert N.assign("m", "BSC-LT/MrBERT-es", fine_tune=False) == "2.0.0"  # MrBERT-es -> major 2
+    assert N.assign("d", "some/new-base", fine_tune=False) == "3.0.0"   # unknown base -> next major
     assert N.display("c") == "Temis 1.1.1" and N.model_id("c") == "temis-1.1.1"
 
 

@@ -55,7 +55,7 @@ def main() -> None:
     from onnxruntime.quantization import QuantType, quantize_dynamic
     quantize_dynamic(str(path), str(out / "decisor.int8.onnx"), weight_type=QuantType.QInt8)
     (out / "tokenizer.json").unlink(missing_ok=True)
-    shutil.copyfile(tokenizer_path(), out / "tokenizer.json")
+    shutil.copyfile(tokenizer_path(base), out / "tokenizer.json")
     from temis.naming import NAME, assign
     semver = assign(a.name, base, fine_tune=bool(meta.get("init")))
     (out / "config.json").write_text(json.dumps({"version": a.name, "name": NAME, "semver": semver, "base": base,

@@ -1,0 +1,21 @@
+{
+  "adapter": "typesafe",
+  "charged_usd": 0.0,
+  "cost_basis": null,
+  "dataset_hash": "dc3995d8ae1e2fc8e81ce38431add509eb8bb39b85aadfd0c7c32079382dde51",
+  "delay_s": 0.0,
+  "endpoint": "http://127.0.0.1:8793",
+  "finished_utc": "2026-11-09T19:03:11.037437+00:00",
+  "key_env_used": true,
+  "n_attempted": 231,
+  "n_planned": 231,
+  "price_input_per_m": 0.0,
+  "price_output_per_m": 0.0,
+  "request_options": {},
+  "requested_model": "temis-latest",
+  "resolved_models": [
+    "temis-2.0.0"
+  ],
+  "run_label": "Temis 2.0.0",
+  "started_utc": "2026-11-09T19:02:56.617153+00:00"
+}

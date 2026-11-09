@@ -28,9 +28,9 @@ from temis.schema import NOUL_DEFAULT, parse_questions, render_state
 BASE = "jhu-clsp/mmBERT-small"  # default; --base overrides (saved in meta.json)
 
 
-def tokenizer_path() -> str:
+def tokenizer_path(base: str = BASE) -> str:
     from huggingface_hub import hf_hub_download
-    return hf_hub_download(BASE, "tokenizer.json")
+    return hf_hub_download(base, "tokenizer.json")
 
 
 def is_val(key: str) -> bool:
@@ -133,7 +133,7 @@ def main() -> None:
     rng = random.Random(0)
     torch.manual_seed(0)
 
-    enc = Encoder(tokenizer_path(), a.max_len)
+    enc = Encoder(tokenizer_path(a.base), a.max_len)
     train, val = load_examples(a.extra)
     print(f"[train] {len(train)} train / {len(val)} val questions on {device}", flush=True)
     ctx_pool = [e["state"] for e in train[:5000]]

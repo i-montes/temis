@@ -116,17 +116,17 @@ EXAMPLE = {  # texts in Spanish on purpose: Temis reads both languages, and most
 
 
 RESPONSE_EXAMPLE = {
-    "model": "temis-1.0.11",
+    "model": "temis-2.0.0",
     "answers": {
-        "operation": {"type": "choice", "choice": "duplicate", "confidence": 0.57,
-                      "probabilities": {"new": 0.18, "duplicate": 0.57, "suspicious": 0.01,
-                                        "updates_m12": 0.21, "updates_m40": 0.04}},
-        "contradicts": {"type": "noul", "noul": 0.08},
-        "usefulness": {"type": "score", "score": 1.63, "confidence": 0.69,
+        "operation": {"type": "choice", "choice": "duplicate", "confidence": 0.7,
+                      "probabilities": {"new": 0.07, "duplicate": 0.7, "suspicious": 0.01,
+                                        "updates_m12": 0.2, "updates_m40": 0.03}},
+        "contradicts": {"type": "noul", "noul": 0.04},
+        "usefulness": {"type": "score", "score": 1.77, "confidence": 0.81,
                        "legend": {"0": "Nada útil", "1": "Algo útil", "2": "Muy útil"},
-                       "probabilities": {"0": 0.06, "1": 0.25, "2": 0.69}},
+                       "probabilities": {"0": 0.04, "1": 0.16, "2": 0.81}},
     },
-    "usage": {"input_tokens": 338, "output_tokens": 0},
+    "usage": {"input_tokens": 341, "output_tokens": 0},
 }
 
 

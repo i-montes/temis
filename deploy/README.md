@@ -35,7 +35,7 @@ Without a token, or with a wrong one, they answer `401`. `/health` and the docs 
 |---|---|---|
 | POST | `/v1/decide` | Answers the questions about the state |
 | GET | `/v1/model` | Version and calibration of the loaded model |
-| GET | `/health` | `{"status":"ok","model":"temis-1.0.11"}` (no token) |
+| GET | `/health` | `{"status":"ok","model":"temis-2.0.0"}` (no token) |
 
 ## Request
 
@@ -67,7 +67,7 @@ Without a token, or with a wrong one, they answer `401`. `/health` and the docs 
 }
 ```
 
-- `model`: `"temis-latest"` or an exact version, e.g. `"temis-1.0.11"`, so an update does not catch
+- `model`: `"temis-latest"` or an exact version, e.g. `"temis-2.0.0"`, so an update does not catch
   you by surprise (if that version is not loaded it answers `400`). If omitted, `temis-latest`.
 - `state`: text or JSON (cut at 6,000 characters).
 - `questions`: `id → question`, up to 20 per request.
@@ -84,18 +84,20 @@ The real response to the request above:
 
 ```json
 {
-  "model": "temis-1.0.11",
+  "model": "temis-2.0.0",
   "answers": {
-    "tool": {"type": "choice", "choice": "web", "confidence": 0.78,
-             "probabilities": {"search_code": 0.16, "web": 0.78, "memory": 0.02, "none": 0.05}},
-    "needs_tool": {"type": "noul", "noul": 0.76},
-    "urgency": {"type": "score", "score": 0.69, "confidence": 0.47,
+    "tool": {"type": "choice", "choice": "web", "confidence": 0.8,
+             "probabilities": {"search_code": 0.11, "web": 0.8, "memory": 0.01, "none": 0.08}},
+    "needs_tool": {"type": "noul", "noul": 0.5},
+    "urgency": {"type": "score", "score": 0.43, "confidence": 0.72,
                 "legend": {"0": "Not urgent", "1": "Can wait a few hours", "2": "Must be done now"},
-                "probabilities": {"0": 0.47, "1": 0.36, "2": 0.16}}
+                "probabilities": {"0": 0.72, "1": 0.14, "2": 0.15}}
   },
-  "usage": {"input_tokens": 175, "output_tokens": 0}
+  "usage": {"input_tokens": 178, "output_tokens": 0}
 }
 ```
+
+`needs_tool` came out at 0.5 here: a coin flip, which `x-temis-uncertainty` reports as high.
 
 - `choice`: the chosen option, its probability (`confidence`) and that of every option.
 - `score`: the expected level (weighted average), the probability of the most likely level, the
@@ -130,7 +132,7 @@ from your labels or Clio's memory, since neither lives on the server.
 
 ## Examples
 
-With context (real answer: `{"contradicts": {"type": "noul", "noul": 0.93}}`):
+With context (real answer: `{"contradicts": {"type": "noul", "noul": 0.9}}`):
 
 ```sh
 curl -s http://149.130.184.223/temis/v1/decide \

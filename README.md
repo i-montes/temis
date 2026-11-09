@@ -8,7 +8,7 @@
 > it has never seen.
 >
 > Being light is a design rule, not a phase: Temis must run on **any CPU**, in milliseconds, with
-> nothing but `onnxruntime`, `tokenizers` and `numpy` (a 309 MB int8 model; about 23 ms per decision
+> nothing but `onnxruntime`, `tokenizers` and `numpy` (a 152 MB int8 model; about 25 ms per decision
 > on a laptop CPU). A GPU is used when there is one, never required. It gets better through data
 > and training, not by growing: large models that need a GPU are out of scope, even when they
 > score higher on general benchmarks.
@@ -24,7 +24,10 @@ whether a command or a piece of text is safe, and what to do with its memory
 whether it is already stored, whether it corrects an existing memory, or whether it should be
 forgotten. It also picks tags and links between notes in a personal writing archive.
 
-- **Student:** `jhu-clsp/mmBERT-base` (multilingual). Exported to ONNX int8 it takes ~300 MB.
+- **Student:** [`BSC-LT/MrBERT-es`](https://huggingface.co/BSC-LT/MrBERT-es) since Temis 2.0.0: the
+  same ModernBERT architecture as mmBERT-base (22 layers), with a Spanish–English vocabulary instead of
+  an 1,800-language one, so it has half the parameters (150M) at the same speed. Exported to ONNX int8
+  it takes 152 MB. Temis 1.x used `jhu-clsp/mmBERT-base` (309 MB).
 - **Teacher:** only Jev (TypeSafe), recalibrated with temperature. A local Qwen3.5-9B only writes the
   synthetic cases.
 - **Data:** synthetic cases centred on Clio plus typed-decisions `train`, in Spanish and English. Of
@@ -53,9 +56,9 @@ forgotten. It also picks tags and links between notes in a personal writing arch
 ## Versions
 
 Temis uses `MAJOR.MINOR.PATCH`: **major** goes up when the base model changes (mmBERT-small = 0,
-mmBERT-base = 1), **minor** with every training run from the base model, and **patch** with every
+mmBERT-base = 1, MrBERT-es = 2), **minor** with every training run from the base model, and **patch** with every
 short fine-tune of a previous version. `runs/registry.json` maps each run (`v1108-2307`) to its
-version (Temis 1.0.11).
+version (Temis 2.0.0).
 
 ## Results
 
@@ -71,7 +74,8 @@ version (Temis 1.0.11).
 | Temis 1.0.7 · v1108-1400 | + weak families reinforced, prioritised queue | 0.768 / 0.094 / — | 63 / 81 / 93 / 88 % (mean 0.81) | 309 MB |
 | Temis 1.0.9 · v1108-1756 | + more of my labels | 0.774 / — / — | 60 / 88 / 93 / 83 % (mean 0.81) | 309 MB |
 | Temis 1.0.10 · v1108-2024 | + memory_op rebalance, 900 external cases | 0.762 / — / — | 80 / 94 / 93 / 81 % (mean 0.87) | 309 MB |
-| **Temis 1.0.11 · v1108-2307 (active)** | + 200 external cases, 484 reviewer answers | **0.766 / 0.098 / 0.054** | **77 / 94 / 93 / 81 %** (mean 0.86) | 309 MB |
+| Temis 1.0.11 · v1108-2307 | + 200 external cases, 484 reviewer answers | 0.766 / 0.098 / 0.054 | 77 / 94 / 93 / 81 % (mean 0.86) | 309 MB |
+| **Temis 2.0.0 · v1109-1028 (active)** | MrBERT-es, from scratch, same data as 1.0.11 | **0.772 / 0.104 / 0.057** | **90 / 94 / 86 / 81 %** (mean 0.88) | **152 MB** |
 | Jev (API, reference) | — | 0.727 / 1.442 / 0.148 | 93 / 100 / 100 / 88 % | — |
 
 - The typed-decisions test split was never used for training. Clio's benchmark
@@ -98,17 +102,19 @@ also needs the sealed and judge items.
 | SemIf (Qwen3.5-4B) | 100 % | 99 % | 61 % | 81.0 % |
 | Laya (ModernBERT-large, 421M) | 96 % | 69 % | 35 % | 58.4 % |
 | GLiNER2 (gliner2.5-base) | 98 % | 64 % | 37 % | 58.0 % |
-| **Temis 1.0.11 (mmBERT-base, int8)** | **100 %** | **65 %** | **33 %** | **57.1 % (#40 of 53)** |
+| **Temis 2.0.0 (MrBERT-es, int8)** | **94 %** | **57 %** | **41 %** | **57.1 % (#40 of 53)** |
+| Temis 1.0.11 (mmBERT-base, int8) | 100 % | 65 % | 33 % | 57.1 % |
 | Verdict (ModernBERT-base, 151M) | 85 % | 62 % | 38 % | 55.4 % |
 
 - Temis sits with the other encoders of its size; the systems above it are 4B–27B-parameter LLMs.
-- Its weak spot is long, multi-step cases: on hard items over 1,500 tokens it gets 14 % (chance is
-  28 %, Jev gets 73 %). Letting it read 2,048 tokens instead of the trained 640 barely changes that
+- Its weak spot is long, multi-step cases: on hard items over 1,500 tokens 1.0.11 gets 14 % (chance
+  is 28 %, Jev gets 73 %). Letting it read 2,048 tokens instead of the trained 640 barely changes that
   (hard 33 % → 34 %), so the limit is reasoning, not truncation.
-- Speed and cost are where it shines: 23 ms median per decision on CPU, and no API cost.
+- Speed and cost are where it shines: 24 ms median per decision on CPU, and no API cost.
+- 2.0.0 and 1.0.11 tie overall: 2.0.0 is better on hard items (+8) and worse on easy and standard ones.
 - JevBench measures general decisions (insurance, finance, rules, support), not Clio's. On what
-  Temis was trained for (memory, tools, security) it gets 86 % on Clio's benchmark.
-- Per-item answers, summary and run manifest: [`benchmarks/jevbench/`](benchmarks/jevbench/).
+  Temis was trained for (memory, tools, security) 2.0.0 gets 88 % on Clio's benchmark.
+- Per-item answers, summaries and run manifests for both versions: [`benchmarks/jevbench/`](benchmarks/jevbench/).
 
 ## Using it
 
@@ -228,7 +234,7 @@ python -m scripts.retrain                                    # Jev labels what's
 python -m scripts.nightly                                    # automatic loop (off: runs/nightly.stop)
 ```
 
-After every run, `scripts/prune_runs.py` keeps old versions with only their ONNX int8 (309 MB) and
+After every run, `scripts/prune_runs.py` keeps old versions with only their ONNX int8 and
 keeps the active one, the two best and the best on typed-decisions complete.
 
 The typed-decisions `test` split is never used for training. The TypeSafe API key lives in `.env`,

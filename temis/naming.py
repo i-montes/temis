@@ -1,7 +1,7 @@
 """Temis: the model's name, and its versions.
 
 Temis (Themis), the Titaness of judgment and good order, beside Clio. Versions are MAJOR.MINOR.PATCH:
-  MAJOR  the base model or the architecture changes (mmBERT-small = 0, mmBERT-base = 1)
+  MAJOR  the base model or the architecture changes (mmBERT-small = 0, mmBERT-base = 1, MrBERT-es = 2)
   MINOR  a training from the base model (a fresh run, e.g. the nightly one)
   PATCH  a short fine-tune of a previous Temis version
 Each training run keeps its id (`v1108-1022`); runs/registry.json maps run id -> version.
@@ -14,7 +14,7 @@ from pathlib import Path
 
 NAME = "Temis"
 REGISTRY = Path("runs/registry.json")
-MAJOR_OF_BASE = {"jhu-clsp/mmBERT-small": 0, "jhu-clsp/mmBERT-base": 1}
+MAJOR_OF_BASE = {"jhu-clsp/mmBERT-small": 0, "jhu-clsp/mmBERT-base": 1, "BSC-LT/MrBERT-es": 2}
 
 # Runs trained before versions existed (2026-11-08), numbered in the order they were trained.
 BACKFILL = {"v0": "0.1.0", "v1b": "0.2.0", "v1c": "1.0.0", "v2": "1.0.1", "v1108-0552": "1.0.2",
