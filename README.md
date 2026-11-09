@@ -109,6 +109,11 @@ Incluye datos de [LocalLLaMA/typed-decisions](https://huggingface.co/datasets/Lo
 (Apache-2.0): su `train` se usa para entrenar y su `test` solo para evaluar. La base de datos de la
 app (`data/decisor.db`: la cola y el playground) no se sube.
 
+## Licencia
+
+MIT (ver [LICENSE](LICENSE)). Los datos que vienen de typed-decisions conservan su licencia
+Apache-2.0.
+
 ## Pipeline
 
 ```sh
