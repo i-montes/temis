@@ -10925,3 +10925,83 @@
 {"id": "ext-4a5ba0de98", "teacher": "jev-1.14.0", "dists": {"refund_within_policy": [0.45999999999999996, 0.54]}}
 {"id": "ext-0048a6d26b", "teacher": "jev-1.14.0", "dists": {"maquina_mas_probable": [0.02, 0.98, 0.0]}}
 {"id": "ext-7578545dca", "teacher": "jev-1.14.0", "dists": {"most_likely_classification": [0.99, 0.01, 0.0]}}
+{"id": "ext-6e9b17f5ba", "teacher": "jev-1.14.0", "dists": {"decision": [0.07, 0.58, 0.02, 0.33], "aplica_limite_de_cinco_anos": [0.030000000000000027, 0.97]}}
+{"id": "ext-11a9999eaf", "teacher": "jev-1.14.0", "dists": {"decision": [0.39, 0.01, 0.06, 0.54], "aplica_limite_de_cinco_anos": [0.030000000000000027, 0.97]}}
+{"id": "ext-a5e2a0d03f", "teacher": "jev-1.14.0", "dists": {"decision": [0.29000000000000004, 0.010000000000000002, 0.7000000000000001, 0.0], "requeria_codeudor": [0.08999999999999997, 0.91]}}
+{"id": "ext-365d4a7d20", "teacher": "jev-1.14.0", "dists": {"decision": [0.01, 0.64, 0.35, 0.0], "requeria_codeudor": [0.12, 0.88]}}
+{"id": "ext-52705c6d7d", "teacher": "jev-1.14.0", "dists": {"fee_for_the_day": [0.24, 0.21, 0.33, 0.22], "hold_is_overdraft_item": [0.98, 0.02]}}
+{"id": "ext-46909c9f21", "teacher": "jev-1.14.0", "dists": {"fee_for_the_day": [0.25, 0.21, 0.34, 0.2], "hold_is_overdraft_item": [0.98, 0.02]}}
+{"id": "ext-ed7f661ac2", "teacher": "jev-1.14.0", "dists": {"repayment": [0.01, 0.67, 0.32], "treated_as_redundancy": [0.95, 0.05]}}
+{"id": "ext-55f81fd4ef", "teacher": "jev-1.14.0", "dists": {"repayment": [0.01, 0.28, 0.71], "treated_as_redundancy": [0.95, 0.05]}}
+{"id": "ext-ad7f7ec294", "teacher": "jev-1.14.0", "dists": {"aporte_mensual": [0.03, 0.23, 0.6, 0.12, 0.02], "base_ajustada_al_minimo": [0.38, 0.62]}}
+{"id": "ext-fd7bd58d54", "teacher": "jev-1.14.0", "dists": {"valor_del_envio": [0.01, 0.74, 0.03, 0.17, 0.05], "se_cobra_peso_real": [0.51, 0.49]}}
+{"id": "ext-2298aca799", "teacher": "jev-1.14.0", "dists": {"valor_del_envio": [0.0, 0.83, 0.02, 0.13, 0.02], "se_cobra_peso_real": [0.4, 0.6]}}
+{"id": "ext-eae26ec471", "teacher": "jev-1.14.0", "dists": {"aporte_mensual": [0.02, 0.13, 0.42, 0.4, 0.03], "base_ajustada_al_minimo": [0.65, 0.35]}}
+{"id": "ext-79305611eb", "teacher": "jev-1.14.0", "dists": {"amount_payable": [0.48, 0.37, 0.03, 0.08, 0.04], "commute_deducted": [0.050000000000000044, 0.95]}}
+{"id": "ext-5c009b35b3", "teacher": "jev-1.14.0", "dists": {"amount_payable": [0.13, 0.45, 0.05, 0.32, 0.05], "commute_deducted": [0.040000000000000036, 0.96]}}
+{"id": "ext-c5ba892fe0", "teacher": "jev-1.14.0", "dists": {"seating": [0.8, 0.2, 0.0]}}
+{"id": "ext-e50ad6374c", "teacher": "jev-1.14.0", "dists": {"seating": [0.68, 0.32, 0.0]}}
+{"id": "ext-301a58175a", "teacher": "jev-1.14.0", "dists": {"cuenta_segundo_trimestre": [0.96, 0.04]}}
+{"id": "ext-10afe5db92", "teacher": "jev-1.14.0", "dists": {"cuenta_segundo_trimestre": [0.030000000000000027, 0.97]}}
+{"id": "ext-de13b47c57", "teacher": "jev-1.14.0", "dists": {"discount_applies": [0.78, 0.22]}}
+{"id": "ext-f0d949e5d7", "teacher": "jev-1.14.0", "dists": {"discount_applies": [0.020000000000000018, 0.98]}}
+{"id": "ext-0864c4b97f", "teacher": "jev-1.14.0", "dists": {"canon_de_mayo": [1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-0e79cd1db6", "teacher": "jev-1.14.0", "dists": {"resultado": [0.0, 0.0, 1.0]}}
+{"id": "ext-a9ffc0f876", "teacher": "jev-1.14.0", "dists": {"applicable_price": [0.010000000000000002, 0.07000000000000002, 0.5700000000000001, 0.35000000000000003]}}
+{"id": "ext-2c91e38fbe", "teacher": "jev-1.14.0", "dists": {"sling_status": [0.0, 0.0, 1.0]}}
+{"id": "ext-c1d6da9078", "teacher": "jev-1.14.0", "dists": {"correcta": [0.97, 0.03]}}
+{"id": "ext-64744afb29", "teacher": "jev-1.14.0", "dists": {"correcta": [0.45999999999999996, 0.54]}}
+{"id": "ext-b878fbffd2", "teacher": "jev-1.14.0", "dists": {"correct": [0.44999999999999996, 0.55]}}
+{"id": "ext-cfe78e5554", "teacher": "jev-1.14.0", "dists": {"correct": [0.0, 1.0]}}
+{"id": "ext-02a7430acf", "teacher": "jev-1.14.0", "dists": {"aviso_oportuno": [0.41000000000000003, 0.59]}}
+{"id": "ext-7f46cea7d0", "teacher": "jev-1.14.0", "dists": {"alert_triggered": [0.6, 0.4]}}
+{"id": "ext-65a90a29ed", "teacher": "jev-1.14.0", "dists": {"alert_triggered": [0.30000000000000004, 0.7]}}
+{"id": "ext-7f17e8e4a0", "teacher": "jev-1.14.0", "dists": {"aviso_oportuno": [0.45999999999999996, 0.54]}}
+{"id": "ext-c489d55867", "teacher": "jev-1.14.0", "dists": {"dependencia": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-e5bc313370", "teacher": "jev-1.14.0", "dists": {"despacho": [0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-bdf9fe6821", "teacher": "jev-1.14.0", "dists": {"team": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-54569c6825", "teacher": "jev-1.14.0", "dists": {"choice": [0.01, 0.99, 0.0, 0.0]}}
+{"id": "ext-7d392e4e91", "teacher": "jev-1.14.0", "dists": {"priority": [0.0, 0.0, 1.0]}}
+{"id": "ext-30d66b6f68", "teacher": "jev-1.14.0", "dists": {"cumple_experiencia": [0.92, 0.08]}}
+{"id": "ext-826282ad0a", "teacher": "jev-1.14.0", "dists": {"resultado_mas_probable": [0.0, 1.0, 0.0]}}
+{"id": "ext-cbddb9b97b", "teacher": "jev-1.14.0", "dists": {"most_likely_kind": [0.72, 0.27, 0.01]}}
+{"id": "ext-202f080736", "teacher": "jev-1.14.0", "dists": {"medida": [0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-c292f46b54", "teacher": "jev-1.14.0", "dists": {"medida": [0.96, 0.03, 0.01, 0.0]}}
+{"id": "ext-d3b3a0da80", "teacher": "jev-1.14.0", "dists": {"voto": [0.68, 0.31, 0.01], "mora_superior_a_tres": [0.06000000000000005, 0.94]}}
+{"id": "ext-ffb00e48ed", "teacher": "jev-1.14.0", "dists": {"voto": [0.49, 0.5, 0.01], "mora_superior_a_tres": [0.040000000000000036, 0.96]}}
+{"id": "ext-4e582c7b0b", "teacher": "jev-1.14.0", "dists": {"renewal": [0.0, 0.92, 0.08, 0.0], "summer_credits_count": [0.020000000000000018, 0.98]}}
+{"id": "ext-27f98e708d", "teacher": "jev-1.14.0", "dists": {"renewal": [0.0, 0.13, 0.87, 0.0], "summer_credits_count": [0.95, 0.05]}}
+{"id": "ext-7cb8a814a7", "teacher": "jev-1.14.0", "dists": {"transcripts_action": [0.0, 1.0, 0.0, 0.0], "invoices_deleted": [0.98, 0.02]}}
+{"id": "ext-851249b7b2", "teacher": "jev-1.14.0", "dists": {"transcripts_action": [0.0, 0.17, 0.83, 0.0], "invoices_deleted": [0.97, 0.03]}}
+{"id": "ext-ec9991d590", "teacher": "jev-1.14.0", "dists": {"total_a_pagar": [0.26, 0.32, 0.22, 0.12, 0.08], "tiene_reduccion": [0.29000000000000004, 0.71]}}
+{"id": "ext-7f6c728de0", "teacher": "jev-1.14.0", "dists": {"subsidio_del_mes": [0.01, 0.01, 0.97, 0.01]}}
+{"id": "ext-5dd30e1764", "teacher": "jev-1.14.0", "dists": {"subsidio_del_mes": [0.05, 0.01, 0.52, 0.42]}}
+{"id": "ext-dc7bd2eaf0", "teacher": "jev-1.14.0", "dists": {"total_a_pagar": [0.2, 0.45, 0.14, 0.11, 0.1], "tiene_reduccion": [0.76, 0.24]}}
+{"id": "ext-f41d0b425a", "teacher": "jev-1.14.0", "dists": {"roaming_charge": [0.19, 0.16, 0.26, 0.39], "pass_charged_second_day": [0.88, 0.12]}}
+{"id": "ext-5a59d511ef", "teacher": "jev-1.14.0", "dists": {"roaming_charge": [0.04, 0.05, 0.27, 0.64], "pass_charged_second_day": [0.86, 0.14]}}
+{"id": "ext-d01bb9dd2e", "teacher": "jev-1.14.0", "dists": {"differential_amount": [0.0, 0.01, 0.01, 0.62, 0.36], "weekend_uplift_applies": [0.030000000000000027, 0.97]}}
+{"id": "ext-dcce6a25a1", "teacher": "jev-1.14.0", "dists": {"differential_amount": [0.12, 0.37, 0.46, 0.03, 0.02], "weekend_uplift_applies": [0.10999999999999999, 0.89]}}
+{"id": "ext-a1ca1582ae", "teacher": "jev-1.14.0", "dists": {"hay_clases_manana": [0.9, 0.1]}}
+{"id": "ext-0436d852b4", "teacher": "jev-1.14.0", "dists": {"hay_clases_manana": [0.030000000000000027, 0.97]}}
+{"id": "ext-e30e6217b3", "teacher": "jev-1.14.0", "dists": {"order_completed": [0.91, 0.09]}}
+{"id": "ext-08dfbaf0ce", "teacher": "jev-1.14.0", "dists": {"order_completed": [0.30000000000000004, 0.7]}}
+{"id": "ext-e5252a8c2e", "teacher": "jev-1.14.0", "dists": {"retardo": [0.33, 0.65, 0.02]}}
+{"id": "ext-11a758db0c", "teacher": "jev-1.14.0", "dists": {"grado": [0.22, 0.01, 0.77]}}
+{"id": "ext-fec97c1c4d", "teacher": "jev-1.14.0", "dists": {"refund": [0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-23b3ce96f6", "teacher": "jev-1.14.0", "dists": {"shipping_warehouse": [0.0, 0.0, 1.0]}}
+{"id": "ext-1e213989b4", "teacher": "jev-1.14.0", "dists": {"correcta": [0.27, 0.73]}}
+{"id": "ext-a7fecbd5e0", "teacher": "jev-1.14.0", "dists": {"correcta": [0.08999999999999997, 0.91]}}
+{"id": "ext-ee2f757f16", "teacher": "jev-1.14.0", "dists": {"correct": [0.96, 0.04]}}
+{"id": "ext-b4c2851806", "teacher": "jev-1.14.0", "dists": {"correct": [0.010000000000000009, 0.99]}}
+{"id": "ext-65561b09cd", "teacher": "jev-1.14.0", "dists": {"cumple_edad": [0.8, 0.2]}}
+{"id": "ext-9ef7934772", "teacher": "jev-1.14.0", "dists": {"within_daily_limit": [0.65, 0.35]}}
+{"id": "ext-0cece8dc6d", "teacher": "jev-1.14.0", "dists": {"cumple_edad": [0.20999999999999996, 0.79]}}
+{"id": "ext-f826203783", "teacher": "jev-1.14.0", "dists": {"within_daily_limit": [0.56, 0.44]}}
+{"id": "ext-def125e24e", "teacher": "jev-1.14.0", "dists": {"oficina": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-cad65778f7", "teacher": "jev-1.14.0", "dists": {"decision": [0.03, 0.97, 0.0, 0.0]}}
+{"id": "ext-b299764193", "teacher": "jev-1.14.0", "dists": {"team": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-e30be1ad61", "teacher": "jev-1.14.0", "dists": {"route_order": [0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-f1e1bab137", "teacher": "jev-1.14.0", "dists": {"clasificacion": [0.0, 1.0, 0.0]}}
+{"id": "ext-09009405a1", "teacher": "jev-1.14.0", "dists": {"free_repair": [0.040000000000000036, 0.96]}}
+{"id": "ext-39e77372da", "teacher": "jev-1.14.0", "dists": {"alcanza_germinacion": [0.06000000000000005, 0.94]}}
+{"id": "ext-7a1decfca3", "teacher": "jev-1.14.0", "dists": {"most_likely_outcome": [1.0, 0.0, 0.0]}}
