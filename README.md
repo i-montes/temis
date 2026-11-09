@@ -70,6 +70,33 @@ version (Temis 1.0.11).
   memory" and 4 % "already stored", so Temis called every already-stored proposal a correction
   (0 of 6 on Clio's benchmark). After rebalancing and adding contrast pairs it gets 5 of 6.
 
+### JevBench (public items)
+
+[JevBench](https://github.com/fstandhartinger/jevbench) is the community benchmark for typed
+decision models. Only part of it is public, so Temis was run on the 231 public items of its v1.2
+set (easy 48, standard 72, hard 111), through JevBench's own TypeSafe adapter against the Temis API
+(the model alone, on a Mac CPU). JevBench publishes per-item outcomes of 52 other systems on those
+same items, so the comparison is item by item. This is **not** an official JevBench score, which
+also needs the sealed and judge items.
+
+| System | Easy | Standard | Hard | All 231 |
+|---|---|---|---|---|
+| Jev 1.13.0 (TypeSafe) | 100 % | 99 % | 73 % | 86.6 % (#7) |
+| SemIf (Qwen3.5-4B) | 100 % | 99 % | 61 % | 81.0 % |
+| Laya (ModernBERT-large, 421M) | 96 % | 69 % | 35 % | 58.4 % |
+| GLiNER2 (gliner2.5-base) | 98 % | 64 % | 37 % | 58.0 % |
+| **Temis 1.0.11 (mmBERT-base, int8)** | **100 %** | **65 %** | **33 %** | **57.1 % (#40 of 53)** |
+| Verdict (ModernBERT-base, 151M) | 85 % | 62 % | 38 % | 55.4 % |
+
+- Temis sits with the other encoders of its size; the systems above it are 4B–27B-parameter LLMs.
+- Its weak spot is long, multi-step cases: on hard items over 1,500 tokens it gets 14 % (chance is
+  28 %, Jev gets 73 %). Letting it read 2,048 tokens instead of the trained 640 barely changes that
+  (hard 33 % → 34 %), so the limit is reasoning, not truncation.
+- Speed and cost are where it shines: 23 ms median per decision on CPU, and no API cost.
+- JevBench measures general decisions (insurance, finance, rules, support), not Clio's. On what
+  Temis was trained for (memory, tools, security) it gets 86 % on Clio's benchmark.
+- Per-item answers, summary and run manifest: [`benchmarks/jevbench/`](benchmarks/jevbench/).
+
 ## Using it
 
 ```sh
