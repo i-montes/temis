@@ -3,9 +3,35 @@
 **Temis** es un modelo **pequeño y general** de decisiones tipadas, con el formato de TypeSafe/Jev
 (`choice`, `score`, `noul`). Corre en cualquier equipo (CPU, CoreML o CUDA) con ONNX y aprende con el uso.
 
-- **Alumno:** `jhu-clsp/mmBERT-small` (~140M parámetros, multilingüe). Exportado a ONNX int8 ocupa ~140 MB.
+**Para qué es.** Lo hice para que [Clio](https://github.com/i-montes/clio), mi agente, tome sus decisiones
+pequeñas en local, sin llamar a un modelo grande en cada paso: qué herramienta usar, si un comando o
+un texto es seguro, y qué hacer con su memoria ([Clio Memory](https://github.com/i-montes/clio-memory)):
+si algo vale la pena recordar, si ya está guardado, si corrige un recuerdo o si hay que olvidarlo.
+También decide etiquetas y enlaces entre notas de un archivo personal de escritura.
+
+- **Alumno:** `jhu-clsp/mmBERT-base` (multilingüe). Exportado a ONNX int8 ocupa ~300 MB.
 - **Teacher:** solo Jev (TypeSafe), recalibrado con temperatura. Qwen3.5-9B local solo genera los casos sintéticos.
-- **Datos:** typed-decisions `train` más casos sintéticos en ~80 dominios, en español e inglés.
+- **Datos:** casos sintéticos centrados en Clio más typed-decisions `train`, en español e inglés.
+  De los 9.247 casos sintéticos, el 63 % son de memoria, herramientas y seguridad (el 76 % si se
+  suman las notas). Contando cada pregunta y el conjunto general, quedan así los 27.604 objetivos de
+  entrenamiento:
+
+  | Área | Objetivos |
+  |---|---|
+  | Memoria (Clio Memory) | 17 % |
+  | Herramientas | 10 % |
+  | Seguridad (inyección, comandos, go/no-go) | 9 % |
+  | Notas (etiquetas y enlaces) | 14 % |
+  | Otros dominios sintéticos (~80: devops, correo, finanzas…) | 29 % |
+  | typed-decisions (general) | 22 % |
+
+  El resto está a propósito: mantiene a Temis general, para que no se rompa con preguntas nuevas.
+- **Contexto (RAG):** a diferencia de un clasificador fijo, cada petición puede traer `context`:
+  pasajes de evidencia que Temis lee junto con la situación, marcados como datos y no como órdenes.
+  El servidor local puede buscarlos solo en Clio Memory (`"context": {"k": 5, "scope": "clio"}`).
+  Ojo: por ahora el entrenamiento solo le enseña a **no confundirse** con contexto irrelevante (al
+  15 % de los ejemplos se le añade un pasaje de otro caso). Todavía no hay casos donde la respuesta
+  dependa del contexto, así que aprovecharlo bien es el siguiente paso.
 - **Diseño completo:** [docs/specs/2026-11-08-decisor-design.md](docs/specs/2026-11-08-decisor-design.md).
 
 ## Versiones
