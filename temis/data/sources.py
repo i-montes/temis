@@ -37,7 +37,7 @@ def load_td(split: str) -> list[dict]:
 def load_synth(clean: bool = True) -> list[dict]:
     """Synthetic cases. With clean=True (default) the quality filter runs: yes/no questions that are
     commands become statements or are dropped, and near-empty states are dropped."""
-    from decisor.data.quality import clean_questions, state_ok
+    from temis.data.quality import clean_questions, state_ok
 
     lines = []
     for path in (SYNTH, EXTERNAL):

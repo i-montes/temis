@@ -6,8 +6,8 @@ from __future__ import annotations
 
 import argparse
 
-from decisor.schema import parse_questions, render_state
-from decisor.store import Store
+from temis.schema import parse_questions, render_state
+from temis.store import Store
 
 
 def main() -> None:

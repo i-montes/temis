@@ -1,6 +1,6 @@
 """Torch-free runtime: ONNX Runtime + tokenizers + numpy. Runs on CPU, CoreML (Mac) or CUDA.
 
-    from decisor.runtime import Decider
+    from temis.runtime import Decider
     d = Decider("runs/v1/onnx")
     answers = d.decide(state, questions)              # {qid: Answer}
     d.decide(state, questions, context="...")        # with retrieved evidence
@@ -14,8 +14,8 @@ from typing import Any
 
 import numpy as np
 
-from decisor.encoding import Encoder
-from decisor.schema import Answer, Question, parse_questions, render_state
+from temis.encoding import Encoder
+from temis.schema import Answer, Question, parse_questions, render_state
 
 
 def _providers(prefer: str | None) -> list[str]:
@@ -35,7 +35,7 @@ class Decider:
         d = Path(model_dir)
         self.config = json.loads((d / "config.json").read_text())
         self.version = self.config.get("version", d.parent.name)  # run id, e.g. v1108-1022
-        from decisor.naming import display, model_id
+        from temis.naming import display, model_id
         self.display = display(self.version)   # "Temis 1.0.5"
         self.model_id = model_id(self.version)  # "temis-1.0.5"
         f = d / ("decisor.int8.onnx" if int8 and (d / "decisor.int8.onnx").exists() else "decisor.onnx")

@@ -15,10 +15,10 @@ RUN=${1:-$(./.venv/bin/python -c 'import json,pathlib;print(pathlib.Path(json.lo
 SRC=runs/$RUN/onnx
 [ -f "$SRC/decisor.int8.onnx" ] || { echo "no int8 export in $SRC" >&2; exit 1; }
 
-ssh "$HOST" "mkdir -p $DIR/decisor $DIR/models/$RUN"
+ssh "$HOST" "mkdir -p $DIR/temis $DIR/models/$RUN"
 rsync -a deploy/Dockerfile deploy/docker-compose.yml deploy/requirements.txt deploy/README.md "$HOST:$DIR/"
-rsync -a decisor/__init__.py decisor/api.py decisor/runtime.py decisor/schema.py decisor/encoding.py \
-      decisor/naming.py "$HOST:$DIR/decisor/"
+rsync -a temis/__init__.py temis/api.py temis/runtime.py temis/schema.py temis/encoding.py \
+      temis/naming.py "$HOST:$DIR/temis/"
 rsync -a --partial "$SRC/config.json" "$SRC/tokenizer.json" "$SRC/decisor.int8.onnx" "$HOST:$DIR/models/$RUN/"
 
 ssh "$HOST" sh -s "$DIR" "$RUN" <<'REMOTE'

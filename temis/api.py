@@ -1,6 +1,6 @@
 """Temis as a standalone HTTP API: inference only, no review queue, store or retraining.
 
-    TEMIS_TOKEN=... TEMIS_MODEL_DIR=runs/v1108-2307/onnx uvicorn decisor.api:app --port 8000
+    TEMIS_TOKEN=... TEMIS_MODEL_DIR=runs/v1108-2307/onnx uvicorn temis.api:app --port 8000
 
 Request: {model, state, questions, context?}. Response: {model, answers, usage}, numbers rounded to
 2 decimals; errors as {"detail": {"error_type", "message"}}. Per-request details (run, uncertainty,
@@ -34,8 +34,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, ConfigDict, Field
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from decisor.runtime import Decider, make_answer, uncertainty
-from decisor.schema import Answer, Question as ParsedQuestion, SchemaError, parse_questions, render_state
+from temis.runtime import Decider, make_answer, uncertainty
+from temis.schema import Answer, Question as ParsedQuestion, SchemaError, parse_questions, render_state
 
 MAX_QUESTIONS = 20
 MAX_CONTEXT_CHARS = 8000

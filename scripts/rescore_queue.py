@@ -8,10 +8,10 @@ from __future__ import annotations
 
 import json
 
-from decisor.data.families import queue_bonus
-from decisor.service import Service, uncertainty
-from decisor.runtime import make_answer
-from decisor.schema import parse_questions, render_state
+from temis.data.families import queue_bonus
+from temis.service import Service, uncertainty
+from temis.runtime import make_answer
+from temis.schema import parse_questions, render_state
 
 
 def main() -> None:

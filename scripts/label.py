@@ -12,8 +12,8 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from decisor.data.sources import load_synth, load_td, read_jsonl
-from decisor.teachers import BudgetExceeded, Jev
+from temis.data.sources import load_synth, load_td, read_jsonl
+from temis.teachers import BudgetExceeded, Jev
 
 LOCK = threading.Lock()
 

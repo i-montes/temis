@@ -18,7 +18,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from decisor.service import active_model_dir
+from temis.service import active_model_dir
 
 RUNS = Path("runs")
 

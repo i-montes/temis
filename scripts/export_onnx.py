@@ -14,7 +14,7 @@ from pathlib import Path
 
 import torch
 
-from decisor.model import Decisor
+from temis.model import Decisor
 from scripts.train import BASE, tokenizer_path
 
 
@@ -56,7 +56,7 @@ def main() -> None:
     quantize_dynamic(str(path), str(out / "decisor.int8.onnx"), weight_type=QuantType.QInt8)
     (out / "tokenizer.json").unlink(missing_ok=True)
     shutil.copyfile(tokenizer_path(), out / "tokenizer.json")
-    from decisor.naming import NAME, assign
+    from temis.naming import NAME, assign
     semver = assign(a.name, base, fine_tune=bool(meta.get("init")))
     (out / "config.json").write_text(json.dumps({"version": a.name, "name": NAME, "semver": semver, "base": base,
                                                  "max_len": meta["max_len"], "temperatures": meta["temperatures"]},

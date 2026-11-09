@@ -2,9 +2,9 @@ import random
 
 import pytest
 
-from decisor.encoding import CTX, EOS, OPT, Encoder
-from decisor.schema import SchemaError, normalize_probs, parse_questions, render_state
-from decisor.store import Store, signature
+from temis.encoding import CTX, EOS, OPT, Encoder
+from temis.schema import SchemaError, normalize_probs, parse_questions, render_state
+from temis.store import Store, signature
 
 Q = {
     "action": {"type": "choice", "instructions": "What now?", "criteria": {"go": "Proceed.", "stop": "Halt."}},
@@ -83,7 +83,7 @@ def test_store_precedents_match_same_signature_only(tmp_path):
 
 
 def test_answer_typesafe_shape():
-    from decisor.runtime import make_answer
+    from temis.runtime import make_answer
     qs = parse_questions(Q)
     a = make_answer(qs[2], [0.3, 0.7]).to_typesafe()
     assert a["type"] == "noul" and a["noul"] == pytest.approx(0.7)
@@ -92,7 +92,7 @@ def test_answer_typesafe_shape():
 
 
 def test_agreement_separates_picked_from_accepted(tmp_path):
-    from decisor.store import agreement
+    from temis.store import agreement
     st = Store(tmp_path / "d.db")
     qs = parse_questions(Q)
     answers = {"action": {"type": "choice", "probabilities": {"go": 0.8, "stop": 0.2}},
@@ -135,12 +135,12 @@ def test_suggestions_are_advisory_and_reviewed_cases_come_first(tmp_path):
     ("Si la alerta indica una caída total, elige A.", None),
 ])
 def test_noul_quality_filter(raw, expected):
-    from decisor.data.quality import normalize_noul
+    from temis.data.quality import normalize_noul
     assert normalize_noul(raw) == expected
 
 
 def test_clean_questions_keeps_other_types_and_drops_bad_noul():
-    from decisor.data.quality import clean_questions, state_ok
+    from temis.data.quality import clean_questions, state_ok
     qs = {"a": {"type": "noul", "instructions": "Evaluate the urgency."},
           "b": {"type": "noul", "instructions": "Determina si hay que responder hoy."},
           "c": {"type": "choice", "instructions": "Elige.", "criteria": {"x": "1", "y": "2"}}}
@@ -152,7 +152,7 @@ def test_clean_questions_keeps_other_types_and_drops_bad_noul():
 
 def test_user_test_holdout_is_never_exported(tmp_path):
     import json as _json
-    from decisor.userlabels import export_user_targets, is_user_test
+    from temis.userlabels import export_user_targets, is_user_test
     st = Store(tmp_path / "d.db")
     qs = parse_questions(Q)
     ids = [st.add_decision(origin="t", state={"i": i}, questions=Q, answers={}, model_version="t", uncertainty=0.5)
@@ -168,7 +168,7 @@ def test_user_test_holdout_is_never_exported(tmp_path):
 
 
 def test_weak_families_get_queue_priority(tmp_path):
-    from decisor.data.families import queue_bonus
+    from temis.data.families import queue_bonus
     st = Store(tmp_path / "d.db")
     a = st.add_decision(origin="t", state={"a": 1}, questions=Q, answers={}, model_version="t", uncertainty=0.6, workflow="note_tags")
     b = st.add_decision(origin="t", state={"b": 1}, questions=Q, answers={}, model_version="t", uncertainty=0.5, workflow="memory_op")
@@ -177,7 +177,7 @@ def test_weak_families_get_queue_priority(tmp_path):
 
 
 def test_temis_versions(tmp_path, monkeypatch):
-    import decisor.naming as N
+    import temis.naming as N
     monkeypatch.setattr(N, "REGISTRY", tmp_path / "registry.json")
     base = "jhu-clsp/mmBERT-base"
     assert N.version_of("v1108-1157") == "1.0.6"                       # backfilled
@@ -190,7 +190,7 @@ def test_temis_versions(tmp_path, monkeypatch):
 
 
 def test_memory_op_rebalance():
-    from decisor.data.balance import copies
+    from temis.data.balance import copies
     opts = ["nueva", "repetida", "sospechosa", "corrige_m1"]
     other = {"id": "syn-x", "workflow": "tools"}
     assert copies(other, opts, [0, 0, 0, 1]) == 1
@@ -202,7 +202,7 @@ def test_memory_op_rebalance():
 
 def test_review_sheet_answers():
     import pytest
-    from decisor.schema import parse_questions
+    from temis.schema import parse_questions
     from scripts.review_sheet import parse_answer
     qs = {q.qid: q for q in parse_questions({
         "op": {"type": "choice", "instructions": "x", "criteria": {"nueva": "a", "repetida": "b", "corrige_m1": "c"}},
@@ -217,9 +217,9 @@ def test_review_sheet_answers():
 
 
 def test_reviewer_targets(tmp_path):
-    from decisor.schema import parse_questions, render_state
-    from decisor.store import Store
-    from decisor.userlabels import export_reviewer_targets, is_user_test
+    from temis.schema import parse_questions, render_state
+    from temis.store import Store
+    from temis.userlabels import export_reviewer_targets, is_user_test
     st = Store(tmp_path / "t.db")
     qs = {"op": {"type": "choice", "instructions": "x", "criteria": {"nueva": "a", "repetida": "b", "corrige_m1": "c"}}}
     ids = []

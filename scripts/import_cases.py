@@ -13,9 +13,9 @@ import hashlib
 import json
 from pathlib import Path
 
-from decisor.data.quality import clean_questions, state_ok
-from decisor.data.sources import EXTERNAL, load_synth
-from decisor.schema import SchemaError, parse_questions
+from temis.data.quality import clean_questions, state_ok
+from temis.data.sources import EXTERNAL, load_synth
+from temis.schema import SchemaError, parse_questions
 
 FAMILIES = {"memory_op", "tool_choice", "memory_relation", "note_link", "needs_memory", "asks_to_forget",
             "tools", "injection", "command_safety", "worth_remembering", "note_tags", "go_no_go", "other"}

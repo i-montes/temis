@@ -20,10 +20,10 @@ from pathlib import Path
 
 import torch
 
-from decisor.data.sources import load_synth, load_td, read_jsonl
-from decisor.encoding import Encoder
-from decisor.model import Decisor, collate, decision_loss, fit_temperature
-from decisor.schema import NOUL_DEFAULT, parse_questions, render_state
+from temis.data.sources import load_synth, load_td, read_jsonl
+from temis.encoding import Encoder
+from temis.model import Decisor, collate, decision_loss, fit_temperature
+from temis.schema import NOUL_DEFAULT, parse_questions, render_state
 
 BASE = "jhu-clsp/mmBERT-small"  # default; --base overrides (saved in meta.json)
 

@@ -1,4 +1,4 @@
-"""Evidence retrieval for the decisor (RAG). Pluggable:
+"""Evidence retrieval for Temis (RAG). Pluggable:
 
 1. The caller brings its own RAG: it passes `context` (a string or a list of passages) in the
    request, and nothing here runs.
@@ -7,7 +7,7 @@
    so no agent configuration is touched.
 
 The memory file is the one Clio shares (~/.local/share/clio/memory.db) when it exists, else the
-decisor's own (data/clio-memory/memory.db). Reads go through `clio-memory --json recall`, which opens
+the project's own (data/clio-memory/memory.db). Reads go through `clio-memory --json recall`, which opens
 the file read-only.
 """
 

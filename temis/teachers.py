@@ -17,7 +17,7 @@ from typing import Any
 
 import requests
 
-from decisor.schema import normalize_probs, parse_questions
+from temis.schema import normalize_probs, parse_questions
 
 
 

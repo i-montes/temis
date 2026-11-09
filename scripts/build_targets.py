@@ -15,9 +15,9 @@ import math
 from collections import defaultdict
 from pathlib import Path
 
-from decisor.data.balance import copies
-from decisor.data.sources import load_synth, load_td, read_jsonl
-from decisor.schema import normalize_probs, parse_questions
+from temis.data.balance import copies
+from temis.data.sources import load_synth, load_td, read_jsonl
+from temis.schema import normalize_probs, parse_questions
 
 EPS = 1e-4
 TEACHER = "jev"
@@ -73,7 +73,7 @@ def main() -> None:
                 d = labels.get(c["id"], {}).get(q.qid)
                 if not d or len(d) != q.n:
                     continue
-                k = copies(c, list(q.options), d)  # rebalance memory_op (see decisor/data/balance.py)
+                k = copies(c, list(q.options), d)  # rebalance memory_op (see temis/data/balance.py)
                 dropped += k == 0
                 tgt = temper(d, calib["temperature"].get(q.kind, 1.0))
                 for _ in range(k):

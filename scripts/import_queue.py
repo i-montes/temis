@@ -15,9 +15,9 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from decisor.data.sources import load_synth, read_jsonl
-from decisor.schema import parse_questions
-from decisor.service import Service
+from temis.data.sources import load_synth, read_jsonl
+from temis.schema import parse_questions
+from temis.service import Service
 
 
 def main() -> None:

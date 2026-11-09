@@ -17,7 +17,7 @@ from pathlib import Path
 
 import numpy as np
 
-from decisor.runtime import Decider
+from temis.runtime import Decider
 from scripts.train import load_examples
 
 

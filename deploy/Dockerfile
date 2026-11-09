@@ -5,9 +5,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY decisor/ decisor/
+COPY temis/ temis/
 RUN useradd --system --uid 10001 temis
 USER temis
 EXPOSE 8000
 # nginx in front sets X-Forwarded-*; only nginx can reach this port.
-CMD ["uvicorn", "decisor.api:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "*"]
+CMD ["uvicorn", "temis.api:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "*"]

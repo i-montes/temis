@@ -12,10 +12,10 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from decisor.runtime import Decider
-from decisor.schema import parse_questions, render_state
-from decisor.store import Store
-from decisor.userlabels import is_user_test
+from temis.runtime import Decider
+from temis.schema import parse_questions, render_state
+from temis.store import Store
+from temis.userlabels import is_user_test
 
 
 def evaluate(model_dir: str) -> dict:

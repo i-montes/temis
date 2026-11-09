@@ -13,8 +13,8 @@ import time
 from collections import defaultdict
 from pathlib import Path
 
-from decisor.data.sources import load_td
-from decisor.runtime import Decider
+from temis.data.sources import load_td
+from temis.runtime import Decider
 
 
 def score_one(probs: dict[str, float], gold: dict) -> tuple[bool, float, float, float]:

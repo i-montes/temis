@@ -1,4 +1,4 @@
-"""The decisor as a service: model + precedents + optional RAG + decision memory."""
+"""Temis as a service: model + precedents + optional RAG + decision memory."""
 
 from __future__ import annotations
 
@@ -9,10 +9,10 @@ from typing import Any
 
 import numpy as np
 
-from decisor.retrieval import ClioMemoryRetriever, Passage, format_context
-from decisor.runtime import Decider, make_answer, uncertainty
-from decisor.schema import parse_questions, render_state
-from decisor.store import Store
+from temis.retrieval import ClioMemoryRetriever, Passage, format_context
+from temis.runtime import Decider, make_answer, uncertainty
+from temis.schema import parse_questions, render_state
+from temis.store import Store
 
 MODELS = Path("runs")
 ACTIVE = Path("models/active.json")

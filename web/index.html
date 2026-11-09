@@ -64,7 +64,7 @@ function show(tab){document.querySelectorAll('nav button').forEach(b=>b.classLis
 
 /* ---------- cola ---------- */
 let Q={item:null,qs:[],cur:0,sel:{},skipped:[]};
-async function loadQueue(){const box=$('#tab-queue');try{const r=await api('/api/queue?limit=1&exclude='+Q.skipped.join(','));refreshStats();const it=r.items[0];if(!it){box.innerHTML='<div class="card empty">No hay casos pendientes. Cuando el decisor dude, aparecerán aquí.</div>';Q.item=null;return}Q={...Q,item:it,qs:Object.entries(it.questions).map(([k,v])=>parseQ(k,v)),cur:0,sel:{},how:{}};drawQueue()}catch(e){box.innerHTML=`<div class="card err">${esc(e.message)}</div>`}}
+async function loadQueue(){const box=$('#tab-queue');try{const r=await api('/api/queue?limit=1&exclude='+Q.skipped.join(','));refreshStats();const it=r.items[0];if(!it){box.innerHTML='<div class="card empty">No hay casos pendientes. Cuando Temis dude, aparecerán aquí.</div>';Q.item=null;return}Q={...Q,item:it,qs:Object.entries(it.questions).map(([k,v])=>parseQ(k,v)),cur:0,sel:{},how:{}};drawQueue()}catch(e){box.innerHTML=`<div class="card err">${esc(e.message)}</div>`}}
 function drawQueue(){const it=Q.item,box=$('#tab-queue');const t=it.teacher||{};const u=it.uncertainty??0;
 let h=`<div class="card"><div class="row"><span class="badge ${u>=.5?'warn':''}">incertidumbre ${Math.round(u*100)}%</span><span class="badge">${esc(it.origin)}</span>${it.workflow?`<span class="muted small">${esc(it.workflow)}</span>`:''}<span class="muted small" style="margin-left:auto">#${esc(it.id)}</span></div>
 <pre class="state">${esc(renderState(it.state))}</pre>${it.context?`<label>Contexto recuperado</label><pre class="state">${esc(it.context)}</pre>`:''}`;

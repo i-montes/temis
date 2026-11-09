@@ -12,8 +12,8 @@ import json
 import sys
 from pathlib import Path
 
-from decisor.schema import parse_questions
-from decisor.store import Store
+from temis.schema import parse_questions
+from temis.store import Store
 
 
 def main() -> None:

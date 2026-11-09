@@ -22,8 +22,8 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from decisor.schema import parse_questions, render_state
-from decisor.store import Store
+from temis.schema import parse_questions, render_state
+from temis.store import Store
 
 COLUMNS = ["caso_id", "familia", "caso", "pregunta_id", "tipo", "pregunta", "opciones",
            "sugerida_modelo", "claude", "respuesta"]

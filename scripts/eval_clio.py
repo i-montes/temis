@@ -12,7 +12,7 @@ import importlib.util
 import json
 from pathlib import Path
 
-from decisor.runtime import Decider
+from temis.runtime import Decider
 
 CASES = Path("external/clio/testing/decisiones/cases.py")
 # Jev's published result on this set (2026-11-03): op 93 %, mem 100 %, del 100 %, tool 88 %.

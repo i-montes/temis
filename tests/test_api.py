@@ -1,9 +1,9 @@
-"""The standalone API (decisor/api.py) against the active model; skipped when none is exported."""
+"""The standalone API (temis/api.py) against the active model; skipped when none is exported."""
 import os
 
 import pytest
 
-from decisor.service import active_model_dir
+from temis.service import active_model_dir
 
 MODEL = active_model_dir()
 pytestmark = pytest.mark.skipif(MODEL is None, reason="no exported model")
@@ -16,12 +16,12 @@ def client():
     os.environ["TEMIS_MODEL_DIR"] = str(MODEL)
     from fastapi.testclient import TestClient
 
-    from decisor.api import app
+    from temis.api import app
     return TestClient(app)
 
 
 def test_api_auth_and_answers(client):
-    from decisor.api import EXAMPLE
+    from temis.api import EXAMPLE
     assert client.get("/health").json()["status"] == "ok"
     assert client.post("/v1/decide", json=EXAMPLE).status_code == 401
     assert client.post("/v1/decide", json=EXAMPLE, headers={"Authorization": "Bearer nope"}).status_code == 401

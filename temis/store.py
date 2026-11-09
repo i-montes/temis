@@ -13,7 +13,7 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-from decisor.schema import Question
+from temis.schema import Question
 
 SCHEMA = """
 PRAGMA journal_mode=WAL;
@@ -78,7 +78,7 @@ class Store:
     def add_decision(self, *, origin: str, state: Any, questions: dict, answers: dict, model_version: str,
                      uncertainty: float, context: str | None = None, workflow: str = "",
                      teacher: dict | None = None, id: str | None = None) -> str:
-        from decisor.data.families import queue_bonus
+        from temis.data.families import queue_bonus
 
         did = id or uuid.uuid4().hex[:12]
         priority = round(uncertainty + queue_bonus(workflow), 4)
@@ -203,7 +203,7 @@ def agreement(store: Store, recent: int = 25) -> dict:
     """How often the model's suggestion (and the teacher, Jev) matches what the user chose."""
     from collections import defaultdict
 
-    from decisor.schema import parse_questions
+    from temis.schema import parse_questions
 
     with store.lock:
         rows = store.db.execute(

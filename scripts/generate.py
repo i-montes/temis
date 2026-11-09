@@ -17,11 +17,11 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from decisor.data import agent_schemas
-from decisor.data.quality import clean_questions, state_ok
-from decisor.data.domains import BROAD, CORE
-from decisor.llm import chat_json
-from decisor.schema import SchemaError, parse_questions
+from temis.data import agent_schemas
+from temis.data.quality import clean_questions, state_ok
+from temis.data.domains import BROAD, CORE
+from temis.llm import chat_json
+from temis.schema import SchemaError, parse_questions
 
 OUT = Path("data/synth/cases.jsonl")
 LOCK = threading.Lock()

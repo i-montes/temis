@@ -8,8 +8,8 @@ from __future__ import annotations
 
 import json
 
-from decisor.data.quality import clean_questions, state_ok
-from decisor.store import Store
+from temis.data.quality import clean_questions, state_ok
+from temis.store import Store
 
 
 def main() -> None:

@@ -17,9 +17,9 @@ import sys
 import time
 from pathlib import Path
 
-from decisor.data.sources import load_synth, read_jsonl
-from decisor.service import active_model_dir, set_active
-from decisor.userlabels import REVIEWER_TARGETS, USER_TARGETS, export_reviewer_targets, export_user_targets
+from temis.data.sources import load_synth, read_jsonl
+from temis.service import active_model_dir, set_active
+from temis.userlabels import REVIEWER_TARGETS, USER_TARGETS, export_reviewer_targets, export_user_targets
 
 STATE = Path("runs/nightly_state.json")
 STOP = Path("runs/nightly.stop")  # while this file exists the loop exits at its next turn (off by the user's choice)

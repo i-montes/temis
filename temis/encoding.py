@@ -17,7 +17,7 @@ from dataclasses import dataclass
 
 from tokenizers import Tokenizer
 
-from decisor.schema import Question
+from temis.schema import Question
 
 BOS, EOS, PAD, OPT, CTX = 2, 1, 0, 7, 8  # mmBERT/Gemma ids; <unused0> = option marker, <unused1> = context
 MAX_INSTR, MAX_OPTION = 160, 80

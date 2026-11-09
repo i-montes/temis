@@ -12,8 +12,8 @@ import hashlib
 import json
 from pathlib import Path
 
-from decisor.schema import parse_questions
-from decisor.store import Store
+from temis.schema import parse_questions
+from temis.store import Store
 
 USER_TARGETS = Path("data/user_targets.jsonl")
 
@@ -71,7 +71,7 @@ def export_reviewer_targets(store: Store | None = None, path: Path = REVIEWER_TA
     for did, qid, lab in rows:
         if not is_user_test(did):
             votes.setdefault(did, {}).setdefault(qid, []).append(lab)
-    from decisor.data.sources import load_synth
+    from temis.data.sources import load_synth
     schema = {c["id"]: c.get("schema_id", c["id"]) for c in load_synth(clean=False)}  # same val split as Jev's row
     out = []
     for did, qv in votes.items():

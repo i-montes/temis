@@ -155,7 +155,7 @@ print(r.json()["answers"])
   `TEMIS_TOKEN` y `TEMIS_MODEL_DIR`.
 - Logs: `docker logs -f temis-api`.
 
-**Desplegar otra versión** (desde el Mac, en la carpeta del decisor):
+**Desplegar otra versión** (desde el Mac, en la carpeta del proyecto):
 
 ```sh
 deploy/deploy.sh              # la versión activa en local

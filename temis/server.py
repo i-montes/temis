@@ -1,6 +1,6 @@
 """Web server: TypeSafe-compatible API + the review/playground UI.
 
-  python -m decisor.server --port 8765      ->  http://127.0.0.1:8765
+  python -m temis.server --port 8765      ->  http://127.0.0.1:8765
 
 API
   POST /v1/systemone        {state, questions, context?, workflow?, log?}   (same answers as TypeSafe)
@@ -33,9 +33,9 @@ from fastapi import Body, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from decisor.schema import SchemaError, parse_questions, render_state
-from decisor.service import Service, active_model_dir, set_active
-from decisor.templates import TEMPLATES
+from temis.schema import SchemaError, parse_questions, render_state
+from temis.service import Service, active_model_dir, set_active
+from temis.templates import TEMPLATES
 
 ROOT = Path(__file__).resolve().parent.parent
 WEB = ROOT / "web"
@@ -142,7 +142,7 @@ def decision(did: str):
 
 @app.get("/api/agreement")
 def agreement_stats():
-    from decisor.store import agreement
+    from temis.store import agreement
     return agreement(service().store)
 
 
@@ -169,7 +169,7 @@ def _models() -> list[dict]:
         ev = run / "eval_td_test.json"
         cl = run / "eval_clio.json"
         ue = run / "eval_user.json"
-        from decisor.naming import display
+        from temis.naming import display
         out.append({"name": run.name, "display": display(run.name), "created": m.get("created"), "val": m.get("val", {}).get("all"),
                     "val_by_source": {k: v for k, v in m.get("val", {}).items() if k != "all"},
                     "td_test": json.loads(ev.read_text()) if ev.exists() else None,
@@ -266,7 +266,7 @@ def main() -> None:
     host = "0.0.0.0" if a.lan else a.host
     LISTEN["lan"] = a.lan
     if a.lan:
-        print(f"[decisor] celular: http://{lan_ip()}:{a.port}/m  (la clave está en la web del Mac: botón «Celular»)", flush=True)
+        print(f"[temis] celular: http://{lan_ip()}:{a.port}/m  (la clave está en la web del Mac: botón «Celular»)", flush=True)
     uvicorn.run(app, host=host, port=a.port, log_level="warning")
 
 

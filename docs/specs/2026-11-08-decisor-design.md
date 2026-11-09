@@ -53,20 +53,20 @@ Un modelo **pequeño y general** de decisiones tipadas con el mismo formato que 
 - **Qwen fuera como teacher (definitivo, decisión de Iván):** confirmado también por las etiquetas de Iván (Qwen coincide ~70 % y Jev ~100 % en las primeras 32 respuestas). El código del teacher local se eliminó; Qwen sigue solo como generador.
 - **Calibración por acierto:** el modelo era infraconfiado (cuando decía 80–90 % acertaba 96 %). Se añadió `scripts/calibrate.py` y la cola se recalcula al promover una versión.
 
-- **Filtro de calidad de casos** (`decisor/data/quality.py`), tras revisar la cola: una pregunta `noul` debe ser una afirmación verdadera o falsa. Las condicionales («Determine if X») se reescriben como «X»; las vagas («Evalúa el peso emocional»), las disyuntivas y los estados casi vacíos se descartan. Se aplica al generar, al cargar los datos (sin tocar el archivo) y a la cola. Sobre los datos existentes: 1.509 preguntas reescritas y 334 descartadas.
+- **Filtro de calidad de casos** (`temis/data/quality.py`), tras revisar la cola: una pregunta `noul` debe ser una afirmación verdadera o falsa. Las condicionales («Determine if X») se reescriben como «X»; las vagas («Evalúa el peso emocional»), las disyuntivas y los estados casi vacíos se descartan. Se aplica al generar, al cargar los datos (sin tocar el archivo) y a la cola. Sobre los datos existentes: 1.509 preguntas reescritas y 334 descartadas.
 
 - **Estancamiento y plan de mejora** (13:30). Con la versión v1108-1022, el acuerdo con Jev en validación es más bajo justo donde Jev duda: operación de memoria 62 % con Jev al 50 % de confianza, elegir herramienta 61 % con Jev al 61 %. En cambio, etiquetas de notas 100 % y go/no-go 94 %. Las familias débiles tenían pocos datos y la medición es ruidosa (±17 puntos). Cambios:
-  1. `decisor/data/families.py`: pesos por familia. El generador saca hasta 3 veces más casos de las débiles y pide que 3 de cada 4 estados sean claros.
+  1. `temis/data/families.py`: pesos por familia. El generador saca hasta 3 veces más casos de las débiles y pide que 3 de cada 4 estados sean claros.
   2. La cola prioriza las familias débiles (columna `priority` = duda + bonus).
   3. Test personal: 1 de cada 5 casos etiquetados por Iván queda reservado y nunca se entrena (`scripts/eval_user.py`). Cuenta para promover versiones desde 150 preguntas.
   4. Una vez por noche (desde la 1:00), el ciclo entrena desde cero 5 épocas en lugar de un ajuste corto.
 
-- **Nombre:** el modelo se llama **Temis** (decisión de Iván), con versiones `MAYOR.MENOR.PARCHE` (`decisor/naming.py`, `runs/registry.json`). La API responde `"model": "temis-1.0.5"` y mantiene el identificador del entrenamiento en `"run"`.
+- **Nombre:** el modelo se llama **Temis** (decisión de Iván), con versiones `MAYOR.MENOR.PARCHE` (`temis/naming.py`, `runs/registry.json`). La API responde `"model": "temis-1.0.5"` y mantiene el identificador del entrenamiento en `"run"`.
 
 ## Fuera de alcance (v1)
 
 `box` (imágenes) y `span` (ubicar un fragmento de texto); el control de vuelo del cohete; aprendizaje
 online de pesos completos.
 - 2026-11-08 · El ciclo automático (generación con Qwen y entrenamiento cada 800 casos o cada noche) queda apagado por decisión de Iván: sin datos nuevos no aporta. Se entrena a mano con `scripts.retrain`, que ahora también hace que Jev etiquete los casos nuevos, reconstruye los objetivos, ajusta 2 épocas, refresca la cola y libera espacio.
-- 2026-11-08 · Rebalanceo de memory_op (decisor/data/balance.py): Temis llamaba "corrige" a toda propuesta ya guardada (0 de 6 en el benchmark de Clio) porque en los casos de Qwen Jev elegía corregir en el 51 % y "repetida" en el 4 %. Ahora las correcciones de Qwen entran el 30 % de las veces y los casos externos de memory_op cuentan doble: la mezcla queda nueva 31 %, sospechosa 28 %, corrige 27 %, repetida 13 %. El prompt para otros modelos pide "repetidas" disfrazadas, pares de contraste y casos límite de herramientas.
+- 2026-11-08 · Rebalanceo de memory_op (temis/data/balance.py): Temis llamaba "corrige" a toda propuesta ya guardada (0 de 6 en el benchmark de Clio) porque en los casos de Qwen Jev elegía corregir en el 51 % y "repetida" en el 4 %. Ahora las correcciones de Qwen entran el 30 % de las veces y los casos externos de memory_op cuentan doble: la mezcla queda nueva 31 %, sospechosa 28 %, corrige 27 %, repetida 13 %. El prompt para otros modelos pide "repetidas" disfrazadas, pares de contraste y casos límite de herramientas.
 - 2026-11-08 · Revisión fuera de la web (scripts/review_sheet.py): la cola se exporta a CSV (máx. 20 casos por familia) y otro modelo la responde. Esas respuestas entran como sugerencias y además como segunda opinión en el entrenamiento (data/reviewer_targets.jsonl): objetivo suave de 0,7 en la opción elegida, peso de un objetivo de Jev, fuera del test personal de Iván, de la validación y de lo que Iván ya etiquetó.

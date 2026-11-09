@@ -1,6 +1,6 @@
 # Temis
 
-**Temis** (el proyecto se llama `decisor`) es un modelo **pequeño y general** de decisiones tipadas, con el formato de TypeSafe/Jev
+**Temis** es un modelo **pequeño y general** de decisiones tipadas, con el formato de TypeSafe/Jev
 (`choice`, `score`, `noul`). Corre en cualquier equipo (CPU, CoreML o CUDA) con ONNX y aprende con el uso.
 
 - **Alumno:** `jhu-clsp/mmBERT-small` (~140M parámetros, multilingüe). Exportado a ONNX int8 ocupa ~140 MB.
@@ -74,7 +74,7 @@ Solo responde el modelo (sin precedentes ni Clio Memory). Para desplegar otra ve
 ## Usarlo sin servidor
 
 ```python
-from decisor.runtime import Decider          # solo necesita onnxruntime, tokenizers y numpy
+from temis.runtime import Decider          # solo necesita onnxruntime, tokenizers y numpy
 d = Decider("runs/<versión>/onnx")
 answers = d.decide(state, questions)          # {qid: Answer}
 ```

@@ -22,8 +22,8 @@ import sys
 import time
 from pathlib import Path
 
-from decisor.service import active_model_dir, set_active
-from decisor.userlabels import REVIEWER_TARGETS, USER_TARGETS, export_reviewer_targets, export_user_targets
+from temis.service import active_model_dir, set_active
+from temis.userlabels import REVIEWER_TARGETS, USER_TARGETS, export_reviewer_targets, export_user_targets
 
 
 def run(*args: str) -> None:

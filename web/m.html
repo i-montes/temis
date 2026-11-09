@@ -62,7 +62,7 @@ $('#tokgo').onclick=()=>{const v=$('#tok').value.trim();if(!v){$('#tokerr').text
 let C={item:null,qs:[],i:0,labels:{},how:{}},skipped=[],done=0;
 async function start(){try{const s=await api('/api/stats');$('#model').textContent=s.model;next()}catch(e){if(e.message!=='auth')$('#stage').innerHTML=`<div class="center">${esc(e.message)}</div>`}}
 async function next(){try{const r=await api('/api/queue?limit=1&exclude='+skipped.join(','));const it=r.items[0];$('#count').textContent=`${r.stats.open} pendientes · ${done} hoy`;
-if(!it){$('#bar').innerHTML='';$('#stage').innerHTML='<div class="center"><div><p><b>No quedan casos</b></p><p class="muted small">Cuando el decisor dude, aparecerán aquí.</p></div></div>';return}
+if(!it){$('#bar').innerHTML='';$('#stage').innerHTML='<div class="center"><div><p><b>No quedan casos</b></p><p class="muted small">Cuando Temis dude, aparecerán aquí.</p></div></div>';return}
 C={item:it,qs:Object.entries(it.questions).map(([k,v])=>parseQ(k,v)),i:0,labels:{},how:{}};draw()}catch(e){if(e.message!=='auth')toast(e.message)}}
 function modelView(q){const a=(C.item.answers||{})[q.qid];if(!a||!a.probabilities)return null;const ent=Object.entries(a.probabilities).sort((x,y)=>y[1]-x[1]);const tie=ent.length>1&&ent[0][1]-ent[1][1]<0.04;return{top:ent[0][0],p:ent[0][1],tie,probs:a.probabilities}}
 function label(q,o){return q.type==='noul'?(o==='true'?'sí':'no'):q.type==='score'?'nivel '+o:o}

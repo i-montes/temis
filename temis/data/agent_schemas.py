@@ -243,7 +243,7 @@ FAMILIES = [memory_op, needs_memory, asks_to_forget, tools, tool_choice, injecti
 
 
 def sample(rng: random.Random) -> dict:
-    from decisor.data.families import FAMILY_WEIGHT
+    from temis.data.families import FAMILY_WEIGHT
 
     fam = rng.choices(FAMILIES, weights=[FAMILY_WEIGHT.get(f.__name__, 1.0) for f in FAMILIES])[0]
     es = rng.random() < 0.65
