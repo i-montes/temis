@@ -65,6 +65,32 @@ def agree(jev_dist: list[float], options: list[str], label) -> bool:
     return str(label) == top
 
 
+AUTHOR_CONFIDENCE = 0.9  # the author's answer, like Iván's labels: 0.9 on it, the rest shared
+
+
+def _one_hot(options: list[str], label: str, p: float = AUTHOR_CONFIDENCE) -> list[float]:
+    n = len(options)
+    return [p if o == label else round((1 - p) / (n - 1), 6) for o in options]
+
+
+def hard_target(jev_dist: list[float], options: list[str], jev_target: list[float], *, surface: str | None,
+                second, author: str | None) -> list[float] | None:
+    """The training target of one hard question, or None to hold it back (it goes to the queue).
+
+    With the author's gold: the gold (0.9 one-hot) when Jev or the second opinion agrees with it; held
+    back when neither does (the case may be badly written). Without it: held back when Jev picked the
+    author's surface answer (wrong by construction) or when the second opinion disagrees with Jev;
+    otherwise Jev's calibrated distribution."""
+    top = options[max(range(len(jev_dist)), key=jev_dist.__getitem__)]
+    if author is not None:
+        if top == author or (second is not NO_OPINION and second == author):
+            return _one_hot(options, author)
+        return None
+    if surface is not None and top == surface:
+        return None
+    return jev_target if agree(jev_dist, options, second) else None
+
+
 def write_held_back(pairs: list[tuple[str, str]], path: Path = HELD_BACK) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w") as f:

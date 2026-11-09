@@ -18,15 +18,15 @@ import math
 from collections import defaultdict
 from pathlib import Path
 
-from temis.data.balance import NO_OPINION, agree, cap_share, copies, write_held_back
+from temis.data.balance import NO_OPINION, cap_share, copies, hard_target, write_held_back
 from temis.data.procedural import budget_filter, gold_targets, load_procedural, write_cases
 from temis.data.sources import load_synth, load_td, read_jsonl
-from scripts.second_opinion import load_second_opinions
+from scripts.second_opinion import load_author_gold, load_second_opinions
 from temis.schema import normalize_probs, parse_questions
 
 EPS = 1e-4
 TEACHER = "jev"
-PROCEDURAL_SHARE = 0.25  # at most this share of all targets (0.35 pushed the Clio families under their floor)
+PROCEDURAL_SHARE = 0.24  # at most this share of all targets (above it the Clio families fall under their 35 % floor)
 CLIO_SHARE_MIN = 0.35    # warn when the agent families (memory, tools, security, notes) fall below this
 
 
@@ -73,6 +73,7 @@ def main() -> None:
     clio = 0
     held: list[tuple[str, str]] = []
     second = load_second_opinions()  # {(case id, qid): label | None} from another model, hard cases only
+    gold = load_author_gold()        # {(case id, qid): label}: the answers of the model that wrote the hard cases
     for c in load_synth():  # synthetic: calibrated Jev
         try:
             qs = parse_questions(c["questions"])
@@ -82,12 +83,16 @@ def main() -> None:
             d = labels.get(c["id"], {}).get(q.qid)
             if not d or len(d) != q.n:
                 continue
-            if str(c.get("domain", "")).startswith("hard:") and not agree(d, list(q.options), second.get((c["id"], q.qid), NO_OPINION)):
-                held.append((c["id"], q.qid))  # teachers disagree: not a target; import_queue puts it first
-                continue
+            tgt = temper(d, calib["temperature"].get(q.kind, 1.0))
+            if str(c.get("domain", "")).startswith("hard:"):
+                key = (c["id"], q.qid)
+                tgt = hard_target(d, list(q.options), tgt, surface=(c.get("surface_answer") or {}).get(q.qid),
+                                  second=second.get(key, NO_OPINION), author=gold.get(key))
+                if tgt is None:
+                    held.append(key)  # trap, disagreement or unverified: not a target; import_queue puts it first
+                    continue
             k = copies(c, list(q.options), d)  # rebalance memory_op (see temis/data/balance.py)
             dropped += k == 0
-            tgt = temper(d, calib["temperature"].get(q.kind, 1.0))
             for _ in range(k):
                 rows.append({"id": c["id"], "qid": q.qid, "kind": q.kind, "source": "synth",
                              "schema_id": c.get("schema_id", c["id"]), "target": tgt, "teachers": [TEACHER]})
@@ -107,7 +112,7 @@ def main() -> None:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
     n = len(rows)
     print(f"[targets] wrote {n} question targets ({dropped} left out to rebalance memory_op, "
-          f"{len(held)} hard questions held back: teachers disagree)")
+          f"{len(held)} hard questions held back: trap, disagreement or unverified)")
     by = defaultdict(int)
     for r in rows:
         by[r["source"]] += 1

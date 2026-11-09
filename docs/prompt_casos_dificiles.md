@@ -24,7 +24,7 @@ FORMATO DE SALIDA (obligatorio)
 - Solo JSON Lines: un objeto JSON por línea, nada más. Sin texto antes ni después, sin ``` ni comentarios.
 - Cada objeto tiene exactamente estas claves:
   {"family": "...", "language": "es" | "en", "workflow": "...", "state": {...} o "texto",
-   "questions": {...}, "rationale": "...", "surface_answer": {...}, "contrast_of": "..." (opcional)}
+   "questions": {...}, "expected": {...}, "rationale": "...", "surface_answer": {...}, "contrast_of": "..." (opcional)}
   - family: una de las 10 de abajo.
   - language: "es" en la mitad de los casos, "en" en la otra mitad. Todo el texto natural del caso va en ese idioma.
   - workflow: nombre corto en snake_case en inglés que describa el TEMA sin revelar la respuesta
@@ -39,6 +39,9 @@ FORMATO DE SALIDA (obligatorio)
       instructions es o bien una PREGUNTA cerrada ("¿La reclamación llegó dentro del plazo?") o bien una
       AFIRMACIÓN ("La reclamación llegó dentro del plazo."): usa las dos formas a partes iguales.
       Prohibidas las órdenes ("Determina si…", "Evalúa…") y las disyuntivas ("A o B").
+  - expected: {id_pregunta: clave_de_opción} con la respuesta CORRECTA de cada pregunta (para noul:
+    "true" o "false"; para score: el índice del nivel como texto). Es el oro del caso; nunca coincide
+    con surface_answer.
   - rationale: 2 a 6 frases que justifican la respuesta correcta de cada pregunta citando los datos
     decisivos del state (qué regla, qué excepción, qué cifra, qué fecha). Un revisor debe poder
     comprobarla en dos minutos.
@@ -100,7 +103,7 @@ probability (300–800 tokens). Evidencia contable explícita que fija la probab
   quedar entre 0,55 y 0,85. Añade "gold_probs": {opción: probabilidad} dentro de rationale como texto.
 
 EJEMPLO DE UNA LÍNEA VÁLIDA (no la copies; sirve para ver la forma):
-{"family":"trap","language":"es","workflow":"return_seal_definition","state":"Política de devoluciones de Tienda Mirlo: un paquete cuenta como \"sin abrir\" solo si todos los precintos de fábrica están intactos; la bolsa del mensajero no cuenta. El cliente escribe: \"No abrí el paquete, aunque el precinto transparente de la caja se rasgó al sacarla de la bolsa mojada\". Foto de recepción: bolsa rota, caja cerrada, precinto de fábrica partido de lado a lado. Nota del agente: \"Dice que está sin abrir; seguramente aplica\". El reembolso inmediato por artículo sin abrir exige devolución en 30 días y artículo sin abrir. La devolución se pidió el día 12.","questions":{"elegible":{"type":"noul","instructions":"¿Esta devolución cumple los requisitos del reembolso inmediato por artículo sin abrir?","criteria":{"false":"No cumple alguna condición.","true":"Cumple todas las condiciones."}}},"rationale":"El plazo se cumple (día 12 de 30), pero el precinto de fábrica de la caja está partido, así que según la definición de la política el artículo no está sin abrir, diga lo que diga el cliente. La nota del agente se basa en la declaración, no en la foto.","surface_answer":{"elegible":"true"}}
+{"family":"trap","language":"es","workflow":"return_seal_definition","state":"Política de devoluciones de Tienda Mirlo: un paquete cuenta como \"sin abrir\" solo si todos los precintos de fábrica están intactos; la bolsa del mensajero no cuenta. El cliente escribe: \"No abrí el paquete, aunque el precinto transparente de la caja se rasgó al sacarla de la bolsa mojada\". Foto de recepción: bolsa rota, caja cerrada, precinto de fábrica partido de lado a lado. Nota del agente: \"Dice que está sin abrir; seguramente aplica\". El reembolso inmediato por artículo sin abrir exige devolución en 30 días y artículo sin abrir. La devolución se pidió el día 12.","questions":{"elegible":{"type":"noul","instructions":"¿Esta devolución cumple los requisitos del reembolso inmediato por artículo sin abrir?","criteria":{"false":"No cumple alguna condición.","true":"Cumple todas las condiciones."}}},"expected":{"elegible":"false"},"rationale":"El plazo se cumple (día 12 de 30), pero el precinto de fábrica de la caja está partido, así que según la definición de la política el artículo no está sin abrir, diga lo que diga el cliente. La nota del agente se basa en la declaración, no en la foto.","surface_answer":{"elegible":"true"}}
 
 ENCARGO
 Genera 40 casos: 8 long_policy (4 pares), 8 multi_hop (4 pares), 4 trap (2 pares), 4 ambiguous,

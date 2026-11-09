@@ -20,7 +20,7 @@ y una lectura por palabras clave da otra respuesta. NO escribas la respuesta en 
 FORMATO DE SALIDA (obligatorio)
 - Solo JSON Lines: un objeto por línea, sin texto antes ni después, sin ``` ni comentarios.
 - Claves: {"family": "rubric_short", "language": "es" | "en", "workflow": "...", "state": "texto",
-           "questions": {...}, "rationale": "...", "surface_answer": {...}}
+           "questions": {...}, "expected": {...}, "rationale": "...", "surface_answer": {...}}
   - language: "es" en la mitad de los casos y "en" en la otra mitad.
   - workflow: nombre corto en snake_case en inglés con el TEMA (sin revelar la respuesta).
   - state: texto de 1 a 3 frases (mínimo 120 caracteres: añade contexto natural si hace falta).
@@ -29,6 +29,7 @@ FORMATO DE SALIDA (obligatorio)
     * noul:   {"type":"noul","instructions":"<pregunta cerrada o afirmación>","criteria":{"false":"...","true":"..."}}
     * score:  {"type":"score","instructions":"<la rúbrica>","criteria":["nivel 0","nivel 1",...]} (3 a 5 niveles)
     La rúbrica va dentro de instructions, en una o dos frases, y dice cómo decidir en los casos dudosos.
+  - expected: {id_pregunta: opción correcta} (noul: "true"/"false"; score: índice del nivel como texto).
   - rationale: una frase que cita la regla de la rúbrica y el hecho del state que la activa.
   - surface_answer: {id_pregunta: opción} con la respuesta tentadora equivocada (para noul, "true"/"false").
 
@@ -60,9 +61,9 @@ CALIDAD
   que el modelo no aprenda que siempre hay trampa.
 
 EJEMPLO DE UNA LÍNEA VÁLIDA (no la copies):
-{"family":"rubric_short","language":"en","workflow":"locker_pickup_code_question","state":"Message from a customer to the pickup-locker helpdesk: My pickup code has not arrived yet, can you tell me when it will be sent? And please do not change the locker location, the one near the station suits me fine.","questions":{"accion":{"type":"choice","instructions":"Which action does the customer actually ask for? Something that is only mentioned, or explicitly asked NOT to be done, is not a request.","criteria":{"reenviar_codigo":"Send the pickup code again or say when it comes","cambiar_casillero":"Move the parcel to another locker","cancelar_recogida":"Cancel the pickup","consulta_general":"Answer a general question with no action","ninguna":"Nothing is being asked"}}},"rationale":"The only thing asked is when the code arrives; the locker location is mentioned to say it must stay as it is.","surface_answer":{"accion":"cambiar_casillero"}}
+{"family":"rubric_short","language":"en","workflow":"locker_pickup_code_question","state":"Message from a customer to the pickup-locker helpdesk: My pickup code has not arrived yet, can you tell me when it will be sent? And please do not change the locker location, the one near the station suits me fine.","questions":{"accion":{"type":"choice","instructions":"Which action does the customer actually ask for? Something that is only mentioned, or explicitly asked NOT to be done, is not a request.","criteria":{"reenviar_codigo":"Send the pickup code again or say when it comes","cambiar_casillero":"Move the parcel to another locker","cancelar_recogida":"Cancel the pickup","consulta_general":"Answer a general question with no action","ninguna":"Nothing is being asked"}}},"expected":{"accion":"reenviar_codigo"},"rationale":"The only thing asked is when the code arrives; the locker location is mentioned to say it must stay as it is.","surface_answer":{"accion":"cambiar_casillero"}}
 
 ENCARGO
-Genera 60 casos: 10 por plantilla, mitad en español, mitad en inglés, respuestas equilibradas dentro
+Genera 120 casos: 20 por plantilla, mitad en español, mitad en inglés, respuestas equilibradas dentro
 de cada plantilla. No repitas escenarios de lotes anteriores.
 ```

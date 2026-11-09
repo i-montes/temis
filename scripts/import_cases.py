@@ -4,7 +4,8 @@
 
 Each line: {"family", "language", "workflow"?, "state", "questions"} (TypeSafe question format).
 Hard families (temis/data/families.py::HARD_FAMILIES) also carry "rationale" (required) and may
-carry "surface_answer" {qid: option} and "contrast_of" (the workflow of their contrast twin);
+carry "expected" {qid: option} (the author's answer, kept as "author_gold"), "surface_answer"
+{qid: option} and "contrast_of" (the workflow of their contrast twin);
 those fields are kept with the case (the rationale feeds training later, never the model's input).
 Lines that fail validation are reported and skipped. Valid cases go to data/synth/external.jsonl;
 Jev labels them on its next pass and the next training uses them. Nothing here is a label.
@@ -94,6 +95,16 @@ def parse_line(line: str, source: str, leaks: set | None = None) -> dict | None:
                 extra["surface_answer"] = {k: str(v) for k, v in surface.items()}
             if c.get("contrast_of"):
                 extra["contrast_of"] = str(c["contrast_of"])
+            expected = c.get("expected")
+            if expected:
+                if not isinstance(expected, dict):
+                    raise SchemaError("expected must be {question_id: option}")
+                for qid, opt in expected.items():
+                    if qid not in parsed or str(opt) not in parsed[qid].options:
+                        raise SchemaError(f"expected {qid!r}: {opt!r} is not one of its options")
+                    if str(opt) == extra.get("surface_answer", {}).get(qid):
+                        raise SchemaError(f"expected {qid!r} equals its surface_answer")
+                extra["author_gold"] = {k: str(v) for k, v in expected.items()}
     except (json.JSONDecodeError, SchemaError, AttributeError, TypeError) as e:
         print(f"[import] skipped ({e})")
         return None
