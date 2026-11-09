@@ -14,6 +14,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from temis.data.sources import load_td
+from temis.jevbench import ece
 from temis.runtime import Decider
 
 
@@ -27,14 +28,6 @@ def score_one(probs: dict[str, float], gold: dict) -> tuple[bool, float, float, 
     kl = sum(gi * math.log(gi / max(pi, 1e-9)) for gi, pi in zip(g, p) if gi > 0)
     brier = sum((pi - gi) ** 2 for pi, gi in zip(p, g))
     return ok, kl, brier, max(p)
-
-
-def ece(accs: list[bool], confs: list[float], n_bins: int = 10) -> float:
-    bt, bh, bc = [0] * n_bins, [0] * n_bins, [0.0] * n_bins
-    for ok, c in zip(accs, confs):
-        b = min(int(c * n_bins), n_bins - 1)
-        bt[b] += 1; bh[b] += ok; bc[b] += c
-    return sum(bt[b] / len(accs) * abs(bh[b] / bt[b] - bc[b] / bt[b]) for b in range(n_bins) if bt[b])
 
 
 def evaluate(model_dir: str, int8: bool = True, limit: int | None = None) -> dict:

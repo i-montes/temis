@@ -31,7 +31,7 @@
 
 ---
 
-### Tarea 1: Puntuación de JevBench como funciones puras + harness local
+### Task 1: Puntuación de JevBench como funciones puras + harness local
 
 **Files:**
 - Create: `temis/jevbench.py`
@@ -128,7 +128,7 @@ git commit -m "JevBench local: puntuación v1.2 y v1.5 estimada, harness sin ser
 
 ---
 
-### Tarea 2: Quitar los cortes de entrada (B1, B2)
+### Task 2: Quitar los cortes de entrada (B1, B2)
 
 **Files:**
 - Modify: `temis/schema.py:113` (`render_state`)
@@ -180,7 +180,7 @@ git commit -m "Estados largos: render_state hasta 40k caracteres y long_max_len 
 
 ---
 
-### Tarea 3: Pruebas de sesgo (A3) en el harness
+### Task 3: Pruebas de sesgo (A3) en el harness
 
 **Files:**
 - Modify: `temis/jevbench.py` (añadir `probes`)
@@ -217,7 +217,7 @@ Expected: `probes.rotation_flip_rate` reportado (esperado > 10 % hoy); `first_op
 
 ---
 
-### Tarea 4: Calibración por tipo × nº de opciones orientada a v1.5 (B3)
+### Task 4: Calibración por tipo × nº de opciones orientada a v1.5 (B3)
 
 **Files:**
 - Create: `temis/calibration.py`
@@ -270,7 +270,7 @@ Expected: `v15.noul_in_band` baja de ~43 a < 20 y `v15.intelligence` sube; `accu
 
 ---
 
-### Tarea 5: `procedural-typed-decisions` como fuente, conjunto interno hard-like y topes de mezcla (C1, A2, C6)
+### Task 5: `procedural-typed-decisions` como fuente, conjunto interno hard-like y topes de mezcla (C1, A2, C6)
 
 **Files:**
 - Create: `temis/data/procedural.py`
@@ -348,7 +348,7 @@ git commit -m "procedural-typed-decisions como fuente con tope del 35 %, conjunt
 
 ---
 
-### Tarea 6: Entrenamiento: consistencia por permutación + R-Drop, entradas largas, CUDA (D1, D4, H)
+### Task 6: Entrenamiento: consistencia por permutación + R-Drop, entradas largas, CUDA (D1, D4, H)
 
 **Files:**
 - Modify: `temis/model.py` (`consistency_loss`, `Decisor.__init__` attn)
@@ -409,7 +409,7 @@ git commit -m "Entrenamiento: lotes gemelos con consistencia por permutación, e
 
 ---
 
-### Tarea 7: Importar casos difíciles con `rationale` y familias nuevas (C2/C3, importador)
+### Task 7: Importar casos difíciles con `rationale` y familias nuevas (C2/C3, importador)
 
 **Files:**
 - Modify: `scripts/import_cases.py` (`FAMILIES`, campos opcionales)
@@ -454,7 +454,7 @@ def test_import_agent_families_unchanged():
 
 ---
 
-### Tarea 8: Prompts para el modelo privado y segunda opinión (C2, C3, C4)
+### Task 8: Prompts para el modelo privado y segunda opinión (C2, C3, C4)
 
 **Files:**
 - Create: `docs/prompt_casos_dificiles.md`
@@ -491,7 +491,7 @@ def test_agree_with_second_opinion():
 
 ---
 
-### Tarea 9: Integrar en `retrain.py`, puertas y README
+### Task 9: Integrar en `retrain.py`, puertas y README
 
 **Files:**
 - Modify: `scripts/retrain.py:47-76`
