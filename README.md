@@ -122,7 +122,7 @@ The response has the same shape as Jev's (`choice` / `score` / `noul`, `probabil
 Temis also runs in a container on my VPS: `http://149.130.184.223/temis`, with a `Bearer` token and
 interactive docs at `/temis/docs`. `POST /v1/decide` takes `model`, `state`, `questions` and the
 optional `context`. It answers with the model alone (no precedents, no Clio Memory). To deploy
-another version: `deploy/deploy.sh`. Details (in Spanish) in [deploy/README.md](deploy/README.md).
+another version: `deploy/deploy.sh`. Details in [deploy/README.md](deploy/README.md).
 
 ## Without a server
 

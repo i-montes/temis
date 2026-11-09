@@ -44,56 +44,57 @@ ERROR_TYPES = {400: "api_usage_error", 401: "authentication_error", 404: "not_fo
                405: "api_usage_error", 429: "rate_limit_error", 503: "overloaded_error"}
 
 DESCRIPTION = """
-**Temis** toma decisiones tipadas sobre una situación: elige una opción (`choice`), da un nivel
-(`score`) o dice si una afirmación es verdadera (`noul`).
+**Temis** makes typed decisions about a situation: it picks an option (`choice`), gives a level
+(`score`) or says whether a statement is true (`noul`).
 
-Una petición lleva `model`, `state` (la situación), `questions` y, opcionalmente, `context`
-(pasajes de evidencia, para RAG). La respuesta trae `model`, `answers` (una por pregunta) y `usage`.
+A request carries `model`, `state` (the situation), `questions` and, optionally, `context`
+(evidence passages, for RAG). The response has `model`, `answers` (one per question) and `usage`.
 
-### Autenticación
-Las rutas bajo `/v1` piden `Authorization: Bearer <token>`.
+### Authentication
+Routes under `/v1` require `Authorization: Bearer <token>`.
 
-**Para probar desde esta página:** pulsa **Authorize** (arriba a la derecha), pega el token, pulsa
-*Authorize* y cierra. Luego, en una ruta, *Try it out* → *Execute*. La respuesta real sale en
-**Server response** (con el código, p. ej. 200). Lo que aparece más abajo en **Responses** son solo
-ejemplos de lo que puede devolver, no tu respuesta. Si el curl generado no trae
-`-H 'Authorization: Bearer …'`, falta autorizar.
+**To try it from this page:** click **Authorize** (top right), paste the token, click *Authorize*
+and close. Then, on a route, *Try it out* → *Execute*. The real response shows up under
+**Server response** (with its status code, e.g. 200). What appears further down under **Responses**
+are only examples of what it can return, not your response. If the generated curl has no
+`-H 'Authorization: Bearer …'`, you still need to authorize.
 
-`/health` y esta documentación no piden token.
+`/health` and these docs need no token.
 
-### Cómo leer una respuesta
-- `choice`: la opción elegida, su `confidence` y la probabilidad de cada opción.
-- `score`: `score` es el nivel esperado (promedio ponderado), `confidence` la del nivel más probable,
-  `legend` el texto de cada nivel.
-- `noul`: `noul` es la probabilidad de que la afirmación sea verdadera (0 a 1).
-- `usage.input_tokens`: tokens que leyó el modelo (`output_tokens` siempre es 0: Temis no genera texto).
+### Reading a response
+- `choice`: the chosen option, its `confidence` and the probability of every option.
+- `score`: `score` is the expected level (weighted average), `confidence` that of the most likely
+  level, `legend` the text of each level.
+- `noul`: `noul` is the probability that the statement is true (0 to 1).
+- `usage.input_tokens`: tokens the model read (`output_tokens` is always 0: Temis does not generate text).
 
-Encabezados: `x-temis-request-id`, `x-temis-run` (versión exacta), `x-temis-uncertainty` (0 si está
-segura de todo, 1 si alguna pregunta es un volado; sirve para decidir cuándo pedir una segunda opinión) y
-`x-temis-latency-ms`.
+Headers: `x-temis-request-id`, `x-temis-run` (exact version), `x-temis-uncertainty` (0 when it is sure
+of everything, 1 when some question is a coin flip; useful to decide when to ask for a second
+opinion) and `x-temis-latency-ms`.
 
-Las probabilidades están calibradas: con confianza 0,7 acierta más o menos 7 de cada 10 veces.
+Probabilities are calibrated: answers with confidence 0.7 are right about 7 times out of 10.
 
-### Claves
-Las claves fijas del JSON (`model`, `state`, `questions`, `type`, `instructions`, `criteria`,
-`answers`, …) están en inglés. Los ids de pregunta, las claves de opción y los campos del `state` los
-eliges tú; en los ejemplos van en inglés, y los textos pueden ir en cualquier idioma.
+### Keys
+The fixed JSON keys (`model`, `state`, `questions`, `type`, `instructions`, `criteria`, `answers`, …)
+are in English. Question ids, option keys and the fields inside `state` are yours to choose. Texts
+can be in English or Spanish: Temis was trained on both (62 % of its cases are Spanish, so it is
+somewhat stronger there; the example below is in Spanish).
 
-### Errores
-`{"detail": {"error_type": "...", "message": "..."}}`: `400 api_usage_error` (la petición
-no cumple el esquema; `message` dice qué campo), `401 authentication_error`, `429 rate_limit_error`.
+### Errors
+`{"detail": {"error_type": "...", "message": "..."}}`: `400 api_usage_error` (the request does not
+match the schema; `message` says which field), `401 authentication_error`, `429 rate_limit_error`.
 
-### Límites
-Hasta 20 preguntas por petición y 12 opciones por pregunta. El estado se recorta a 6000 caracteres
-y el contexto a 8000. 120 peticiones por minuto por IP.
+### Limits
+Up to 20 questions per request and 12 options per question. The state is cut at 6,000 characters
+and the context at 8,000. 120 requests per minute per IP.
 """
 
-EXAMPLE = {
+EXAMPLE = {  # texts in Spanish on purpose: Temis reads both languages, and most of its memory cases are Spanish
     "model": "temis-latest",
     "state": {
         "proposal": "Como te comenté, Ana sigue trabajando de enfermera en el Hospital San Ignacio.",
         "nearby_memories": {"m12": "Ana es enfermera en el Hospital San Ignacio de Bogotá.",
-                              "m40": "Ana prefiere que le escriban por WhatsApp."},
+                            "m40": "Ana prefiere que le escriban por WhatsApp."},
     },
     "questions": {
         "operation": {
@@ -109,7 +110,7 @@ EXAMPLE = {
         },
         "contradicts": {"type": "noul", "instructions": "La propuesta contradice una memoria cercana."},
         "usefulness": {"type": "score", "instructions": "¿Qué tan útil es guardar la propuesta?",
-                     "criteria": ["Nada útil", "Algo útil", "Muy útil"]},
+                       "criteria": ["Nada útil", "Algo útil", "Muy útil"]},
     },
 }
 
@@ -137,23 +138,23 @@ def _err(kind: str, message: str) -> dict:
 
 class ChoiceQuestion(BaseModel):
     type: Literal["choice"]
-    instructions: str = Field(min_length=1, max_length=2000, description="La pregunta, en una frase.")
+    instructions: str = Field(min_length=1, max_length=2000, description="The question, in one sentence.")
     criteria: dict[str, str] = Field(min_length=2, max_length=12,
-                                     description="clave_de_opcion → descripción en una frase.")
+                                     description="option_key → one-sentence description.")
 
 
 class ScoreQuestion(BaseModel):
     type: Literal["score"]
     instructions: str = Field(min_length=1, max_length=2000)
     criteria: list[str] | dict[str, str] = Field(
-        description="Niveles del más bajo al más alto (lista), o {\"0\": ..., \"1\": ...}.")
+        description="Levels from lowest to highest (a list), or {\"0\": ..., \"1\": ...}.")
 
 
 class NoulQuestion(BaseModel):
     type: Literal["noul"]
     instructions: str = Field(min_length=1, max_length=2000,
-                              description="Una AFIRMACIÓN verdadera o falsa sobre el estado, no una orden.")
-    criteria: dict[str, str] | None = Field(None, description='Opcional: {"false": "...", "true": "..."}.')
+                              description="A true-or-false STATEMENT about the state, not an instruction.")
+    criteria: dict[str, str] | None = Field(None, description='Optional: {"false": "...", "true": "..."}.')
 
 
 Question = Annotated[Union[ChoiceQuestion, ScoreQuestion, NoulQuestion], Field(discriminator="type")]
@@ -161,23 +162,23 @@ Question = Annotated[Union[ChoiceQuestion, ScoreQuestion, NoulQuestion], Field(d
 
 class DecideRequest(BaseModel):
     model_config = ConfigDict(json_schema_extra={"example": EXAMPLE}, extra="ignore")
-    model: str = Field("temis-latest", description='"temis-latest" o una versión exacta, p. ej. "temis-1.0.11".')
-    state: str | dict[str, Any] | list[Any] = Field(description="La situación: texto o JSON.")
+    model: str = Field("temis-latest", description='"temis-latest" or an exact version, e.g. "temis-1.0.11".')
+    state: str | dict[str, Any] | list[Any] = Field(description="The situation: text or JSON.")
     questions: dict[str, Question] = Field(min_length=1, max_length=MAX_QUESTIONS,
-                                           description="id_pregunta → pregunta.")
+                                           description="question_id → question.")
     context: str | list[str] | None = Field(
-        None, description="Opcional: pasajes de evidencia, texto o lista. "
-                          "Se marcan como datos, no como órdenes.")
+        None, description="Optional: evidence passages, a string or a list. "
+                          "They are marked as data, not instructions.")
 
 
 class AnswerOut(BaseModel):
     type: Literal["choice", "score", "noul"]
-    choice: str | None = Field(None, description="choice: la opción elegida.")
-    score: float | None = Field(None, description="score: nivel esperado.")
-    noul: float | None = Field(None, description="noul: probabilidad de que sea verdadera.")
-    confidence: float | None = Field(None, description="choice y score: probabilidad de la respuesta.")
-    legend: dict[str, str] | None = Field(None, description="score: texto de cada nivel.")
-    probabilities: dict[str, float] | None = Field(None, description="choice y score: probabilidad de cada opción.")
+    choice: str | None = Field(None, description="choice: the chosen option.")
+    score: float | None = Field(None, description="score: expected level.")
+    noul: float | None = Field(None, description="noul: probability that it is true.")
+    confidence: float | None = Field(None, description="choice and score: probability of the answer.")
+    legend: dict[str, str] | None = Field(None, description="score: text of each level.")
+    probabilities: dict[str, float] | None = Field(None, description="choice and score: probability of each option.")
 
 
 class Usage(BaseModel):
@@ -187,7 +188,7 @@ class Usage(BaseModel):
 
 class DecideResponse(BaseModel):
     model_config = ConfigDict(json_schema_extra={"example": RESPONSE_EXAMPLE})
-    model: str = Field(description='Versión que respondió, p. ej. "temis-1.0.11".')
+    model: str = Field(description='Version that answered, e.g. "temis-1.0.11".')
     answers: dict[str, AnswerOut]
     usage: Usage
 
@@ -238,7 +239,7 @@ class Model:
 
 TOKEN = _token()
 MODEL = Model(os.environ.get("TEMIS_MODEL_DIR", "/models/current"), int(os.environ.get("TEMIS_THREADS", "2")))
-bearer = HTTPBearer(auto_error=False, description="El token que te dieron para esta API.")
+bearer = HTTPBearer(auto_error=False, description="The token you were given for this API.")
 
 app = FastAPI(
     title="Temis API",
@@ -247,8 +248,8 @@ app = FastAPI(
     root_path=os.environ.get("TEMIS_ROOT_PATH", ""),
     # keep the token after a reload, and show how long each call took
     swagger_ui_parameters={"persistAuthorization": True, "displayRequestDuration": True},
-    openapi_tags=[{"name": "decisiones", "description": "Preguntar a Temis."},
-                  {"name": "servicio", "description": "Estado y versión del modelo."}],
+    openapi_tags=[{"name": "decisions", "description": "Ask Temis."},
+                  {"name": "service", "description": "Model status and version."}],
 )
 def _doc_error(description: str, example: dict) -> dict:
     return {"model": ErrorResponse, "description": description,
@@ -256,12 +257,12 @@ def _doc_error(description: str, example: dict) -> dict:
 
 
 ERRORS = {
-    400: _doc_error("Solo si la petición está mal formada.",
+    400: _doc_error("Only when the request is malformed.",
                     _err("api_usage_error", "Invalid request. questions.usefulness.score.criteria: Field required")),
-    401: _doc_error("Falta el token o no es válido: pulsa Authorize arriba y pega el token.",
+    401: _doc_error("Missing or invalid token: click Authorize above and paste the token.",
                     _err("authentication_error",
                          "Missing or invalid API token.")),
-    429: _doc_error("Más de 120 peticiones por minuto.",
+    429: _doc_error("More than 120 requests per minute.",
                     _err("rate_limit_error", "Too many requests. Limit: 120 per minute.")),
 }
 
@@ -342,11 +343,11 @@ def decide(body: DecideRequest, response: Response) -> dict:
             "usage": {"input_tokens": tokens, "output_tokens": 0}}
 
 
-DECIDE_DOC = dict(response_model=DecideResponse, response_model_exclude_none=True, tags=["decisiones"],
+DECIDE_DOC = dict(response_model=DecideResponse, response_model_exclude_none=True, tags=["decisions"],
                   dependencies=[Depends(require_token)], responses=ERRORS)
 
 
-@app.post("/v1/decide", summary="Responder preguntas tipadas sobre una situación", **DECIDE_DOC)
+@app.post("/v1/decide", summary="Answer typed questions about a situation", **DECIDE_DOC)
 def decide_route(body: DecideRequest, response: Response):
     return decide(body, response)
 
@@ -356,15 +357,15 @@ def systemone_route(body: DecideRequest, response: Response):
     return decide(body, response)
 
 
-@app.get("/v1/model", response_model=ModelInfo, tags=["servicio"], dependencies=[Depends(require_token)],
-         responses={401: ERRORS[401]}, summary="Versión y configuración del modelo cargado")
+@app.get("/v1/model", response_model=ModelInfo, tags=["service"], dependencies=[Depends(require_token)],
+         responses={401: ERRORS[401]}, summary="Version and configuration of the loaded model")
 def model_info():
     cfg = MODEL.decider.config
     return {"model": MODEL.id, "name": MODEL.name, "version": MODEL.version, "run": MODEL.decider.version,
             "base": cfg.get("base"), "max_len": cfg.get("max_len"), "calibration": MODEL.decider.calibration}
 
 
-@app.get("/health", response_model=Health, tags=["servicio"], summary="El servicio está arriba (sin token)")
+@app.get("/health", response_model=Health, tags=["service"], summary="The service is up (no token)")
 def health():
     return {"status": "ok", "model": MODEL.id}
 
