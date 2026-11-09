@@ -12,6 +12,8 @@ Two fixes, both deterministic by case id:
 from __future__ import annotations
 
 import hashlib
+import json
+from pathlib import Path
 
 CORRECTION_PREFIXES = ("corrige_", "updates_", "update_", "corrects_")
 CORRECTION_KEEP = 0.3
@@ -47,10 +49,35 @@ def cap_share(rows: list[dict], source: str, max_share: float, seed: int = 0) ->
     return [r for i, r in enumerate(rows) if r.get("source") != source or i in keep]
 
 
-def agree(jev_dist: list[float], options: list[str], label: str | None) -> bool:
-    """A hard case enters training only if the second opinion (another model, docs/prompt_segunda_opinion.md)
-    picks the same option as Jev's argmax. No second opinion: it enters on Jev alone."""
-    if label is None:
+NO_OPINION = object()  # nobody has given a second opinion on this question yet
+HELD_BACK = Path("data/held_back.jsonl")  # hard questions where the teachers disagree: queue, not training
+
+
+def agree(jev_dist: list[float], options: list[str], label) -> bool:
+    """A hard question enters training only if the second opinion (another model,
+    docs/prompt_segunda_opinion.md) picks the same option as Jev's argmax. NO_OPINION (nobody asked):
+    it enters on Jev alone. None (the reviewer said no option is justified): held back."""
+    if label is NO_OPINION:
         return True
+    if label is None:
+        return False
     top = options[max(range(len(jev_dist)), key=jev_dist.__getitem__)]
     return str(label) == top
+
+
+def write_held_back(pairs: list[tuple[str, str]], path: Path = HELD_BACK) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w") as f:
+        for cid, qid in pairs:
+            f.write(json.dumps({"id": cid, "qid": qid}) + "\n")
+
+
+def read_held_back(path: Path = HELD_BACK) -> set[tuple[str, str]]:
+    if not path.exists():
+        return set()
+    out = set()
+    for line in path.read_text().splitlines():
+        if line.strip():
+            r = json.loads(line)
+            out.add((r["id"], r["qid"]))
+    return out

@@ -18,6 +18,13 @@ from temis.model import Decisor
 from scripts.train import BASE, tokenizer_path
 
 
+INFER_LONG_MAX_LEN = 1024  # the runtime budget for long states (CPU cost); training may use more
+
+
+def inference_long_max_len(meta: dict, cap: int = INFER_LONG_MAX_LEN) -> int:
+    return min(int(meta.get("long_max_len", cap)), cap)
+
+
 class Wrapped(torch.nn.Module):
     def __init__(self, m: Decisor) -> None:
         super().__init__()
@@ -59,7 +66,7 @@ def main() -> None:
     from temis.naming import NAME, assign
     semver = assign(a.name, base, fine_tune=bool(meta.get("init")))
     (out / "config.json").write_text(json.dumps({"version": a.name, "name": NAME, "semver": semver, "base": base,
-                                                 "max_len": meta["max_len"], "long_max_len": meta.get("long_max_len", 1024),
+                                                 "max_len": meta["max_len"], "long_max_len": inference_long_max_len(meta),
                                                  "temperatures": meta["temperatures"]},
                                                 indent=2))
     print(f"[export] {NAME} {semver} ({a.name})")

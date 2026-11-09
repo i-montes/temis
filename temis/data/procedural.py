@@ -78,6 +78,31 @@ def gold_targets(case: dict) -> list[dict]:
     return out
 
 
+STATE_BUDGET = 1024 - 160  # the runtime reads 1,024 tokens; ~160 go to the question and its options
+
+
+def state_counter(base: str = "jhu-clsp/mmBERT-base"):
+    """text -> number of tokens, with the base model's tokenizer (downloaded once)."""
+    from huggingface_hub import hf_hub_download
+    from tokenizers import Tokenizer
+
+    tok = Tokenizer.from_file(hf_hub_download(base, "tokenizer.json"))
+    return lambda text: len(tok.encode(text, add_special_tokens=False).ids)
+
+
+def budget_filter(max_tokens: int = STATE_BUDGET, base: str = "jhu-clsp/mmBERT-base"):
+    count = state_counter(base)
+    return lambda case: fits_budget(case, count, max_tokens)
+
+
+def fits_budget(case: dict, count, max_tokens: int) -> bool:
+    """True when the rendered state fits in max_tokens (count: text -> number of tokens). Cases that would
+    be cut at inference time are not worth training on with an exact gold: the answer may be in the cut."""
+    from temis.schema import render_state
+
+    return count(render_state(case["state"])) <= max_tokens
+
+
 def _weighted_sample(rows: list[dict], k: int, rng: random.Random) -> list[dict]:
     """k rows without replacement, level-weighted (Efraimidis–Spirakis keys), deterministic."""
     keyed = sorted(rows, key=lambda r: -(rng.random() ** (1.0 / LEVEL_WEIGHT.get(int(r["level"]), 1.0))))
@@ -91,7 +116,8 @@ def _load(split: str):
 
 
 def load_procedural(split: str = "train", per_task: int = PER_TASK, seed: int = 0,
-                    exclude: tuple[str, ...] = HOLDOUT_TASKS) -> list[dict]:
+                    exclude: tuple[str, ...] = HOLDOUT_TASKS, fits=None) -> list[dict]:
+    """fits: optional predicate on a case (see fits_budget); cases failing it are skipped before sampling."""
     by_task: dict[str, list[dict]] = defaultdict(list)
     for r in _load(split):
         if r["task"] not in exclude:
@@ -99,11 +125,12 @@ def load_procedural(split: str = "train", per_task: int = PER_TASK, seed: int = 
     rng = random.Random(seed)
     out = []
     for task in sorted(by_task):
-        out += [c for c in map(to_case, _weighted_sample(by_task[task], per_task, rng)) if c["questions"]]
+        cases = [c for c in map(to_case, by_task[task]) if c["questions"] and (fits is None or fits(c))]
+        out += _weighted_sample(cases, per_task, rng)
     return out
 
 
-def load_hardlike(n: int = 2000, seed: int = 0) -> list[dict]:
+def load_hardlike(n: int = 2000, seed: int = 0, fits=None) -> list[dict]:
     """The internal hard-like set, from the `test` split: half from the held-out tasks (all levels),
     half from levels 3–4 of the other tasks. Never trained on."""
     held: dict[str, list[dict]] = defaultdict(list)
@@ -118,14 +145,14 @@ def load_hardlike(n: int = 2000, seed: int = 0) -> list[dict]:
     for group, share in ((held, n // 2), (hard, n - n // 2)):
         per = max(1, share // max(len(group), 1))
         for task in sorted(group):
-            rows = list(group[task])
-            rng.shuffle(rows)
-            out += [c for c in map(to_case, rows[:per]) if c["questions"]]
+            cases = [c for c in map(to_case, group[task]) if c["questions"] and (fits is None or fits(c))]
+            rng.shuffle(cases)
+            out += cases[:per]
     return out
 
 
 __all__ = ["DATASET", "HOLDOUT_TASKS", "PER_TASK", "LEVEL_WEIGHT", "to_case", "gold_targets", "load_procedural",
-           "load_hardlike", "CASES", "write_cases", "read_cases"]
+           "load_hardlike", "CASES", "write_cases", "read_cases", "fits_budget", "budget_filter", "STATE_BUDGET"]
 
 
 CASES = Path("data/procedural/cases.jsonl")  # the sampled cases, rebuilt by build_targets (not versioned)

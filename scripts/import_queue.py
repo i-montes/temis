@@ -15,6 +15,7 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
+from temis.data.balance import read_held_back
 from temis.data.sources import load_synth, read_jsonl
 from temis.schema import parse_questions
 from temis.service import Service
@@ -33,6 +34,9 @@ def main() -> None:
         if r.get("source") == "synth":
             targets[r["id"]][r["qid"]] = r["target"]
     cases = {c["id"]: c for c in load_synth()}
+    held = {cid for cid, _ in read_held_back()}  # hard questions where Jev and the second opinion disagree
+    for cid in held:
+        targets.setdefault(cid, {})
     svc = Service()
     scored = []
     for cid, tg in targets.items():
@@ -43,7 +47,7 @@ def main() -> None:
             qs = {q.qid: q for q in parse_questions(c["questions"])}
         except Exception:  # noqa: BLE001
             continue
-        doubt = 0.0
+        doubt = 1.0 if cid in held else 0.0
         for qid, t in tg.items():
             n = len(t)
             if n > 1:

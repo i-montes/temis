@@ -13,7 +13,7 @@ import argparse
 import json
 from pathlib import Path
 
-from temis.data.procedural import load_hardlike
+from temis.data.procedural import budget_filter, load_hardlike
 
 HARDLIKE = Path("data/hardlike.jsonl")
 
@@ -22,7 +22,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--n", type=int, default=2000)
     a = ap.parse_args()
-    cases = load_hardlike(a.n)
+    cases = load_hardlike(a.n, fits=budget_filter())  # states the runtime can read whole
     HARDLIKE.parent.mkdir(parents=True, exist_ok=True)
     with HARDLIKE.open("w") as f:
         for c in cases:

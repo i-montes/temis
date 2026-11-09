@@ -51,3 +51,10 @@ def test_cases_file_roundtrip(tmp_path):
     write_cases(cases, p)
     assert {c["id"]: c for c in read_cases(p)} == {"proc-arithmetic:train:0": cases[0]}
     assert read_cases(tmp_path / "missing.jsonl") == []
+
+
+def test_fits_budget_counts_state_tokens():
+    from temis.data.procedural import fits_budget
+    c = to_case(ROW)
+    assert fits_budget(c, count=lambda text: len(text), max_tokens=100)
+    assert not fits_budget(c, count=lambda text: len(text), max_tokens=10)

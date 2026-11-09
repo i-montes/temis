@@ -18,8 +18,8 @@ import math
 from collections import defaultdict
 from pathlib import Path
 
-from temis.data.balance import agree, cap_share, copies
-from temis.data.procedural import gold_targets, load_procedural, write_cases
+from temis.data.balance import NO_OPINION, agree, cap_share, copies, write_held_back
+from temis.data.procedural import budget_filter, gold_targets, load_procedural, write_cases
 from temis.data.sources import load_synth, load_td, read_jsonl
 from scripts.second_opinion import load_second_opinions
 from temis.schema import normalize_probs, parse_questions
@@ -70,8 +70,9 @@ def main() -> None:
                 rows.append({"id": c["id"], "qid": qid, "kind": q.kind, "source": "td-train",
                              "schema_id": c["workflow"], "target": normalize_probs(q, g.get("probabilities") or {}),
                              "teachers": ["gold"]})
-    clio = held = 0
-    second = load_second_opinions()  # {(case id, qid): label} from another model, hard cases only
+    clio = 0
+    held: list[tuple[str, str]] = []
+    second = load_second_opinions()  # {(case id, qid): label | None} from another model, hard cases only
     for c in load_synth():  # synthetic: calibrated Jev
         try:
             qs = parse_questions(c["questions"])
@@ -81,8 +82,8 @@ def main() -> None:
             d = labels.get(c["id"], {}).get(q.qid)
             if not d or len(d) != q.n:
                 continue
-            if str(c.get("domain", "")).startswith("hard:") and not agree(d, list(q.options), second.get((c["id"], q.qid))):
-                held += 1  # Jev and the second opinion disagree: not a training target (it goes to the queue)
+            if str(c.get("domain", "")).startswith("hard:") and not agree(d, list(q.options), second.get((c["id"], q.qid), NO_OPINION)):
+                held.append((c["id"], q.qid))  # teachers disagree: not a target; import_queue puts it first
                 continue
             k = copies(c, list(q.options), d)  # rebalance memory_op (see temis/data/balance.py)
             dropped += k == 0
@@ -91,19 +92,22 @@ def main() -> None:
                 rows.append({"id": c["id"], "qid": q.qid, "kind": q.kind, "source": "synth",
                              "schema_id": c.get("schema_id", c["id"]), "target": tgt, "teachers": [TEACHER]})
                 clio += str(c.get("domain", "")).startswith("agent:")
-    proc = {c["id"]: c for c in load_procedural()}  # procedural: exact gold; cases kept in data/procedural/
+    # procedural: exact gold; only states that fit the runtime's budget (a cut state with an exact gold
+    # teaches guessing); the sampled cases are kept in data/procedural/
+    proc = {c["id"]: c for c in load_procedural(fits=budget_filter())}
     for c in proc.values():
         for t in gold_targets(c):
             rows.append({"id": c["id"], "qid": t["qid"], "kind": t["kind"], "source": "procedural",
                          "schema_id": f"proc-{c['workflow']}-{c['level']}", "target": t["target"], "teachers": ["gold"]})
     rows = cap_share(rows, "procedural", PROCEDURAL_SHARE)
+    write_held_back(held)
     write_cases([proc[i] for i in dict.fromkeys(r["id"] for r in rows if r["source"] == "procedural")])
     with Path("data/targets.jsonl").open("w") as f:
         for r in rows:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
     n = len(rows)
     print(f"[targets] wrote {n} question targets ({dropped} left out to rebalance memory_op, "
-          f"{held} hard questions held back: teachers disagree)")
+          f"{len(held)} hard questions held back: teachers disagree)")
     by = defaultdict(int)
     for r in rows:
         by[r["source"]] += 1

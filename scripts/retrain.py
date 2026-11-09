@@ -28,6 +28,22 @@ from temis.service import active_model_dir, set_active
 from temis.userlabels import REVIEWER_TARGETS, USER_TARGETS, export_reviewer_targets, export_user_targets
 
 
+def promotion(new: dict, old: dict) -> tuple[bool, str]:
+    """new/old: {kl, test_acc, clio, hardlike, flip} of the candidate and the active run (None = unknown).
+    A candidate is promoted when it is not worse on any gate; a missing measurement on either side
+    skips that gate. JevBench accuracy is reported, never a gate; its option-rotation flip rate only
+    blocks a candidate that got worse than the active run by more than 5 points."""
+    def delta(k: str) -> float | None:
+        return None if new.get(k) is None or old.get(k) is None else new[k] - old[k]
+    d = {k: delta(k) for k in ("kl", "test_acc", "clio", "hardlike", "flip")}
+    ok = ((d["kl"] is None or d["kl"] <= 0.01) and (d["test_acc"] is None or d["test_acc"] >= -0.005)
+          and (d["clio"] is None or d["clio"] >= -0.01) and (d["hardlike"] is None or d["hardlike"] >= -0.01)
+          and (d["flip"] is None or d["flip"] <= 0.05))
+    fmt = lambda v: "n/a" if v is None else f"{v:+.4f}"  # noqa: E731
+    why = ", ".join(f"{k} {fmt(v)}" for k, v in d.items())
+    return ok, why
+
+
 def run(*args: str) -> None:
     print(f"[retrain] $ {' '.join(args)}", flush=True)
     subprocess.run([sys.executable, "-m", *args], check=True)
@@ -60,24 +76,17 @@ def main() -> None:
     run("scripts.eval_jevbench", "--model", f"runs/{name}/onnx", "--calibration", "jevbench", "--probes")
 
     new_meta = json.loads(Path(f"runs/{name}/meta.json").read_text())
-    new_eval = json.loads(Path(f"runs/{name}/eval_td_test.json").read_text())
     promote, why = True, "no active model"
     if act:
-        old_meta = json.loads((act.parent / "meta.json").read_text())
-        old_eval_p = act.parent / "eval_td_test.json"
-        old_eval = json.loads(old_eval_p.read_text()) if old_eval_p.exists() else {"accuracy": 0}
-        dkl = new_meta["val"]["all"]["kl"] - old_meta["val"]["all"]["kl"]
-        dacc = new_eval["accuracy"] - old_eval["accuracy"]
         read = lambda d, f, k: (json.loads((d / f).read_text()).get(k) if (d / f).exists() else None)  # noqa: E731
-        clio = lambda d: read(d, "eval_clio.json", "mean") or 0.0  # noqa: E731
-        dclio = clio(Path(f"runs/{name}")) - clio(act.parent)
-        new_hard, old_hard = read(Path(f"runs/{name}"), "eval_hardlike.json", "accuracy"), read(act.parent, "eval_hardlike.json", "accuracy")
-        dhard = (new_hard - old_hard) if (new_hard is not None and old_hard is not None) else 0.0
-        flip = (read(Path(f"runs/{name}"), "eval_jevbench.json", "probes") or {}).get("rotation_flip_rate")
+        def measures(d: Path) -> dict:
+            meta = read(d, "meta.json", "val") or {}
+            return {"kl": (meta.get("all") or {}).get("kl"), "test_acc": read(d, "eval_td_test.json", "accuracy"),
+                    "clio": read(d, "eval_clio.json", "mean"), "hardlike": read(d, "eval_hardlike.json", "accuracy"),
+                    "flip": (read(d, "eval_jevbench.json", "probes") or {}).get("rotation_flip_rate")}
+        promote, why = promotion(measures(Path(f"runs/{name}")), measures(act.parent))
         jev = read(Path(f"runs/{name}"), "eval_jevbench.json", "accuracy")
-        promote = dkl <= 0.01 and dacc >= -0.005 and dclio >= -0.01 and dhard >= -0.01 and (flip is None or flip <= 0.05)
-        why = (f"val KL {dkl:+.4f}, test acc {dacc:+.4f}, clio {dclio:+.4f}, hard-like {dhard:+.4f}, "
-               f"flip {flip if flip is None else round(flip, 3)} vs {base}; jevbench public {jev} (reported only)")
+        why = f"{why} vs {base}; jevbench public {jev} (reported only)"
     new_meta["notes"] = ("promoted: " if promote else "kept previous: ") + why
     Path(f"runs/{name}/meta.json").write_text(json.dumps(new_meta, indent=2))
     if promote:

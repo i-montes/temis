@@ -69,39 +69,56 @@ def load_examples(extra: list[str]) -> tuple[list[dict], list[dict]]:
     return train, val
 
 
+def augment(ex: dict, rng: random.Random | None, ctx_pool: list[str] | None):
+    """The training-time augmentation of one example: (question, context). Drawn once per example so
+    twin encodings differ only in option order and dropout."""
+    ctx = None
+    q = ex["q"]
+    if rng is not None and ctx_pool and rng.random() < 0.15:
+        ctx = rng.choice(ctx_pool)[:600]
+    if rng is not None and q.kind == "noul" and rng.random() < 0.3:
+        # callers often send noul questions without criteria: learn to decide from the statement alone
+        q = dataclasses.replace(q, descriptions=(NOUL_DEFAULT["false"], NOUL_DEFAULT["true"]))
+    return q, ctx
+
+
+def encode_one(enc: Encoder, ex: dict, q, ctx, rng: random.Random | None, max_len: int,
+               long_max_len: int | None = None) -> dict:
+    """A state that gets truncated at max_len is re-encoded at long_max_len (when given)."""
+    e = enc.encode(q, ex["state"], ctx, rng=rng, max_len=max_len)
+    if long_max_len and long_max_len > max_len and len(e.ids) >= max_len:
+        e = enc.encode(q, ex["state"], ctx, rng=rng, max_len=long_max_len)
+    return {"ids": e.ids, "opt_pos": e.opt_pos, "target": [ex["target"][i] for i in e.order],
+            "kind": ex["kind"], "order": e.order, "n": q.n}
+
+
 def encode_batch(enc: Encoder, exs: list[dict], rng: random.Random | None, ctx_pool: list[str] | None,
                  max_len: int, long_max_len: int | None = None) -> list[dict]:
-    """A state that gets truncated at max_len is re-encoded at long_max_len (when given)."""
-    out = []
+    return [encode_one(enc, ex, *augment(ex, rng, ctx_pool), rng, max_len, long_max_len) for ex in exs]
+
+
+def encode_twins(enc: Encoder, exs: list[dict], rng: random.Random, ctx_pool: list[str] | None,
+                 max_len: int, long_max_len: int | None = None) -> tuple[list[dict], list[dict]]:
+    """Two encodings of the same examples with the same augmentation and different option shuffles."""
+    a, b = [], []
     for ex in exs:
-        ctx = None
-        q = ex["q"]
-        if rng is not None and ctx_pool and rng.random() < 0.15:
-            ctx = rng.choice(ctx_pool)[:600]
-        if rng is not None and q.kind == "noul" and rng.random() < 0.3:
-            # callers often send noul questions without criteria: learn to decide from the statement alone
-            q = dataclasses.replace(q, descriptions=(NOUL_DEFAULT["false"], NOUL_DEFAULT["true"]))
-        e = enc.encode(q, ex["state"], ctx, rng=rng, max_len=max_len)
-        if long_max_len and long_max_len > max_len and len(e.ids) >= max_len:
-            e = enc.encode(q, ex["state"], ctx, rng=random.Random(rng.random()) if rng else None, max_len=long_max_len)
-        out.append({"ids": e.ids, "opt_pos": e.opt_pos, "target": [ex["target"][i] for i in e.order],
-                    "kind": ex["kind"], "order": e.order, "n": q.n})
-    return out
-
-
-LONG_CHARS_PER_TOKEN = 3  # a state longer than max_len * this (characters) is treated as long
+        q, ctx = augment(ex, rng, ctx_pool)
+        a.append(encode_one(enc, ex, q, ctx, rng, max_len, long_max_len))
+        b.append(encode_one(enc, ex, q, ctx, rng, max_len, long_max_len))
+    return a, b
 
 
 def batches(exs: list[dict], bs: int, rng: random.Random, long_bs: int | None = None,
             max_len: int | None = None) -> list[list[dict]]:
-    """Batches of similar length; the ones holding a long state are split into long_bs."""
-    exs = sorted(exs, key=lambda e: len(e["state"]) + rng.random() * 400)
+    """Batches of similar length (by state tokens, `ntok`); the ones holding a state longer than
+    max_len are split into long_bs."""
+    length = lambda e: e.get("ntok", len(e["state"]) // 3)  # noqa: E731
+    exs = sorted(exs, key=lambda e: length(e) + rng.random() * 120)
     bl = [exs[i:i + bs] for i in range(0, len(exs), bs)]
     if long_bs and max_len and long_bs < bs:
-        limit = max_len * LONG_CHARS_PER_TOKEN
         split = []
         for b in bl:
-            if max(len(e["state"]) for e in b) > limit:
+            if max(length(e) for e in b) > max_len:
                 split += [b[i:i + long_bs] for i in range(0, len(b), long_bs)]
             else:
                 split.append(b)
@@ -173,6 +190,8 @@ def main() -> None:
     enc = Encoder(tokenizer_path(a.base), a.max_len)
     train, val = load_examples(a.extra)
     val = val[: a.val_limit] if a.val_limit else val
+    for ex in train:
+        ex["ntok"] = len(enc._ids(ex["state"]))  # for length batching (tokenizers: a few seconds)
     print(f"[train] {len(train)} train / {len(val)} val questions on {device} "
           f"(twin={a.twin}, consistency={a.consistency}, long_max_len={a.long_max_len}, bf16={bf16}, attn={attn or 'eager'})",
           flush=True)
@@ -204,8 +223,10 @@ def main() -> None:
         for chunk in batches(train, a.bs, rng, a.long_bs, a.max_len):
             if step >= total:
                 break
-            enc_a = encode_batch(enc, chunk, rng, ctx_pool, a.max_len, a.long_max_len)
-            enc_b = encode_batch(enc, chunk, rng, ctx_pool, a.max_len, a.long_max_len) if a.twin else []
+            if a.twin:
+                enc_a, enc_b = encode_twins(enc, chunk, rng, ctx_pool, a.max_len, a.long_max_len)
+            else:
+                enc_a, enc_b = encode_batch(enc, chunk, rng, ctx_pool, a.max_len, a.long_max_len), []
             b = collate(enc_a + enc_b, device)
             with autocast() if autocast else contextlib.nullcontext():
                 logits = model(b["input_ids"], b["attention_mask"], b["opt_pos"], b["opt_mask"])

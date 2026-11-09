@@ -117,8 +117,9 @@ also needs the sealed and judge items.
 - Per-item answers, summaries and run manifests for both versions: [`benchmarks/jevbench/`](benchmarks/jevbench/).
 - `scripts/eval_jevbench.py` reproduces this locally (57.6 % for 1.0.11 with the same calibration)
   and adds an estimate of the v1.5 rules (noul abstention band, score by expected level) plus bias
-  probes. It runs after every training but never decides which version goes live, and the public
-  items are never trained on. The improvement plan is in
+  probes. It runs after every training; its accuracy never decides which version goes live (only a
+  rise in the option-rotation flip rate blocks a promotion), and the public items are never trained
+  on: the importer rejects any case that shares a phrase with them. The improvement plan is in
   [docs/specs/2026-11-09-plan-jevbench.md](docs/specs/2026-11-09-plan-jevbench.md).
 
 ## Using it

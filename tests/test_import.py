@@ -34,6 +34,25 @@ def test_import_keeps_contrast_pair_reference():
 
 
 def test_agree_with_second_opinion():
-    from temis.data.balance import agree
+    from temis.data.balance import NO_OPINION, agree
     assert agree([0.2, 0.7, 0.1], ["a", "b", "c"], "b") and not agree([0.2, 0.7, 0.1], ["a", "b", "c"], "a")
-    assert agree([0.2, 0.7, 0.1], ["a", "b", "c"], None)  # no second opinion: the case goes in
+    assert agree([0.2, 0.7, 0.1], ["a", "b", "c"], NO_OPINION)   # nobody asked: the case goes in on Jev alone
+    assert not agree([0.2, 0.7, 0.1], ["a", "b", "c"], None)     # explicit null: "no option is justified" -> held back
+
+
+def test_import_rejects_lines_that_copy_public_benchmark_text():
+    from scripts.import_cases import shingles
+    public = shingles(["Select the primary requested action. A mention without a request does not establish intent."])
+    q = {"intent": {"type": "choice", "instructions": "Select the primary requested action. A mention without a request does not establish intent.",
+                    "criteria": {"status": "Learn delivery progress", "other": "Nothing is requested", "cancel": "End it"}}}
+    assert parse_line(line(questions=q, surface_answer={"intent": "status"}), "gpt", leaks=public) is None
+    assert parse_line(line(questions=q, surface_answer={"intent": "status"}), "gpt") is not None  # no public items at hand: no check
+    assert parse_line(line(), "gpt", leaks=public) is not None          # our own wording passes
+
+
+def test_held_back_roundtrip(tmp_path):
+    from temis.data.balance import read_held_back, write_held_back
+    p = tmp_path / "held.jsonl"
+    write_held_back([("ext-1", "q1"), ("ext-2", "q2")], p)
+    assert read_held_back(p) == {("ext-1", "q1"), ("ext-2", "q2")}
+    assert read_held_back(tmp_path / "missing.jsonl") == set()

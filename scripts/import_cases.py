@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 
 from temis.data.families import HARD_FAMILIES
@@ -25,15 +26,50 @@ AGENT_FAMILIES = {"memory_op", "tool_choice", "memory_relation", "note_link", "n
                   "tools", "injection", "command_safety", "worth_remembering", "note_tags", "go_no_go"}
 FAMILIES = AGENT_FAMILIES | set(HARD_FAMILIES) | {"other"}
 MIN_RATIONALE = 40
+SHINGLE = 6  # a case sharing a 6-word phrase with a public benchmark item is a copy, not our own scenario
 
 
-def parse_line(line: str, source: str) -> dict | None:
-    """One JSONL line from the other model -> a normalized case, or None (the reason is printed)."""
+def shingles(texts, n: int = SHINGLE) -> set[tuple[str, ...]]:
+    out: set[tuple[str, ...]] = set()
+    for t in texts:
+        words = [w.lower() for w in re.findall(r"\w+", str(t))]
+        out.update(tuple(words[i:i + n]) for i in range(len(words) - n + 1))
+    return out
+
+
+def public_shingles() -> set[tuple[str, ...]]:
+    """Phrases of JevBench's public items, when they have been fetched (external/jevbench/public)."""
+    from temis.jevbench import PUBLIC_DIR, load_public
+    if not (PUBLIC_DIR / "hard.jsonl").exists():
+        return set()
+    texts = []
+    for it in load_public():
+        q = it["question"]
+        texts += [it["state"] if isinstance(it["state"], str) else json.dumps(it["state"]), q.get("instructions", "")]
+        crit = q.get("criteria")
+        texts += list(crit.values()) if isinstance(crit, dict) else list(crit or [])
+    return shingles(texts)
+
+
+def _texts_of(c: dict) -> list[str]:
+    out = [c["state"] if isinstance(c["state"], str) else json.dumps(c["state"], ensure_ascii=False)]
+    for q in (c.get("questions") or {}).values():
+        out.append(str(q.get("instructions", "")))
+        crit = q.get("criteria")
+        out += [str(v) for v in (crit.values() if isinstance(crit, dict) else (crit or []))]
+    return out
+
+
+def parse_line(line: str, source: str, leaks: set | None = None) -> dict | None:
+    """One JSONL line from the other model -> a normalized case, or None (the reason is printed).
+    `leaks`: word shingles of public benchmark items; a case sharing one is rejected."""
     try:
         c = json.loads(line)
         fam = c.get("family", "other")
         if fam not in FAMILIES:
             raise SchemaError(f"unknown family {fam!r}")
+        if leaks and shingles(_texts_of(c)) & leaks:
+            raise SchemaError("copies a public JevBench item (shared phrase); benchmark items never enter training")
         if c.get("language") not in ("es", "en"):
             raise SchemaError("language must be es or en")
         if not state_ok(c.get("state")):
@@ -77,13 +113,16 @@ def main() -> None:
     ap.add_argument("--source", required=True, help="which model wrote them, e.g. gpt-5")
     a = ap.parse_args()
     seen = {json.dumps(c["state"], sort_keys=True, ensure_ascii=False) for c in load_synth(clean=False)}
+    leaks = public_shingles()
+    if not leaks:
+        print("[import] note: JevBench public items not fetched (scripts.eval_jevbench --fetch); leak check skipped")
     ok = bad = dup = 0
     out = []
     for i, line in enumerate(Path(a.path).read_text().splitlines(), 1):
         line = line.strip().strip(",")
         if not line or line.startswith(("```", "//", "#")):
             continue
-        c = parse_line(line, a.source)
+        c = parse_line(line, a.source, leaks)
         if c is None:
             print(f"[import]   ... at line {i}")
             bad += 1
