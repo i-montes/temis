@@ -43,6 +43,31 @@ def decision_loss(logits: Tensor, target: Tensor, mask: Tensor, is_score: Tensor
     return loss.mean()
 
 
+def align_to_options(p: Tensor, order: list[list[int]], n: list[int]) -> Tensor:
+    """(B, K) values in marker order -> (B, K) in the question's own option order (positions >= n are 0).
+    order[b][i] is the option shown at marker i (what Encoder.encode returns as `order`)."""
+    out = torch.zeros_like(p)
+    for b, (ord_b, n_b) in enumerate(zip(order, n)):
+        idx = torch.tensor(ord_b[:n_b], device=p.device)
+        out[b, idx] = p[b, : len(idx)]
+    return out
+
+
+def consistency_loss(logits_a: Tensor, logits_b: Tensor, mask_a: Tensor, mask_b: Tensor,
+                     order_a: list[list[int]], order_b: list[list[int]], n: list[int]) -> Tensor:
+    """Symmetric KL between two passes over the same questions (different option shuffles and dropout),
+    compared in option order. Permutation consistency + R-Drop in one term."""
+    pa = align_to_options(logits_a.float().masked_fill(~mask_a, -1e4).softmax(-1), order_a, n)
+    pb = align_to_options(logits_b.float().masked_fill(~mask_b, -1e4).softmax(-1), order_b, n)
+    valid = pa > 0
+    valid = valid | (pb > 0)
+    la = pa.clamp(min=1e-9).log()
+    lb = pb.clamp(min=1e-9).log()
+    kl_ab = (pa * (la - lb) * valid).sum(-1)
+    kl_ba = (pb * (lb - la) * valid).sum(-1)
+    return (0.5 * (kl_ab + kl_ba)).mean()
+
+
 def collate(batch: list[dict], device: str | torch.device = "cpu") -> dict[str, Tensor]:
     """batch items: {ids: list[int], opt_pos: list[int], target: list[float] (in marker order), kind}."""
     T = max(len(b["ids"]) for b in batch)
@@ -79,4 +104,4 @@ def fit_temperature(logits: Tensor, target: Tensor, mask: Tensor) -> float:
     return best_t
 
 
-__all__ = ["Decisor", "decision_loss", "collate", "fit_temperature", "KIND_ID", "F"]
+__all__ = ["Decisor", "decision_loss", "consistency_loss", "align_to_options", "collate", "fit_temperature", "KIND_ID", "F"]

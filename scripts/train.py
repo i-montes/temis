@@ -4,11 +4,18 @@
 
 Saves runs/<name>/{model.pt, meta.json}. meta.json holds per-kind temperatures and val metrics.
 Extra labeled data (user labels, replay) can be passed with --extra data/user_targets.jsonl.
+
+Twin batches (default): every question is encoded twice, with different option shuffles and
+different dropout, and a symmetric KL between the two answers (in option order) is added to the
+loss (--consistency). That removes the option-position bias and doubles as R-Drop. Long states
+(truncated at --max-len) are re-encoded at --long-max-len and batched --long-bs at a time.
+On CUDA the forward runs in bf16 with SDPA attention; MPS/CPU stay in fp32.
 """
 
 from __future__ import annotations
 
 import argparse
+import contextlib
 import dataclasses
 import hashlib
 import json
@@ -23,7 +30,7 @@ import torch
 from temis.data.procedural import read_cases as read_procedural_cases
 from temis.data.sources import load_synth, load_td, read_jsonl
 from temis.encoding import Encoder
-from temis.model import Decisor, collate, decision_loss, fit_temperature
+from temis.model import Decisor, collate, consistency_loss, decision_loss, fit_temperature
 from temis.schema import NOUL_DEFAULT, parse_questions, render_state
 
 BASE = "jhu-clsp/mmBERT-small"  # default; --base overrides (saved in meta.json)
@@ -63,7 +70,8 @@ def load_examples(extra: list[str]) -> tuple[list[dict], list[dict]]:
 
 
 def encode_batch(enc: Encoder, exs: list[dict], rng: random.Random | None, ctx_pool: list[str] | None,
-                 max_len: int) -> list[dict]:
+                 max_len: int, long_max_len: int | None = None) -> list[dict]:
+    """A state that gets truncated at max_len is re-encoded at long_max_len (when given)."""
     out = []
     for ex in exs:
         ctx = None
@@ -74,26 +82,44 @@ def encode_batch(enc: Encoder, exs: list[dict], rng: random.Random | None, ctx_p
             # callers often send noul questions without criteria: learn to decide from the statement alone
             q = dataclasses.replace(q, descriptions=(NOUL_DEFAULT["false"], NOUL_DEFAULT["true"]))
         e = enc.encode(q, ex["state"], ctx, rng=rng, max_len=max_len)
+        if long_max_len and long_max_len > max_len and len(e.ids) >= max_len:
+            e = enc.encode(q, ex["state"], ctx, rng=random.Random(rng.random()) if rng else None, max_len=long_max_len)
         out.append({"ids": e.ids, "opt_pos": e.opt_pos, "target": [ex["target"][i] for i in e.order],
-                    "kind": ex["kind"]})
+                    "kind": ex["kind"], "order": e.order, "n": q.n})
     return out
 
 
-def batches(exs: list[dict], bs: int, rng: random.Random) -> list[list[dict]]:
+LONG_CHARS_PER_TOKEN = 3  # a state longer than max_len * this (characters) is treated as long
+
+
+def batches(exs: list[dict], bs: int, rng: random.Random, long_bs: int | None = None,
+            max_len: int | None = None) -> list[list[dict]]:
+    """Batches of similar length; the ones holding a long state are split into long_bs."""
     exs = sorted(exs, key=lambda e: len(e["state"]) + rng.random() * 400)
     bl = [exs[i:i + bs] for i in range(0, len(exs), bs)]
+    if long_bs and max_len and long_bs < bs:
+        limit = max_len * LONG_CHARS_PER_TOKEN
+        split = []
+        for b in bl:
+            if max(len(e["state"]) for e in b) > limit:
+                split += [b[i:i + long_bs] for i in range(0, len(b), long_bs)]
+            else:
+                split.append(b)
+        bl = split
     rng.shuffle(bl)
     return bl
 
 
 @torch.no_grad()
-def predict(model: Decisor, enc: Encoder, exs: list[dict], device, max_len: int, bs: int = 32):
+def predict(model: Decisor, enc: Encoder, exs: list[dict], device, max_len: int, bs: int = 32,
+            long_max_len: int | None = None, autocast=None):
     model.eval()
     logits, targets, masks, kinds, srcs = [], [], [], [], []
     for i in range(0, len(exs), bs):
         chunk = exs[i:i + bs]
-        b = collate(encode_batch(enc, chunk, None, None, max_len), device)
-        lg = model(b["input_ids"], b["attention_mask"], b["opt_pos"], b["opt_mask"]).float().cpu()
+        b = collate(encode_batch(enc, chunk, None, None, max_len, long_max_len), device)
+        with autocast() if autocast else contextlib.nullcontext():
+            lg = model(b["input_ids"], b["attention_mask"], b["opt_pos"], b["opt_mask"]).float().cpu()
         K = 12
         pad = lambda t, v: torch.nn.functional.pad(t, (0, K - t.size(1)), value=v)  # noqa: E731
         logits.append(pad(lg, -1e4)); targets.append(pad(b["target"].cpu(), 0.0)); masks.append(pad(b["opt_mask"].cpu(), False))
@@ -126,9 +152,19 @@ def main() -> None:
     ap.add_argument("--accum", type=int, default=1)
     ap.add_argument("--base", default=BASE)
     ap.add_argument("--train-emb", action="store_true", help="also fine-tune the token embeddings")
+    ap.add_argument("--twin", action=argparse.BooleanOptionalAction, default=True,
+                    help="encode every question twice (different shuffles/dropout) and add the consistency loss")
+    ap.add_argument("--consistency", type=float, default=0.5, help="weight of the symmetric KL between the twins")
+    ap.add_argument("--long-max-len", type=int, default=1536, help="budget for states that overflow --max-len")
+    ap.add_argument("--long-bs", type=int, default=4, help="batch size for batches holding a long state")
+    ap.add_argument("--bf16", action=argparse.BooleanOptionalAction, default=None, help="default: on CUDA only")
+    ap.add_argument("--val-limit", type=int, default=None, help="validate on the first N questions (smoke tests)")
     a = ap.parse_args()
     torch.set_num_threads(a.threads)
     device = "mps" if torch.backends.mps.is_available() else ("cuda" if torch.cuda.is_available() else "cpu")
+    bf16 = (device == "cuda") if a.bf16 is None else a.bf16
+    autocast = (lambda: torch.autocast(device_type=device, dtype=torch.bfloat16)) if bf16 else None
+    attn = "sdpa" if device == "cuda" else None
     out = Path("runs") / a.name
     out.mkdir(parents=True, exist_ok=True)
     rng = random.Random(0)
@@ -136,10 +172,13 @@ def main() -> None:
 
     enc = Encoder(tokenizer_path(a.base), a.max_len)
     train, val = load_examples(a.extra)
-    print(f"[train] {len(train)} train / {len(val)} val questions on {device}", flush=True)
+    val = val[: a.val_limit] if a.val_limit else val
+    print(f"[train] {len(train)} train / {len(val)} val questions on {device} "
+          f"(twin={a.twin}, consistency={a.consistency}, long_max_len={a.long_max_len}, bf16={bf16}, attn={attn or 'eager'})",
+          flush=True)
     ctx_pool = [e["state"] for e in train[:5000]]
 
-    model = Decisor(a.base)
+    model = Decisor(a.base, attn=attn)
     if a.init:
         model.load_state_dict(torch.load(Path("runs") / a.init / "model.pt", map_location="cpu"))
     model.to(device)
@@ -162,12 +201,20 @@ def main() -> None:
     while step < total:
         model.train()
         micro = 0
-        for chunk in batches(train, a.bs, rng):
+        for chunk in batches(train, a.bs, rng, a.long_bs, a.max_len):
             if step >= total:
                 break
-            b = collate(encode_batch(enc, chunk, rng, ctx_pool, a.max_len), device)
-            logits = model(b["input_ids"], b["attention_mask"], b["opt_pos"], b["opt_mask"])
+            enc_a = encode_batch(enc, chunk, rng, ctx_pool, a.max_len, a.long_max_len)
+            enc_b = encode_batch(enc, chunk, rng, ctx_pool, a.max_len, a.long_max_len) if a.twin else []
+            b = collate(enc_a + enc_b, device)
+            with autocast() if autocast else contextlib.nullcontext():
+                logits = model(b["input_ids"], b["attention_mask"], b["opt_pos"], b["opt_mask"])
             loss = decision_loss(logits, b["target"], b["opt_mask"], b["is_score"])
+            if a.twin and a.consistency > 0:
+                h = len(enc_a)
+                loss = loss + a.consistency * consistency_loss(
+                    logits[:h], logits[h:], b["opt_mask"][:h], b["opt_mask"][h:],
+                    [e["order"] for e in enc_a], [e["order"] for e in enc_b], [e["n"] for e in enc_a])
             (loss / a.accum).backward()
             micro += 1
             if micro % a.accum:
@@ -178,9 +225,11 @@ def main() -> None:
             if step % 50 == 0:
                 if device == "mps":
                     torch.mps.empty_cache()
+                elif device == "cuda":
+                    torch.cuda.empty_cache()
                 print(f"[train] step {step}/{total} loss {loss.item():.4f} {(time.time() - t0) / step:.2f}s/step", flush=True)
             if step % steps_per_epoch == 0 or step == total:
-                lg, tg, mk, kinds, srcs = predict(model, enc, val, device, a.max_len)
+                lg, tg, mk, kinds, srcs = predict(model, enc, val, device, a.max_len, long_max_len=a.long_max_len, autocast=autocast)
                 m = metrics(lg, tg, mk, None, kinds)
                 log.append({"step": step, **m})
                 print(f"[val] step {step} {m}", flush=True)
@@ -193,7 +242,7 @@ def main() -> None:
     # calibration on val with the best weights
     model.load_state_dict(torch.load(out / "model.pt", map_location="cpu"))
     model.to(device)
-    lg, tg, mk, kinds, srcs = predict(model, enc, val, device, a.max_len)
+    lg, tg, mk, kinds, srcs = predict(model, enc, val, device, a.max_len, long_max_len=a.long_max_len, autocast=autocast)
     temps = {}
     for k in ("choice", "score", "noul"):
         idx = [i for i, x in enumerate(kinds) if x == k]
@@ -205,7 +254,9 @@ def main() -> None:
     report = {"all": metrics(lg, tg, mk, temps, kinds)}
     for s, idx in by.items():
         report[s] = metrics(lg[idx], tg[idx], mk[idx], temps, [kinds[i] for i in idx])
-    meta = {"base": a.base, "init": a.init, "max_len": a.max_len, "temperatures": temps, "val": report, "log": log,
+    meta = {"base": a.base, "init": a.init, "max_len": a.max_len, "long_max_len": a.long_max_len, "twin": a.twin,
+            "consistency": a.consistency, "bf16": bf16, "attn": attn or "eager",
+            "temperatures": temps, "val": report, "log": log,
             "n_train": len(train), "n_val": len(val), "created": time.strftime("%Y-%m-%d %H:%M:%S")}
     (out / "meta.json").write_text(json.dumps(meta, indent=2))
     print(f"[done] temps={temps} val={json.dumps(report)}", flush=True)
