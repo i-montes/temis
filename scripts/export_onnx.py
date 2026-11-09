@@ -59,7 +59,8 @@ def main() -> None:
     from temis.naming import NAME, assign
     semver = assign(a.name, base, fine_tune=bool(meta.get("init")))
     (out / "config.json").write_text(json.dumps({"version": a.name, "name": NAME, "semver": semver, "base": base,
-                                                 "max_len": meta["max_len"], "temperatures": meta["temperatures"]},
+                                                 "max_len": meta["max_len"], "long_max_len": meta.get("long_max_len", 1024),
+                                                 "temperatures": meta["temperatures"]},
                                                 indent=2))
     print(f"[export] {NAME} {semver} ({a.name})")
     # parity check

@@ -239,3 +239,15 @@ def test_reviewer_targets(tmp_path):
     assert all(r["id"] != ids[0] and not is_user_test(r["id"]) and r["source"] == "reviewer" for r in rows)
     assert abs(sum(rows[0]["target"]) - 1) < 1e-9
     assert abs(rows[0]["target"][0] - rows[0]["target"][1]) < 1e-9  # two reviewers split: half and half
+
+
+def test_render_state_keeps_long_text():
+    assert len(render_state("x" * 20_000)) == 20_000
+
+
+def test_encoder_long_max_len_keeps_state_up_to_budget():
+    enc = Encoder(tok_path(), 640)
+    q = parse_questions(Q)[0]
+    short = enc.encode(q, "palabra " * 3000, max_len=640)
+    long = enc.encode(q, "palabra " * 3000, max_len=1024)
+    assert len(short.ids) == 640 and len(long.ids) == 1024

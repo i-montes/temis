@@ -42,14 +42,16 @@ class Decider:
         so = ort.SessionOptions()
         so.intra_op_num_threads = threads
         self.session = ort.InferenceSession(str(f), so, providers=_providers(provider))
-        self.encoder = Encoder(str(d / "tokenizer.json"), self.config.get("max_len", 1024))
+        # long states are read up to long_max_len tokens (short ones cost the same as before)
+        self.long_max_len = int(self.config.get("long_max_len", 1024))
+        self.encoder = Encoder(str(d / "tokenizer.json"), max(int(self.config.get("max_len", 1024)), self.long_max_len))
         self.temps_soft = self.config.get("temperatures", {})
         acc = self.config.get("temperatures_accuracy")
         self.calibration = calibration if (calibration == "soft" or acc) else "soft"
         self.temps = acc if self.calibration == "accuracy" else self.temps_soft
 
     def logits(self, qs: list[Question], state_text: str, context: str | None = None) -> list[np.ndarray]:
-        encs = [self.encoder.encode(q, state_text, context, max_len=2048 if context else None) for q in qs]
+        encs = [self.encoder.encode(q, state_text, context, max_len=2048 if context else self.long_max_len) for q in qs]
         self.last_input_tokens = sum(len(e.ids) for e in encs)  # read under the caller's lock (API usage)
         B, T, K = len(encs), max(len(e.ids) for e in encs), max(len(e.opt_pos) for e in encs)
         ids = np.zeros((B, T), np.int64)

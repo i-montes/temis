@@ -110,7 +110,7 @@ def parse_questions(questions: Any) -> list[Question]:
     return [parse_question(qid, q) for qid, q in questions.items()]
 
 
-def render_state(state: Any, max_chars: int = 6000) -> str:
+def render_state(state: Any, max_chars: int = 40_000) -> str:
     """JSON states become readable `key: value` lines; strings pass through."""
     if isinstance(state, str):
         s = state.strip()

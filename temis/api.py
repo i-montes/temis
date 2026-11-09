@@ -85,8 +85,9 @@ somewhat stronger there; the example below is in Spanish).
 match the schema; `message` says which field), `401 authentication_error`, `429 rate_limit_error`.
 
 ### Limits
-Up to 20 questions per request and 12 options per question. The state is cut at 6,000 characters
-and the context at 8,000. 120 requests per minute per IP.
+Up to 20 questions per request and 12 options per question. The state is cut at 40,000 characters
+and the context at 8,000; the model reads up to `long_max_len` tokens of a long state (1,024 by
+default) and the rest is dropped. 120 requests per minute per IP.
 """
 
 EXAMPLE = {  # texts in Spanish on purpose: Temis reads both languages, and most of its memory cases are Spanish
