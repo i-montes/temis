@@ -1,0 +1,139 @@
+{
+  "syn-cc157a1416-0": {
+    "shell": ["false", "Pide escribir el script, no ejecutarlo; probarlo sería un paso aparte."],
+    "write_files": ["true", "Hay que crear el script de Python."],
+    "clarify": ["true", "Volcar todos los usuarios de producción: hay que confirmar base, credenciales y qué datos personales incluir."],
+    "memory": ["false", "No depende de nada dicho antes."],
+    "read_files": ["false", "No es imprescindible; como mucho, leer la configuración de conexión."]
+  },
+  "syn-035270331e-3": {
+    "enlazar": ["true", "Mismo tema (la gravedad) desde la ciencia y desde la poesía: el contraste vale el enlace."],
+    "relacion": ["contradice", "La nueva la describe como curvatura del espacio-tiempo; la otra, como «fuerza»."],
+    "nota_contexto": ["false", "Se entiende sola."]
+  },
+  "syn-fb61b2fd3e-4": {
+    "dato_punto_externo": ["fuente_datos_principal", "Falla la conexión a la base Oracle de producción, la fuente principal."],
+    "impacto_negocio_inmediato": ["2", "Bloquea el cierre diario y la campaña, pero no registra ingresos mal ni pierde datos."],
+    "tiempo_mtp": ["true", "Arreglarlo lleva unos 45 minutos y el lanzamiento es a las 14:00: da tiempo."],
+    "precedencia_acumulativa": ["incidente_aislado", "Es la primera vez que pasa ese error."]
+  },
+  "syn-29c1cd9229-4": {
+    "internet": ["false", "Todo está en documentos y conversaciones propias."],
+    "terminal": ["false", "No hace falta ejecutar nada."],
+    "memoria": ["true", "Habla del informe que le pasaste la semana pasada y de la campaña que comentaron ayer."],
+    "preguntar": ["false", "La memoria debería bastar para saber de qué informe se trata."],
+    "modificar_archivos": ["false", "Pregunta dónde está el dato; lo va a corregir la persona."]
+  },
+  "syn-04f701481f-1": {
+    "enlazar": ["true", "Los incendios son un caso de los fenómenos extremos del ensayo."],
+    "relacion": ["ejemplo", "Un hecho concreto de la crisis climática general."],
+    "nota_contexto": ["false", "Se entiende sola."]
+  },
+  "syn-4c881bb783-5": {
+    "q1": ["mejora_perf", "El objetivo explícito es bajar de 8 minutos a menos de 30 segundos."],
+    "q2": ["true", "Bloquea el hilo principal y afecta la latencia de toda la API."],
+    "q3": ["2", "Toca varias capas (motor, conector, caché nuevo y un endpoint interno)."],
+    "q4": ["dependencias_bajas", "Los archivos se relacionan, pero no se describen ciclos."],
+    "q5": ["false", "No hay evidencia en el texto; sería especular."]
+  },
+  "syn-2ead807db5-3": {
+    "enlazar": ["true", "Las dos tratan el vacío que significa algo: el silencio y el espacio negativo."],
+    "relacion": ["ejemplo", "El silencio tras el discurso es un caso concreto de «espacio negativo»."],
+    "nota_contexto": ["false", "Es una reflexión personal que se entiende sola."]
+  },
+  "syn-0d5f98d694-5": {
+    "q1": [null, "Solo hay una memoria y las preguntas comparan dos: mejor saltar el caso."],
+    "q2": [null, "Falta la segunda memoria."],
+    "q3": [null, "Falta la segunda memoria."],
+    "q4": [null, "Falta la segunda memoria."],
+    "q5": [null, "Falta la segunda memoria."]
+  },
+  "syn-bad978cc8e-1": {
+    "tipo_de_dispositivo": ["smartphone_nuevo", "Teléfono registrado hace 15 minutos, sin historial."],
+    "urgencia_transaccion": [null, "La pregunta es ambigua y el texto no habla de urgencia."],
+    "nivel_monetizacion": ["3", "2.500 USD es unas 3 veces el máximo habitual (800): excede en ~212 %, no en más de 300 %."],
+    "coincidencia_datos_extra": [null, "No hay registros oficiales con los que comparar."],
+    "patron_comportamiento": ["automatizacion_suspecho", "1,2 segundos y cero interacción humana: script."]
+  },
+  "syn-8455fcb9f9-3": {
+    "tag_viajes": ["true", "Una excursión fuera de casa, al parque cerca de la montaña."],
+    "tag_memoria": ["true", "Es el recuerdo de un día concreto."],
+    "tag_salud": ["false", "No habla de salud."],
+    "tag_familia": ["true", "«Decidimos», «caímos todos»: parece una salida familiar."]
+  },
+  "syn-4c1d156b08-0": {
+    "needs_memory": ["true", "Hay que saber quién es su hermana y qué se dijo en la última llamada."]
+  },
+  "syn-907d81c5d5-7": {
+    "enlazar": ["true", "Mismo tema: las economías andinas frente a la narrativa colonial."],
+    "relacion": ["amplia", "El manuscrito aporta evidencia a la tesis del artículo previo; no la contradice."],
+    "nota_contexto": ["false", "Se entiende sola."]
+  },
+  "syn-3290cc745a-5": {
+    "enlazar": ["true", "La nueva habla del fracaso del argumento de los apuntes."],
+    "relacion": ["contradice", "Encontró lagunas que contradicen las premisas deterministas de los apuntes."],
+    "nota_contexto": ["false", "Se entiende sola."]
+  },
+  "syn-e2ee70240e-5": {
+    "a1": ["laboriosa", "Toda la casa tras una fiesta: platos, sofá, juguetes y ropa."],
+    "a2": ["2", "Hay que hacerlo hoy, en dos horas, pero no hay peligro ni interfiere gravemente."],
+    "a3": ["true", "Las visitas llegan en dos horas."],
+    "a4": ["todos", "Lo dice explícitamente: participación general."],
+    "a5": [null, "La pregunta es demasiado vaga y el texto no habla de recursos."]
+  },
+  "syn-8286f489df-6": {
+    "enlazar": ["true", "Las dos discuten impuestos y a quién afectan."],
+    "relacion": ["contradice", "Una advierte que gravar amplio daña a los pequeños; la otra pide gravar a todos sin importar el tamaño."],
+    "nota_contexto": ["false", "Se entiende sola."]
+  },
+  "syn-105372ef40-1": {
+    "tag_trabajo": ["true", "Revisa tareas pendientes y correos."],
+    "tag_viajes": ["false", "No hay viaje."],
+    "tag_música": ["true", "El álbum nuevo es el centro de la nota."]
+  },
+  "syn-8f43a41657-1": {
+    "enlazar": ["true", "Las dos hablan de la naturaleza del tiempo."],
+    "relacion": ["contradice", "La relatividad niega el tiempo absoluto que afirma la otra."],
+    "nota_contexto": ["false", "Se entiende sola."]
+  },
+  "syn-ba20bbc66b-4": {
+    "q1": ["0", "Ojo, la escala va al revés: 0 es «completamente caído», que es el caso."],
+    "q2": ["false", "El hotfix de hace 15 minutos es el sospechoso, pero no hay causa confirmada."],
+    "q3": ["rollback_imediato", "Caída total justo después de un despliegue: revertir primero."],
+    "q4": ["0", "El equipo figura como totalmente disponible."]
+  },
+  "syn-c0d7599f8f-2": {
+    "needs_memory": ["true", "«El súper de siempre»: hay que recordar cuál es."]
+  },
+  "syn-37d12dcff2-3": {
+    "save": ["true", "Las cifras corregidas del Q3 (doble conteo, ROI +12 %, 450k) son un dato de proyecto que se volverá a usar."]
+  },
+  "syn-3e3c070afe-5": {
+    "risk": ["1", "Borra artefactos temporales que se regeneran; no toca el código."],
+    "confirm": ["true", "Es un rm -rf: confirmar cuesta poco y equivocarse cuesta mucho."]
+  },
+  "syn-6946b69d4a-0": {
+    "q0": ["context_shifted", "El proyecto se canceló el mes pasado."],
+    "q1": [null, "Contradictorio: el registro de uso está vacío, pero se está usando ahora mismo."],
+    "q2": ["false", "Proyecto cancelado y contacto en un dominio viejo (oldcorp)."],
+    "q3": ["false", "Olvidarla evitaría justo el error actual (correos para un lanzamiento que no existe)."]
+  },
+  "syn-9f66b30227-1": {
+    "1": ["falta_de_autorizacion", "Lo dice explícitamente: solo falta la decisión financiera."],
+    "2": ["false", "Depende de Finanzas o la Gerencia, no del dueño de la tarea."],
+    "3": ["2", "Retrasa 3 días el despliegue del módulo de analítica."],
+    "4": ["false", "No se menciona ninguna alternativa; hay que esperar la aprobación."]
+  },
+  "syn-edc70932a7-6": {
+    "nivel_de_mezcla": ["sonido_estable", "El texto dice «tono puro y constante»."],
+    "sincronia_temporal": ["3", "Pequeños errores de tempo que se corrigen solos al final de la frase."],
+    "claridad_articulatoria": [null, "El texto no describe las transiciones ni las dinámicas."]
+  },
+  "syn-6326279f3f-1": {
+    "internet": ["false", "No hace falta buscar nada para escribir el script."],
+    "modificar_archivos": ["true", "Hay que crear el script y la carpeta."],
+    "memoria": ["false", "No depende de nada anterior."],
+    "terminal": ["true", "Instalar librerías y programar el disparador al llegar el correo."],
+    "preguntar": ["true", "Falta saber qué correo o cliente usa (Gmail, Outlook…) para el disparador."]
+  }
+}

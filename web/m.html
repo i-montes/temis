@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#1b1b19">
+<title>Temis</title>
+<style>
+:root{--bg:#f7f6f2;--card:#fff;--text:#1f1e1b;--muted:#6b6a64;--line:#e4e2da;--accent:#4b44b3;--accent-bg:#eeedfe;--yes:#0f6e56;--yes-bg:#e1f5ee;--no:#a32d2d;--no-bg:#fcebeb;--warn:#854f0b;--warn-bg:#faeeda;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1b1b19;--card:#262624;--text:#ecebe6;--muted:#a3a29b;--line:#3a3a36;--accent:#aea8f0;--accent-bg:#2f2b5c;--yes:#5dcaa5;--yes-bg:#103a30;--no:#f09595;--no-bg:#4a1b1b;--warn:#efb05a;--warn-bg:#3f2a0c}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,sans-serif;overscroll-behavior:none}
+body{display:flex;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{display:flex;align-items:center;gap:10px;padding:10px 16px}
+header b{font-size:17px}.muted{color:var(--muted)}.small{font-size:13px}
+#count{margin-left:auto;font-size:13px;color:var(--muted)}
+main{flex:1;position:relative;padding:0 16px;min-height:0}
+.card{position:absolute;inset:0 16px 0 16px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;touch-action:pan-y;will-change:transform;user-select:none;overflow:hidden}
+.card.anim{transition:transform .25s ease,opacity .25s ease}
+.meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px}
+.pill{padding:2px 9px;border-radius:99px;background:var(--accent-bg);color:var(--accent);font-size:12px}
+.state{flex:1;min-height:60px;overflow:auto;font:13px/1.5 var(--mono);white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;-webkit-user-select:text;user-select:text}
+.q{font-size:17px;font-weight:600;line-height:1.35}
+.hint{font-size:13px;color:var(--muted)}
+.stamp{position:absolute;top:22px;font-size:26px;font-weight:700;padding:4px 14px;border:3px solid;border-radius:10px;opacity:0;pointer-events:none;transform:rotate(-12deg)}
+.stamp.yes{left:20px;color:var(--yes);border-color:var(--yes)}.stamp.no{right:20px;color:var(--no);border-color:var(--no);transform:rotate(12deg)}
+.opts{display:flex;flex-direction:column;gap:8px;max-height:46vh;overflow:auto}
+.opt{display:block;width:100%;text-align:left;font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 12px}
+.opt b{display:block}.opt span{font-size:13px;color:var(--muted)}
+.opt.sug{border-color:var(--accent)}.opt .tag{float:right;font-size:11px;color:var(--accent)}
+.opt:active{transform:scale(.98)}.claude{font-size:14px;padding:7px 10px;border-radius:10px;background:var(--accent-bg);color:var(--accent)}.opt .tag.cl{margin-left:8px;font-weight:600}
+footer{display:flex;gap:12px;justify-content:center;align-items:center;padding:14px 16px 18px}
+.round{width:64px;height:64px;border-radius:50%;border:2px solid;font-size:26px;background:var(--card);display:grid;place-items:center}
+.round.no{color:var(--no);border-color:var(--no)}.round.yes{color:var(--yes);border-color:var(--yes)}
+.small-btn{white-space:nowrap;font:inherit;font-size:14px;border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:99px;padding:8px 14px}
+.center{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px}
+input{font:16px var(--mono);width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.go{font:inherit;width:100%;margin-top:10px;padding:12px;border-radius:10px;border:0;background:var(--accent);color:#fff}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:8px 14px;border-radius:99px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:.92}
+</style>
+</head>
+<body>
+<header><b>Temis</b><span class="pill" id="model">…</span><span id="count"></span></header>
+<main id="stage"></main>
+<footer id="bar"></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let TOKEN='';try{TOKEN=localStorage.getItem('decisor-token')||''}catch(e){}
+async function api(path,opts={}){const r=await fetch(path,{headers:{'Content-Type':'application/json','X-Decisor-Token':TOKEN},...opts,body:opts.body?JSON.stringify(opts.body):undefined});const j=await r.json().catch(()=>({}));if(r.status===401){askToken();throw new Error('auth')}if(!r.ok)throw new Error(j.detail||j.error||r.statusText);return j}
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('on'),1300)}
+function buzz(ms){try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}}
+function renderState(s){if(typeof s==='string')return s;const out=[];const walk=(p,v)=>{if(v&&typeof v==='object'&&!Array.isArray(v)){for(const[k,x]of Object.entries(v))walk(p?p+' · '+k:k,x)}else out.push(p.replaceAll('_',' ')+': '+(Array.isArray(v)?v.map(x=>typeof x==='object'?JSON.stringify(x):x).join('; '):v))};walk('',s);return out.join('\n')}
+function parseQ(qid,q){const t=q.type;let opts=[],desc=[];if(t==='noul'){const c=q.criteria||{};opts=['false','true'];desc=[c.false||'',c.true||'']}else if(t==='score'){const c=Array.isArray(q.criteria)?q.criteria:Object.values(q.criteria||{});opts=c.map((_,i)=>String(i));desc=c}else{opts=Object.keys(q.criteria||{});desc=Object.values(q.criteria||{})}return{qid,type:t,instructions:q.instructions,opts,desc}}
+
+function askToken(){$('#bar').innerHTML='';$('#stage').innerHTML=`<div class="center"><div style="width:100%;max-width:340px"><p><b>Escribe la clave</b></p><p class="small muted">Está en la web del Mac, en el botón «Celular». Solo hay que ponerla una vez.</p><input id="tok" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Clave"><button class="go" id="tokgo">Entrar</button><p class="small" id="tokerr" style="color:var(--no)"></p></div></div>`;
+$('#tokgo').onclick=()=>{const v=$('#tok').value.trim();if(!v){$('#tokerr').textContent='Escribe la clave primero.';return}TOKEN=v;try{localStorage.setItem('decisor-token',v)}catch(e){}start()};$('#tok').oninput=()=>$('#tokerr').textContent=''}
+
+/* state of the current case */
+let C={item:null,qs:[],i:0,labels:{},how:{}},skipped=[],done=0;
+async function start(){try{const s=await api('/api/stats');$('#model').textContent=s.model;next()}catch(e){if(e.message!=='auth')$('#stage').innerHTML=`<div class="center">${esc(e.message)}</div>`}}
+async function next(){try{const r=await api('/api/queue?limit=1&exclude='+skipped.join(','));const it=r.items[0];$('#count').textContent=`${r.stats.open} pendientes · ${done} hoy`;
+if(!it){$('#bar').innerHTML='';$('#stage').innerHTML='<div class="center"><div><p><b>No quedan casos</b></p><p class="muted small">Cuando el decisor dude, aparecerán aquí.</p></div></div>';return}
+C={item:it,qs:Object.entries(it.questions).map(([k,v])=>parseQ(k,v)),i:0,labels:{},how:{}};draw()}catch(e){if(e.message!=='auth')toast(e.message)}}
+function modelView(q){const a=(C.item.answers||{})[q.qid];if(!a||!a.probabilities)return null;const ent=Object.entries(a.probabilities).sort((x,y)=>y[1]-x[1]);const tie=ent.length>1&&ent[0][1]-ent[1][1]<0.04;return{top:ent[0][0],p:ent[0][1],tie,probs:a.probabilities}}
+function label(q,o){return q.type==='noul'?(o==='true'?'sí':'no'):q.type==='score'?'nivel '+o:o}
+function draw(){const q=C.qs[C.i],it=C.item,mv=modelView(q),cs=(it.suggestions||{})[q.qid];
+let guess='';if(mv){guess=mv.tie?'el modelo duda (empate)':`el modelo cree: <b>${esc(label(q,mv.top))}</b> ${Math.round(mv.p*100)}%`}
+let h=`<div class="card" id="card"><div class="meta"><span class="pill">${C.i+1} de ${C.qs.length}</span>${it.workflow?`<span class="muted">${esc(it.workflow)}</span>`:''}</div>
+<div class="state">${esc(renderState(it.state))}</div><div class="q">${esc(q.instructions)}</div>${cs?`<div class="claude">${cs.label==null?'Claude no respondería esta':`Claude elegiría <b>${esc(label(q,cs.label))}</b>`}${cs.reason?' — '+esc(cs.reason):''}</div>`:''}`;
+if(q.type==='noul'){h+=`<div class="hint">${guess} · desliza → sí, ← no</div>${q.desc[1]||q.desc[0]?`<div class="hint">sí: ${esc(q.desc[1])}<br>no: ${esc(q.desc[0])}</div>`:''}<div class="stamp yes">SÍ</div><div class="stamp no">NO</div>`}
+else{h+=`<div class="hint">${guess}</div><div class="opts">`+q.opts.map((o,oi)=>`<button class="opt ${mv&&!mv.tie&&mv.top===o?'sug':''}" data-o="${esc(o)}">${mv&&!mv.tie&&mv.top===o?'<span class="tag">el modelo</span>':''}${cs&&cs.label===o?'<span class="tag cl">Claude</span>':''}<b>${esc(label(q,o))}</b><span>${esc(q.desc[oi]!==label(q,o)?q.desc[oi]:'')}</span></button>`).join('')+'</div>'}
+h+='</div>';$('#stage').innerHTML=h;
+$('#bar').innerHTML=q.type==='noul'?`<button class="small-btn" id="back" ${C.i?'':'disabled'} aria-label="Pregunta anterior">↩</button><button class="round no" id="no" aria-label="No">✕</button><button class="small-btn" id="skipq">no sé</button><button class="round yes" id="yes" aria-label="Sí">✓</button><button class="small-btn" id="skipc" aria-label="Saltar caso">saltar</button>`
+:`<button class="small-btn" id="back" ${C.i?'':'disabled'}>↩ atrás</button><button class="small-btn" id="skipq">no sé</button><button class="small-btn" id="skipc">saltar caso</button>`;
+$('#back').onclick=()=>{if(C.i){C.i--;delete C.labels[C.qs[C.i].qid];draw()}};$('#skipq').onclick=()=>answer(null);$('#skipc').onclick=skipCase;
+if(q.type==='noul'){$('#yes').onclick=()=>fly(1);$('#no').onclick=()=>fly(-1);swipe($('#card'))}
+else document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{buzz(10);answer(b.dataset.o)})}
+function fly(dir){const c=$('#card');if(!c)return;c.classList.add('anim');c.style.transform=`translateX(${dir*window.innerWidth*1.2}px) rotate(${dir*18}deg)`;c.style.opacity='0';buzz(15);setTimeout(()=>answer(dir>0?'true':'false'),200)}
+function swipe(card){let x0=null,y0=null,dx=0,drag=false;const yes=card.querySelector('.stamp.yes'),no=card.querySelector('.stamp.no');const st=card.querySelector('.state');
+card.addEventListener('pointerdown',e=>{if(st.contains(e.target)&&st.scrollHeight>st.clientHeight)return;x0=e.clientX;y0=e.clientY;drag=false;card.setPointerCapture(e.pointerId)});
+card.addEventListener('pointermove',e=>{if(x0===null)return;dx=e.clientX-x0;const dy=e.clientY-y0;if(!drag&&Math.abs(dx)<8)return;if(!drag&&Math.abs(dy)>Math.abs(dx)){x0=null;return}drag=true;card.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`;yes.style.opacity=Math.max(0,Math.min(1,dx/90));no.style.opacity=Math.max(0,Math.min(1,-dx/90))});
+const end=()=>{if(x0===null)return;x0=null;if(Math.abs(dx)>90){fly(Math.sign(dx))}else{card.classList.add('anim');card.style.transform='';yes.style.opacity=0;no.style.opacity=0;setTimeout(()=>card.classList.remove('anim'),260)}dx=0};
+card.addEventListener('pointerup',end);card.addEventListener('pointercancel',end)}
+async function answer(o){const q=C.qs[C.i];if(o!==null){C.labels[q.qid]=o;C.how[q.qid]='pick';toast(label(q,o))}else toast('sin respuesta')
+if(C.i<C.qs.length-1){C.i++;draw();return}
+try{if(Object.keys(C.labels).length){await api('/api/label',{method:'POST',body:{decision_id:C.item.id,labels:C.labels,how:C.how}});done++}else{skipped.push(C.item.id)}next()}catch(e){if(e.message!=='auth'){toast('No se pudo guardar, reintenta');C.i=C.qs.length-1;draw()}}}
+async function skipCase(){try{await api('/api/skip',{method:'POST',body:{decision_id:C.item.id}})}catch(e){skipped.push(C.item.id)}toast('caso saltado');next()}
+start();
+</script>
+</body>
+</html>

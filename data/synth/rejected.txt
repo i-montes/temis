@@ -1,0 +1,23 @@
+# 2026-11-08: every question answered '?' by the reviewer (missing memory/note, mismatched questions)
+syn-0d5f98d694-5
+syn-a2f8b36aa6-4
+syn-9aea813710-3
+syn-cc504744f9-5
+syn-39aa64c746-2
+syn-f90ab9752c-7
+syn-9e3fef5b08-6
+syn-9368b99a33-3
+syn-e1b204d95f-6
+syn-83ef06e732-3
+syn-36fa42a6cc-3
+syn-815d55b9a3-3
+syn-bf52ce4309-3
+syn-ea402d6eb5-0
+syn-5b7b27aa17-5
+syn-bf52ce4309-2
+syn-bff9f3199b-2
+syn-6e2a1e568f-5
+syn-7eb332e738-3
+syn-bff9f3199b-1
+syn-7eb332e738-2
+syn-39aa64c746-6

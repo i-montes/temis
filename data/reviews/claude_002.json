@@ -1,0 +1,151 @@
+{
+  "syn-4dca768e52-3": {
+    "q1": ["daily_log", "Sobre todo es una anécdota del día (el perro a las 3 AM) más un enlace suelto."],
+    "q2": ["0", "No tiene ninguna urgencia."],
+    "q3": [null, "No es una afirmación de sí o no: «evalúa el peso emocional» no se puede responder con sí/no."],
+    "q4": [null, "Ninguna opción encaja: es texto escrito que además trae un enlace."],
+    "q5": [null, "La pregunta es demasiado vaga."]
+  },
+  "syn-4a58c307cf-7": {
+    "modificar_archivos": ["true", "Hay que escribir el código en R."],
+    "memoria": ["true", "El artículo «que te mandé por WhatsApp anoche»."],
+    "internet": ["false", "El artículo ya se lo mandó; no hace falta buscar nada."],
+    "preguntar": ["true", "Pregunta por cuál empezar, y cambiar la contraseña de AWS exige confirmar y tener credenciales."]
+  },
+  "syn-4766dfe762-1": {
+    "tag_philosophy": ["false", "Es una descripción, no una reflexión."],
+    "tag_music": ["false", "El sonido del agua no es música."],
+    "tag_travel": ["true", "Una caminata por Sierra Nevada."],
+    "tag_health": ["false", "No habla de salud, aunque sea ejercicio."],
+    "tag_grief": ["false", "No hay duelo."]
+  },
+  "syn-3c713aab24-0": {
+    "inyeccion": ["false", "Es un pedido normal de un colega a la persona, no órdenes dirigidas a una IA."],
+    "accion": ["solo_dato", "Un correo de un tercero se lee como dato: el agente no debería añadir la nota al pie por su cuenta."]
+  },
+  "syn-fe94cc708a-2": {
+    "q1": ["vendedor_prospecto", "Te ofrece una inversión: está vendiendo."],
+    "q2": ["false", "La «urgencia» es una táctica de venta, no una necesidad tuya."],
+    "q3": ["2", "Para decidir habría que leer el dossier y el contrato."],
+    "q4": ["false", "Es una oferta comercial, no información privada tuya."]
+  },
+  "syn-533abca47a-6": {
+    "q0": ["requerio_reintentos", "Reintentó tras fallar, aunque no logró el objetivo."],
+    "q1": ["1", "No alucinó, pero dijo «cambiando» sin poder y no explicó bien el fallo."],
+    "q2": ["true", "Cambiar el puerto SSH con sudo es una operación de seguridad."],
+    "q3": ["error_de_configuracion", "Un entorno sin permisos de root."]
+  },
+  "syn-21fa318a02-0": {
+    "enlazar": ["true", "Mismo autor y misma tesis."],
+    "relacion": ["contradice", "La nueva dice que la forma contiene el caos; la tesis, que la forma cede ante él."],
+    "nota_contexto": ["false", "Se entiende sola."]
+  },
+  "syn-4c42ebcfef-5": {
+    "p1": ["chiste_anecdota", "Es una anécdota graciosa, sin uso práctico."],
+    "p2": ["0", "No hay nada que recordar más allá de esta conversación."],
+    "p3": ["false", "No se promete nada."],
+    "p4": ["false", "No cambia ninguna situación."]
+  },
+  "syn-910cc2ad68-4": {
+    "tag_philosophy": ["true", "«Grief is just love with nowhere to go» es un aforismo."],
+    "tag_music": ["false", "No hay música."],
+    "tag_childhood": ["false", "Habla de la muerte del padre, pero no dice que fuera en la infancia."],
+    "tag_grief": ["true", "Es el tema central."]
+  },
+  "syn-6fb5384c48-2": {
+    "enlazar": ["true", "Las dos hablan de los abuelos y los domingos en familia."],
+    "relacion": ["amplia", "La receta suma un recuerdo más de esos domingos."],
+    "nota_contexto": ["false", "Se entiende sola."]
+  },
+  "syn-035270331e-0": {
+    "enlazar": ["true", "Las dos hablan del silencio, el vacío y los recuerdos."],
+    "relacion": ["contradice", "Es el contrapunto: la nueva encuentra paz en el silencio que la otra teme. Es la elección más dudosa."],
+    "nota_contexto": ["false", "Se entiende sola."]
+  },
+  "syn-b44750a4d9-6": {
+    "enlazar": ["true", "La nueva refuta justamente la tesis de la otra."],
+    "relacion": ["contradice", "Dice que el sentido persiste a través de religiones que evolucionan; la otra, que se perdió."],
+    "nota_contexto": ["false", "Se entiende sola."]
+  },
+  "syn-c8264db055-5": {
+    "tag_familia": ["false", "No hay familia."],
+    "tag_música": ["false", "No hay música."],
+    "tag_escritura": ["false", "No habla de escribir."],
+    "tag_duelo": ["false", "Hay frustración, no duelo."],
+    "tag_salud": ["true", "Fracturas e indicación médica."]
+  },
+  "syn-33ced90576-6": {
+    "preguntar": ["false", "Con la memoria basta; los campos ya están dados."],
+    "leer_archivos": ["false", "No hace falta leer archivos."],
+    "memoria": ["true", "Quiere el tono que usó en la charla de ayer."],
+    "internet": ["false", "No hace falta buscar nada."]
+  },
+  "syn-552f20a26f-4": {
+    "q1": ["registro_hecho_unico", "Es el acta puntual de una reunión."],
+    "q2": ["1", "Trae los datos clave, pero «lo nuevo» y el proyecto dependen de cosas externas."],
+    "q3": ["true", "El plazo «antes del viernes» de marzo de 2023 ya pasó."],
+    "q4": ["true", "Da por sabido quiénes son Juan y María y qué es el proyecto Alpha."],
+    "q5": ["sin_enlaces_funcionales", "No referencia otras notas."]
+  },
+  "syn-6946b69d4a-4": {
+    "q0": ["context_shifted", "Es del proyecto Alpha, ya «legacy»; los activos son otros."],
+    "q1": ["3", "«last accessed: None»: nunca se usó."],
+    "q2": [null, "No hay forma de saber si la preferencia sigue vigente."],
+    "q3": ["false", "No tiene tareas dependientes y el proyecto no está activo."]
+  },
+  "syn-d8d6a3cb8c-6": {
+    "q1": [null, "Solo dice que falló la capa 30: no hay datos para ninguna pregunta. Saltar."],
+    "q2": [null, "Sin datos."],
+    "q3": [null, "Sin datos."],
+    "q4": [null, "Sin datos."]
+  },
+  "syn-4a58c307cf-5": {
+    "modificar_archivos": ["false", "Es una pregunta, no pide cambiar nada."],
+    "memoria": ["false", "El error de codificación es genérico; el script de ayer ayudaría, pero no es imprescindible."],
+    "internet": ["true", "Pide el enlace a la documentación o buscarlo juntos."],
+    "preguntar": ["false", "Está claro qué pide."]
+  },
+  "syn-cb7ec0518c-5": {
+    "tag_filosofía": ["true", "Ética de la IA y paradojas morales."],
+    "tag_salud": ["false", "Trasnochar no basta."],
+    "tag_infancia": ["false", "No hay infancia."],
+    "tag_trabajo": ["true", "Es el libro que está escribiendo."],
+    "tag_memoria": ["false", "No es un recuerdo."]
+  },
+  "syn-4a58c307cf-2": {
+    "modificar_archivos": ["false", "Es redactar un texto, no tocar archivos."],
+    "memoria": ["false", "Todo debería estar en el correo."],
+    "internet": ["false", "No hace falta."],
+    "preguntar": ["true", "El cuerpo del correo dice solo «Cuerpo del mensaje...»: falta el texto real."]
+  },
+  "syn-54c59b0b0f-3": {
+    "internet": ["false", "No hace falta."],
+    "modificar_archivos": ["false", "Pide verificar, no cambiar."],
+    "terminal": ["true", "Para saber si funciona hay que ejecutarla o correr pruebas."],
+    "memoria": ["false", "El archivo y la función están nombrados."]
+  },
+  "syn-cc504744f9-7": {
+    "q1": ["1", "Las dos son un gasto de transporte del cliente X, pero difieren en ciudad, mes y monto."],
+    "q2": ["interpretacion_alternativa", "Las dos pueden ser ciertas si fueron viajes distintos."],
+    "q3": ["false", "Noviembre frente a diciembre es justo lo que importa."],
+    "q4": ["1", "Comparten el cliente y «un viaje», pero no las ciudades."]
+  },
+  "syn-82dbfa725f-3": {
+    "1": ["remitente_interior", "Es tu jefa."],
+    "2": ["2", "Propone vernos hoy a las 17:30 y escribió a las 16:45: hay que contestar en minutos."],
+    "3": ["true", "Te pide que elijas una hora."],
+    "4": ["propone_reunion", "Propone dos horarios."],
+    "5": ["true", "Basta con saber tu propia disponibilidad."]
+  },
+  "syn-8286f489df-2": {
+    "enlazar": ["true", "Las dos tratan de los pájaros en invierno."],
+    "relacion": ["contradice", "Una dice que los pájaros se quedan y cantan; la otra, que quedarse es morir."],
+    "nota_contexto": ["false", "Se entiende sola."]
+  },
+  "syn-ea402d6eb5-4": {
+    "temporal_alignment": ["3", "B cuenta lo mismo que A (el café, el latte, Gatsby) y la vuelta a casa."],
+    "semantic_overlap": ["identical_subject", "Es la misma visita al café."],
+    "evidence_conflict": ["false", "No se contradicen: A sale a las 5 PM y B llega a casa después."],
+    "information_expansion": ["true", "B añade la vuelta a casa."]
+  }
+}

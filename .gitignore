@@ -1,0 +1,24 @@
+# secrets: the TypeSafe key and the API tokens
+.env
+
+.venv/
+__pycache__/
+.pytest_cache/
+.DS_Store
+
+# trained models (GB each) and third-party checkouts/weights
+runs/*
+!runs/registry.json
+*.onnx
+*.pt
+external/
+bin/
+models/active.json
+
+# the app's working database (queue, playground) and scratch stores; the training data
+# itself (labels, targets, cases) is committed below data/
+data/decisor.db*
+data/clio-test/
+
+# backups of casos.json (casos.json is a superset)
+casos.backup-*.json

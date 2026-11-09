@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Temis</title>
+<style>
+:root{--bg:#f7f6f2;--card:#fff;--text:#1f1e1b;--muted:#6b6a64;--line:#e4e2da;--accent:#4b44b3;--accent-bg:#eeedfe;--ok:#0f6e56;--ok-bg:#e1f5ee;--warn:#854f0b;--warn-bg:#faeeda;--bar:#d3d1c7;--sel:#fff7e0;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1b1b19;--card:#252523;--text:#ecebe6;--muted:#a3a29b;--line:#3a3a36;--accent:#aea8f0;--accent-bg:#2f2b5c;--ok:#5dcaa5;--ok-bg:#103a30;--warn:#efb05a;--warn-bg:#3f2a0c;--bar:#4a4a45;--sel:#3a3320}}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text)}
+header{display:flex;align-items:center;gap:16px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:2;flex-wrap:wrap}
+header h1{font-size:17px;margin:0;font-weight:600}nav{display:flex;gap:4px}
+nav button{border:0;background:none;color:var(--muted);padding:6px 12px;border-radius:8px;font:inherit;cursor:pointer}
+nav button.on{background:var(--accent-bg);color:var(--accent);font-weight:600}
+.stats{margin-left:auto;color:var(--muted);font-size:13px;display:flex;gap:14px;flex-wrap:wrap}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.muted{color:var(--muted)}.small{font-size:13px}
+.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;background:var(--accent-bg);color:var(--accent)}
+.badge.warn{background:var(--warn-bg);color:var(--warn)}.badge.ok{background:var(--ok-bg);color:var(--ok)}
+pre.state{white-space:pre-wrap;word-break:break-word;font:13px/1.55 var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;max-height:340px;overflow:auto;margin:8px 0 0}
+.q{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}.q.cur{outline:2px solid var(--accent);outline-offset:6px;border-radius:4px}
+.q h3{font-size:15px;margin:0 0 8px;font-weight:600}
+.opt{display:grid;grid-template-columns:28px 1fr 170px;gap:10px;align-items:center;padding:6px 8px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+.opt:hover{background:var(--bg)}.opt.sel{background:var(--sel);border-color:var(--warn)}
+.key{font:12px var(--mono);border:1px solid var(--line);border-radius:5px;text-align:center;padding:1px 0;color:var(--muted)}
+.opt b{font-weight:600}.opt .d{color:var(--muted);font-size:13px}
+.bars{display:flex;flex-direction:column;gap:3px}.bar{display:flex;align-items:center;gap:6px;font:11px var(--mono);color:var(--muted)}
+.bar i{display:block;height:7px;border-radius:4px;background:var(--accent);min-width:1px}.bar.t i{background:var(--bar)}
+.help{font-size:12px;color:var(--muted);margin-top:10px}.help kbd{font:11px var(--mono);border:1px solid var(--line);border-radius:4px;padding:0 5px}
+button.btn{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:8px;padding:7px 14px;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}button:disabled{opacity:.5;cursor:default}
+textarea,select,input{font:13px var(--mono);width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px}
+textarea{min-height:120px;resize:vertical}label{font-size:13px;color:var(--muted);display:block;margin:10px 0 4px}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:500}
+.tablewrap{overflow-x:auto}.err{color:#c0392b;font-size:13px;margin-top:6px}.empty{text-align:center;padding:40px;color:var(--muted)}
+.ev{font-size:12px;color:var(--muted);margin-top:6px}.claude{font-size:13px;margin:-2px 0 8px;padding:6px 10px;border-radius:8px;background:var(--accent-bg);color:var(--accent)}.badge.cl{background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent)}
+@media (max-width:640px){.opt{grid-template-columns:24px 1fr}.opt .bars{grid-column:2}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Temis</h1>
+  <nav><button data-tab="queue" class="on">Cola</button><button data-tab="play">Probar</button><button data-tab="models">Modelos</button><button data-tab="stats">Estadísticas</button></nav>
+  <div class="stats" id="stats"></div><button class="btn" id="phone" style="padding:5px 10px">Celular</button>
+</header>
+<main><div class="card" id="phonebox" hidden></div>
+  <section id="tab-queue"></section>
+  <section id="tab-play" hidden></section>
+  <section id="tab-models" hidden></section>
+  <section id="tab-stats" hidden></section>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function api(path,opts={}){const r=await fetch(path,{headers:{'Content-Type':'application/json'},...opts,body:opts.body?JSON.stringify(opts.body):undefined});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.detail||j.error||r.statusText);return j}
+function renderState(s){if(typeof s==='string')return s;const out=[];const walk=(p,v)=>{if(v&&typeof v==='object'&&!Array.isArray(v)){for(const[k,x]of Object.entries(v))walk(p?p+' · '+k:k,x)}else out.push(p.replaceAll('_',' ')+': '+(Array.isArray(v)?v.map(x=>typeof x==='object'?JSON.stringify(x):x).join('; '):v))};walk('',s);return out.join('\n')}
+function parseQ(qid,q){const t=q.type;let opts=[],desc=[];if(t==='noul'){const c=q.criteria||{};opts=['false','true'];desc=[c.false||'',c.true||'']}else if(t==='score'){const c=Array.isArray(q.criteria)?q.criteria:Object.values(q.criteria||{});opts=c.map((_,i)=>String(i));desc=c}else{opts=Object.keys(q.criteria||{});desc=Object.values(q.criteria||{})}return{qid,type:t,instructions:q.instructions,opts,desc}}
+const typeName={choice:'elegir',score:'puntuar',noul:'sí / no'};
+function bar(p,cls='',tag=''){const w=Math.round((p||0)*100);return `<div class="bar ${cls}"><i style="width:${Math.max(w,1)}px"></i>${tag}${w}%</div>`}
+async function refreshStats(){try{const s=await api('/api/stats');$('#stats').innerHTML=`<span>modelo <b>${esc(s.model)}</b></span><span>pendientes ${s.open}</span><span>dudosos ${s.doubtful}</span><span>etiquetados por ti ${s.labeled}</span>`}catch(e){}}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.tab));
+function show(tab){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));for(const t of['queue','play','models','stats'])$('#tab-'+t).hidden=t!==tab;if(tab==='queue')loadQueue();if(tab==='play')renderPlay();if(tab==='models')loadModels();if(tab==='stats')loadStats()}
+
+/* ---------- cola ---------- */
+let Q={item:null,qs:[],cur:0,sel:{},skipped:[]};
+async function loadQueue(){const box=$('#tab-queue');try{const r=await api('/api/queue?limit=1&exclude='+Q.skipped.join(','));refreshStats();const it=r.items[0];if(!it){box.innerHTML='<div class="card empty">No hay casos pendientes. Cuando el decisor dude, aparecerán aquí.</div>';Q.item=null;return}Q={...Q,item:it,qs:Object.entries(it.questions).map(([k,v])=>parseQ(k,v)),cur:0,sel:{},how:{}};drawQueue()}catch(e){box.innerHTML=`<div class="card err">${esc(e.message)}</div>`}}
+function drawQueue(){const it=Q.item,box=$('#tab-queue');const t=it.teacher||{};const u=it.uncertainty??0;
+let h=`<div class="card"><div class="row"><span class="badge ${u>=.5?'warn':''}">incertidumbre ${Math.round(u*100)}%</span><span class="badge">${esc(it.origin)}</span>${it.workflow?`<span class="muted small">${esc(it.workflow)}</span>`:''}<span class="muted small" style="margin-left:auto">#${esc(it.id)}</span></div>
+<pre class="state">${esc(renderState(it.state))}</pre>${it.context?`<label>Contexto recuperado</label><pre class="state">${esc(it.context)}</pre>`:''}`;
+Q.qs.forEach((q,qi)=>{const ans=(it.answers||{})[q.qid]||{};const probs=ans.probabilities||{};const tj=(t.jev||{})[q.qid];
+const sug=suggested(q);const cs=(it.suggestions||{})[q.qid];const lab=o=>q.type==='noul'?(o==='true'?'sí':'no'):q.type==='score'?'nivel '+o:o;
+h+=`<div class="q ${qi===Q.cur?'cur':''}" id="q${qi}"><h3>${esc(q.instructions)} <span class="badge">${typeName[q.type]||q.type}</span></h3>${cs?`<div class="claude">${cs.label==null?'Claude no respondería esta':`Claude elegiría <b>${esc(lab(cs.label))}</b>`}${cs.reason?' — '+esc(cs.reason):''}</div>`:''}`;
+q.opts.forEach((o,oi)=>{const label=q.type==='noul'?(o==='true'?'sí':'no'):q.type==='score'?'nivel '+o:o;
+h+=`<div class="opt ${Q.sel[q.qid]===o?'sel':''}" data-q="${qi}" data-o="${oi}"><span class="key">${oi+1}</span><div><b>${esc(label)}</b>${sug===o?' <span class="badge ok">sugerida</span>':''}${cs&&cs.label===o?' <span class="badge cl">Claude</span>':''} <span class="d">${esc(q.desc[oi]!==label?q.desc[oi]:'')}</span></div><div class="bars">${probs[o]!==undefined?bar(probs[o],'','modelo '):''}${tj?bar(tj[oi],'t','jev '):''}</div></div>`});h+='</div>'});
+h+=`<div class="row" style="margin-top:14px"><button class="btn primary" id="save" ${Object.keys(Q.sel).length<Q.qs.length?'disabled':''}>Guardar y siguiente</button><button class="btn" id="accept">Aceptar las sugeridas</button><button class="btn" id="skip">Saltar</button></div>
+<div class="help"><kbd>1</kbd>–<kbd>9</kbd> elegir opción · <kbd>←</kbd><kbd>→</kbd> cambiar de pregunta · <kbd>a</kbd> aceptar la opción «sugerida» (la más probable según el modelo) en las que faltan · <kbd>Enter</kbd> guardar · <kbd>s</kbd> saltar</div></div>`;
+box.innerHTML=h;box.querySelectorAll('.opt').forEach(el=>el.onclick=()=>pick(+el.dataset.q,+el.dataset.o));$('#save').onclick=save;$('#skip').onclick=skip;$('#accept').onclick=acceptAll;
+const cur=$('#q'+Q.cur);if(cur)cur.scrollIntoView({block:'nearest',behavior:'smooth'})}
+function suggested(q){const it=Q.item,ans=(it.answers||{})[q.qid];if(ans&&ans.probabilities){const e=Object.entries(ans.probabilities).sort((a,b)=>b[1]-a[1]);return e.length>1&&e[0][1]-e[1][1]<0.04?null:e[0][0]}const t=it.teacher||{};const d=(t.mix||t.jev||{})[q.qid];if(d){return q.opts[d.indexOf(Math.max(...d))]}return null}
+function pick(qi,oi){const q=Q.qs[qi];if(!q||oi>=q.opts.length)return;Q.sel[q.qid]=q.opts[oi];Q.how[q.qid]='pick';Q.cur=Math.min(qi+1,Q.qs.length-1);drawQueue();if(Object.keys(Q.sel).length===Q.qs.length&&qi===Q.qs.length-1)save()}
+function acceptAll(){for(const q of Q.qs){if(!Q.sel[q.qid]){const s=suggested(q);if(s){Q.sel[q.qid]=s;Q.how[q.qid]='accept'}}}drawQueue()}
+async function save(){if(Object.keys(Q.sel).length<Q.qs.length)return;try{await api('/api/label',{method:'POST',body:{decision_id:Q.item.id,labels:Q.sel,how:Q.how}});loadQueue()}catch(e){alert('No se pudo guardar ('+e.message+'). Tus respuestas siguen marcadas: vuelve a pulsar «Guardar y siguiente».')}}
+async function skip(){await api('/api/skip',{method:'POST',body:{decision_id:Q.item.id}});loadQueue()}
+document.addEventListener('keydown',e=>{if($('#tab-queue').hidden||!Q.item||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;
+if(/^[1-9]$/.test(e.key)){pick(Q.cur,+e.key-1)}else if(e.key==='ArrowRight'){Q.cur=Math.min(Q.cur+1,Q.qs.length-1);drawQueue()}else if(e.key==='ArrowLeft'){Q.cur=Math.max(Q.cur-1,0);drawQueue()}else if(e.key==='Enter'){save()}else if(e.key==='s'){skip()}else if(e.key==='a'){acceptAll()}});
+
+/* ---------- probar ---------- */
+let T=[],lastPlay=null;
+async function renderPlay(){const box=$('#tab-play');if(!T.length){try{T=await api('/api/templates')}catch(e){}}
+box.innerHTML=`<div class="card"><div class="row"><div style="flex:1;min-width:200px"><label for="tpl">Ejemplo</label><select id="tpl">${T.map((t,i)=>`<option value="${i}">${esc(t.name)}</option>`).join('')}</select></div>
+<div style="flex:1;min-width:200px"><label for="ctxmode">Contexto (RAG)</label><select id="ctxmode"><option value="none">Sin contexto</option><option value="manual">Pasajes escritos a mano</option><option value="clio">Clio Memory</option></select></div></div>
+<label for="state">Estado (JSON o texto libre)</label><textarea id="state"></textarea>
+<label for="questions">Preguntas (formato TypeSafe)</label><textarea id="questions" style="min-height:200px"></textarea>
+<div id="ctxbox" hidden><label for="ctx">Pasajes (uno por línea)</label><textarea id="ctx" style="min-height:70px"></textarea></div>
+<div class="row" style="margin-top:12px"><button class="btn primary" id="go">Decidir</button><span class="muted small" id="lat"></span></div><div class="err" id="perr"></div></div><div id="pres"></div>`;
+const load=i=>{const t=T[i];if(!t)return;$('#state').value=JSON.stringify(t.state,null,2);$('#questions').value=JSON.stringify(t.questions,null,2)};load(0);
+$('#tpl').onchange=e=>load(+e.target.value);$('#ctxmode').onchange=e=>$('#ctxbox').hidden=e.target.value!=='manual';$('#go').onclick=decide}
+async function decide(){$('#perr').textContent='';let state=$('#state').value.trim(),questions;try{state=state.startsWith('{')||state.startsWith('[')?JSON.parse(state):state}catch(e){$('#perr').textContent='El estado parece JSON pero no es válido: '+e.message;return}
+try{questions=JSON.parse($('#questions').value)}catch(e){$('#perr').textContent='Las preguntas no son JSON válido: '+e.message;return}
+const mode=$('#ctxmode').value;const body={state,questions,origin:'ui'};if(mode==='manual'){body.context=$('#ctx').value.split('\n').filter(Boolean)}else if(mode==='clio'){body.context={k:5}}
+const t0=performance.now();try{const r=await api('/v1/systemone',{method:'POST',body});$('#lat').textContent=`${Math.round(performance.now()-t0)} ms · ${r.model}`;lastPlay={r,questions};drawPlay()}catch(e){$('#perr').textContent=e.message}}
+function drawPlay(){const{r,questions}=lastPlay;let h='<div class="card">';for(const[qid,qq]of Object.entries(questions)){const q=parseQ(qid,qq),a=r.answers[qid]||{},p=a.probabilities||{};
+const win=q.type==='noul'?(a.noul>=.5?'sí':'no'):q.type==='score'?`nivel ${Math.round(a.score*100)/100}`:a.choice;const conf=q.type==='noul'?Math.max(a.noul,1-a.noul):a.confidence;
+h+=`<div class="q"><h3>${esc(q.instructions)} <span class="badge">${typeName[q.type]}</span> <span class="badge ${conf<.6?'warn':'ok'}">${esc(win)} · ${Math.round(conf*100)}%</span></h3>`;
+q.opts.forEach((o,oi)=>{const label=q.type==='noul'?(o==='true'?'sí':'no'):q.type==='score'?'nivel '+o:o;h+=`<div class="opt" data-qid="${esc(qid)}" data-o="${esc(o)}"><span class="key">${oi+1}</span><div><b>${esc(label)}</b> <span class="d">${esc(q.desc[oi]!==label?q.desc[oi]:'')}</span></div><div class="bars">${bar(p[o])}</div></div>`});
+const ev=(a.evidence||[]);if(ev.length)h+=`<div class="ev">Basado en: ${ev.map(e=>e.type==='precedent'?`precedente #${esc(e.decision)} → ${esc(e.label)}`:`pasaje ${esc(e.id||'')} «${esc((e.text||'').slice(0,90))}…»`).join(' · ')}</div>`;h+='</div>'}
+h+=`<div class="help">¿Se equivocó? Haz clic en la opción correcta de cada pregunta y pulsa «Guardar corrección». Queda como precedente al instante y entra en el próximo reentrenamiento.</div><div class="row" style="margin-top:10px"><button class="btn" id="fix" disabled>Guardar corrección</button><span class="small muted" id="fixmsg"></span></div></div>`;
+$('#pres').innerHTML=h;const sel={};document.querySelectorAll('#pres .opt').forEach(el=>el.onclick=()=>{sel[el.dataset.qid]=el.dataset.o;document.querySelectorAll(`#pres .opt[data-qid="${CSS.escape(el.dataset.qid)}"]`).forEach(x=>x.classList.toggle('sel',x===el));$('#fix').disabled=Object.keys(sel).length<Object.keys(questions).length});
+$('#fix').onclick=async()=>{try{await api('/api/label',{method:'POST',body:{decision_id:r.decision_id,labels:sel}});$('#fixmsg').textContent='Guardado.';refreshStats()}catch(e){$('#fixmsg').textContent=e.message}}}
+
+/* ---------- modelos ---------- */
+async function loadModels(){const box=$('#tab-models');try{const r=await api('/api/models');const f=x=>x==null?'—':(Math.round(x*1000)/1000);
+let h=`<div class="card"><div class="row"><b>Versiones</b><button class="btn primary" id="rt" style="margin-left:auto">Reentrenar con lo etiquetado</button></div><pre class="state" id="rtlog" hidden></pre>
+<div class="tablewrap"><table><tr><th>versión</th><th>creada</th><th>val acc</th><th>val KL</th><th>test acc</th><th>test KL</th><th>test ECE</th><th>Clio</th><th>tu test</th><th></th></tr>`;
+for(const m of r.items){h+=`<tr><td><b>${esc(m.display||m.name)}</b>${m.active?' <span class="badge ok">activa</span>':''}<div class="muted small">${esc(m.name)}</div></td><td class="muted">${esc(m.created||'')}</td><td>${f(m.val&&m.val.acc)}</td><td>${f(m.val&&m.val.kl)}</td><td>${f(m.td_test&&m.td_test.accuracy)}</td><td>${f(m.td_test&&m.td_test.kl_from_gold)}</td><td>${f(m.td_test&&m.td_test.ece)}</td><td title="${m.clio?esc(JSON.stringify(m.clio)):''}">${f(m.clio&&m.clio.mean)}</td><td>${m.user&&m.user.n?`${f(m.user.accuracy)} <span class="muted small">(${m.user.n})</span>`:'—'}</td><td>${m.exported&&!m.active?`<button class="btn" data-act="${esc(m.name)}">Activar</button>`:''}</td></tr>`}
+h+=`</table></div><p class="small muted">«test» es el split de evaluación de typed-decisions, nunca usado para entrenar. Referencias: embeddinggemma-2-ft-typed-decision 0,761 en test. «Clio» es la media del benchmark de decisiones de Clio (72 casos en español; Jev: 0,95). «tu test» es cuánto coincide con tus respuestas en 1 de cada 5 casos que etiquetas, reservados y nunca entrenados (entre paréntesis, cuántas preguntas); cuenta para activar versiones a partir de 150.</p></div>`;box.innerHTML=h;
+box.querySelectorAll('[data-act]').forEach(b=>b.onclick=async()=>{await api('/api/models/activate',{method:'POST',body:{name:b.dataset.act}});loadModels();refreshStats()});
+$('#rt').onclick=async()=>{try{await api('/api/retrain',{method:'POST'});pollRetrain()}catch(e){alert(e.message)}};pollRetrain(true)}catch(e){box.innerHTML=`<div class="card err">${esc(e.message)}</div>`}}
+async function pollRetrain(once){const s=await api('/api/retrain');const lg=$('#rtlog');if(!lg)return;if(s.started){lg.hidden=false;lg.textContent=(s.running?'Reentrenando…\n':`Terminó (código ${s.exit}).\n`)+s.tail}$('#rt').disabled=s.running;if(s.running)setTimeout(pollRetrain,4000);else if(!once){loadModels();refreshStats()}}
+
+/* ---------- estadísticas ---------- */
+const famName={memory_op:'operación de memoria',needs_memory:'¿hace falta memoria?',asks_to_forget:'¿pide olvidar?',tools:'herramientas (sí/no)',tool_choice:'elegir herramienta',injection:'inyección',command_safety:'seguridad de comandos',worth_remembering:'¿vale la pena recordar?',memory_relation:'relación entre memorias',note_link:'enlazar notas',note_tags:'etiquetas de notas',go_no_go:'go / no-go'};
+const typeNames={choice:'elegir',score:'puntuar',noul:'sí / no'};
+async function loadStats(){const box=$('#tab-stats');try{const a=await api('/api/agreement');const pc=x=>x==null?'—':Math.round(x*100)+'%';
+const row=(name,v)=>`<tr><td>${esc(name)}</td><td>${v.n}</td><td><b>${pc(v.model)}</b></td><td>${pc(v.jev)}</td><td>${pc(v.claude)}${v.n_claude?` <span class="muted small">(${v.n_claude})</span>`:''}</td></tr>`;
+const table=(title,obj,namer=x=>x)=>Object.keys(obj).length?`<div class="card"><b>${title}</b><div class="tablewrap"><table><tr><th></th><th>n</th><th>modelo</th><th>Jev</th><th>Claude</th></tr>${Object.entries(obj).map(([k,v])=>row(namer(k),v)).join('')}</table></div></div>`:'';
+if(!a.all||!a.all.n){box.innerHTML='<div class="card empty">Todavía no hay etiquetas tuyas. Cuando etiquetes casos en la Cola, aquí verás cuánto coincide la sugerencia con lo que eliges.</div>';return}
+const conf=a.by_confidence;let h=`<div class="card"><div class="row"><div><div class="muted small">Coincidencia de la sugerencia del modelo contigo</div><div style="font-size:32px;font-weight:600">${pc(a.all.model)}</div><div class="muted small">en ${a.all.n} respuestas · Jev ${pc(a.all.jev)} · Claude ${pc(a.all.claude)}${a.all.n_claude?` (en ${a.all.n_claude})`:''}</div></div></div>
+<p class="small muted">Cuenta cada pregunta etiquetada. Las que aceptaste con «Aceptar las sugeridas» coinciden por definición: mira la fila «elegida a mano» para la cifra real.</p></div>`;
+h+=table('Según cómo respondiste',a.by_how,k=>k==='accept'?'aceptada (sugerida)':'elegida a mano');
+h+=table('Por tipo de pregunta',a.by_type,k=>typeNames[k]||k);
+h+=`<div class="card"><b>¿La confianza del modelo sirve?</b> <span class="small muted">(solo respuestas elegidas a mano)</span><div class="tablewrap"><table><tr><th>confianza de la sugerencia</th><th>n</th><th>coincide contigo</th></tr>${Object.entries(conf).map(([k,v])=>`<tr><td>${k}</td><td>${v.n}</td><td><b>${pc(v.model)}</b></td></tr>`).join('')}</table></div><p class="small muted">Si el modelo está bien calibrado, la coincidencia sube con la confianza. Así se elige el umbral para que Clio actúe solo.</p></div>`;
+h+=table('Por familia',a.by_family,k=>famName[k]||k);
+h+=table('Por versión del modelo que sugirió',a.by_model);
+if(a.disagreements.length){h+=`<div class="card"><b>Últimos desacuerdos</b> <span class="small muted">(el modelo sugirió una cosa y tú elegiste otra)</span><div class="tablewrap"><table><tr><th>pregunta</th><th>modelo</th><th>tú</th><th>Jev</th><th>Claude</th></tr>${a.disagreements.map(d=>`<tr><td>${esc(d.instructions.slice(0,110))}<div class="small muted">${esc(famName[d.family]||d.family||'')}</div></td><td>${esc(d.model)} <span class="muted small">${pc(d.confidence)}</span></td><td><b>${esc(d.user)}</b></td><td>${esc(d.jev||'—')}</td><td>${esc(d.claude||'—')}</td></tr>`).join('')}</table></div></div>`}
+box.innerHTML=h}catch(e){box.innerHTML=`<div class="card err">${esc(e.message)}</div>`}}
+$('#phone').onclick=async()=>{const b=$('#phonebox');if(!b.hidden){b.hidden=true;return}try{const i=await api('/api/lan-info');b.hidden=false;b.innerHTML=i.listening_lan&&i.url?`<b>Abrir la cola en el celular</b><p class="small">1. Conecta el celular al mismo Wi-Fi que este Mac.<br>2. Abre <b style="font-family:var(--mono)">${esc(i.url)}</b><br>3. Escribe la clave: <b style="font-family:var(--mono)">${esc(i.token)}</b> (solo la primera vez).</p><p class="small muted">Sí/no: desliza → sí, ← no. Opciones: tócalas. La clave protege la API de otros equipos de tu red.</p>`:`<b>El servidor solo escucha en este Mac.</b><p class="small">Arráncalo con <code>./run.sh</code> (ya incluye <code>--lan</code>) para abrirlo desde el celular.</p>`}catch(e){b.hidden=false;b.textContent=e.message}};
+show('queue');setInterval(refreshStats,15000);
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+services:
+  temis-api:
+    build: .
+    image: temis-api
+    container_name: temis-api
+    restart: unless-stopped
+    env_file: .env          # TEMIS_TOKEN, TEMIS_MODEL_DIR (written by deploy.sh)
+    environment:
+      TEMIS_THREADS: "2"
+      # nginx serves it at http://<ip>/temis/ and strips the prefix; the docs need to know it
+      TEMIS_ROOT_PATH: /temis
+    # Reachable only through nginx, never straight off the public interface.
+    ports:
+      - "127.0.0.1:8093:8000"
+    volumes:
+      - ./models:/models:ro
+    read_only: true
+    tmpfs:
+      - /tmp
+    mem_limit: 2g
+    cpus: 2
+    healthcheck:
+      # No curl in python:*-slim, so ask Python.
+      test: ["CMD", "python", "-c",
+             "import urllib.request,sys;sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health',timeout=5).status==200 else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
