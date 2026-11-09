@@ -26,7 +26,7 @@ from temis.schema import normalize_probs, parse_questions
 
 EPS = 1e-4
 TEACHER = "jev"
-PROCEDURAL_SHARE = 0.24  # at most this share of all targets (above it the Clio families fall under their 35 % floor)
+PROCEDURAL_SHARE = 0.23  # at most this share of all targets (above it the Clio families fall under their 35 % floor)
 CLIO_SHARE_MIN = 0.35    # warn when the agent families (memory, tools, security, notes) fall below this
 
 
