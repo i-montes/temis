@@ -76,6 +76,25 @@ def probs_for_labels(item: dict, answer: Answer) -> dict[str, float]:
     return {k: v / s for k, v in vec.items()} if s > 0 else {k: 1.0 / len(vec) for k in vec}
 
 
+def rotate_question(q: dict, k: int) -> dict:
+    """The same `choice` question with its options rotated k positions (score/noul unchanged)."""
+    if q.get("type") != "choice" or not isinstance(q.get("criteria"), dict):
+        return q
+    keys = list(q["criteria"])
+    k %= len(keys)
+    return {**q, "criteria": {key: q["criteria"][key] for key in keys[k:] + keys[:k]}}
+
+
+def options_only_request(item: dict) -> tuple[str, dict]:
+    """The question with an empty state: how much the model answers without reading."""
+    return "", {"decision": item["question"]}
+
+
+def flip_rate(pred_a: list[str], pred_b: list[str]) -> float:
+    pairs = list(zip(pred_a, pred_b))
+    return sum(a != b for a, b in pairs) / len(pairs) if pairs else 0.0
+
+
 def _argmax(probs: dict[str, float]) -> str:
     """Ties go to the lexicographically smallest label, as JevBench does."""
     return min(probs, key=lambda k: (-probs[k], k))
@@ -86,8 +105,9 @@ def score_item(item: dict, probs: dict[str, float]) -> dict:
     labels = list(item["labels"])
     expected = str(item["expected"])
     pred = _argmax(probs)
-    out: dict[str, Any] = {"correct": pred == expected, "predicted": pred, "conf": max(probs.values()),
-                           "chance": 1.0 / len(labels), "type": kind}
+    out: dict[str, Any] = {"correct": pred == expected, "predicted": pred, "expected": expected,
+                           "conf": max(probs.values()), "chance": 1.0 / len(labels), "type": kind,
+                           "pred_first": pred == labels[0], "gold_first": expected == labels[0]}
     if kind == "noul":
         lo, hi = NOUL_BAND
         decided = probs.get("yes", 0.0) <= lo or probs.get("yes", 0.0) >= hi
@@ -191,8 +211,18 @@ def summarize(rows: list[dict]) -> dict:
     tvd = [r["tvd"] for r in rows if "tvd" in r]
     if tvd:
         out["v15"]["probability_tvd"] = statistics.fmean(tvd)
+    rot = [r for r in rows if r.get("pred_rot1") is not None]
+    blank = [r for r in rows if r.get("pred_blank") is not None]
+    choice = [r for r in rows if r["type"] == "choice"]
+    if rot or blank:
+        out["probes"] = {
+            "rotation_flip_rate": flip_rate([r["predicted"] for r in rot], [r["pred_rot1"] for r in rot]) if rot else None,
+            "options_only_accuracy": (sum(r["pred_blank"] == r["expected"] for r in blank) / len(blank)) if blank else None,
+            "first_option_rate": {"pred": sum(r["pred_first"] for r in choice) / len(choice) if choice else None,
+                                  "gold": sum(r["gold_first"] for r in choice) / len(choice) if choice else None},
+        }
     return out
 
 
 __all__ = ["PUBLIC_DIR", "PUBLIC_FILES", "fetch_public", "load_public", "to_request", "probs_for_labels",
-           "score_item", "ece", "summarize", "math"]
+           "score_item", "ece", "summarize", "rotate_question", "options_only_request", "flip_rate", "math"]

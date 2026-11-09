@@ -14,11 +14,14 @@ import json
 import time
 from pathlib import Path
 
-from temis.jevbench import PUBLIC_DIR, fetch_public, load_public, probs_for_labels, score_item, summarize, to_request
+from temis.jevbench import (PUBLIC_DIR, fetch_public, load_public, options_only_request, probs_for_labels,
+                            rotate_question, score_item, summarize, to_request)
 from temis.runtime import Decider
 
 
-def run(d: Decider, items: list[dict]) -> list[dict]:
+def run(d: Decider, items: list[dict], probes: bool = False) -> list[dict]:
+    """With probes, every choice item with >= 3 options is also decided with its options rotated by one
+    and with an empty state (3x the cost on those items)."""
     rows = []
     for it in items:
         state, qs = to_request(it)
@@ -26,6 +29,11 @@ def run(d: Decider, items: list[dict]) -> list[dict]:
         ans = d.decide(state, qs)["decision"]
         ms = (time.perf_counter() - t0) * 1000
         r = score_item(it, probs_for_labels(it, ans))
+        if probes and it["question"]["type"] == "choice" and len(it["labels"]) >= 3:
+            rot = d.decide(state, {"decision": rotate_question(it["question"], 1)})["decision"]
+            r["pred_rot1"] = score_item(it, probs_for_labels(it, rot))["predicted"]
+            blank = d.decide(*options_only_request(it))["decision"]
+            r["pred_blank"] = score_item(it, probs_for_labels(it, blank))["predicted"]
         rows.append({**r, "id": it["id"], "tier": it["tier"], "family": it["family"], "ms": ms})
     return rows
 
@@ -41,6 +49,11 @@ def print_report(s: dict) -> None:
           f"p95 {s['latency_ms']['p95']:.0f} ms")
     print(f"v1.5 estimate: accuracy {s['v15']['accuracy']:.1%} · noul in band {s['v15']['noul_in_band']}/{s['v15']['noul_n']} "
           f"· CC by tier {cc} · intelligence {s['v15']['intelligence']:.1f}")
+    if "probes" in s:
+        p = s["probes"]
+        print(f"probes: rotation flip rate {p['rotation_flip_rate']:.1%} · options-only accuracy "
+              f"{p['options_only_accuracy']:.1%} · first option picked {p['first_option_rate']['pred']:.1%} "
+              f"(gold {p['first_option_rate']['gold']:.1%})")
 
 
 def main() -> None:
@@ -49,6 +62,7 @@ def main() -> None:
     ap.add_argument("--fetch", action="store_true", help="download the public items into external/jevbench/public")
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--calibration", default="accuracy", choices=["soft", "accuracy", "jevbench"])
+    ap.add_argument("--probes", action="store_true", help="bias probes: rotated options and empty state (slower)")
     a = ap.parse_args()
     if a.fetch:
         fetch_public()
@@ -56,7 +70,7 @@ def main() -> None:
         raise SystemExit("public items missing: python -m scripts.eval_jevbench --model ... --fetch")
     items = load_public()[: a.limit]
     d = Decider(a.model, calibration=a.calibration)
-    rows = run(d, items)
+    rows = run(d, items, probes=a.probes)
     s = summarize(rows)
     s["calibration"] = d.calibration
     s["model"] = a.model
