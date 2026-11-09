@@ -30,10 +30,10 @@ def score_one(probs: dict[str, float], gold: dict) -> tuple[bool, float, float, 
     return ok, kl, brier, max(p)
 
 
-def evaluate(model_dir: str, int8: bool = True, limit: int | None = None) -> dict:
-    d = Decider(model_dir, int8=int8, calibration="soft")  # soft keeps KL comparable with the leaderboard
-    cases = load_td("test")[:limit]
-    accs, kls, brs, confs, kinds, wfs = [], [], [], [], [], []
+def evaluate_cases(d: Decider, cases: list[dict], group_keys: tuple[str, ...] = ("workflow",)) -> dict:
+    """Official typed-decisions metrics over `cases` ({state, questions, gold, ...}), grouped by `group_keys`."""
+    accs, kls, brs, confs, kinds = [], [], [], [], []
+    groups: dict[str, list] = {k: [] for k in group_keys}
     t0 = time.time()
     for c in cases:
         ans = d.decide(c["state"], c["questions"])
@@ -41,20 +41,32 @@ def evaluate(model_dir: str, int8: bool = True, limit: int | None = None) -> dic
             a = ans.get(qid)
             if a is None:
                 continue
-            probs = a.probabilities
-            ok, kl, br, conf = score_one(probs, g)
+            ok, kl, br, conf = score_one(a.probabilities, g if "probabilities" in g else _noul_gold(g))
             accs.append(ok); kls.append(kl); brs.append(br); confs.append(conf)
-            kinds.append(g["type"]); wfs.append(c["workflow"])
+            kinds.append(g["type"])
+            for k in group_keys:
+                groups[k].append(c.get(k))
     n = len(accs)
-    res = {"model": model_dir, "int8": int8, "n_cases": len(cases), "n_decisions": n,
-           "accuracy": sum(accs) / n, "kl_from_gold": sum(kls) / n, "brier": sum(brs) / n,
-           "ece": ece(accs, confs), "ms_per_case": (time.time() - t0) / len(cases) * 1000}
-    for key, vals in (("by_type", kinds), ("by_workflow", wfs)):
+    res = {"n_cases": len(cases), "n_decisions": n, "accuracy": sum(accs) / n, "kl_from_gold": sum(kls) / n,
+           "brier": sum(brs) / n, "ece": ece(accs, confs), "ms_per_case": (time.time() - t0) / len(cases) * 1000}
+    for key, vals in [("by_type", kinds)] + [(f"by_{k}", groups[k]) for k in group_keys]:
         grp = defaultdict(list)
         for v, ok in zip(vals, accs):
-            grp[v].append(ok)
+            grp[str(v)].append(ok)
         res[key] = {k: round(sum(v) / len(v), 4) for k, v in sorted(grp.items())}
     return res
+
+
+def _noul_gold(g: dict) -> dict:
+    """procedural-style noul gold ({"noul": p}) in the shape score_one expects."""
+    p = float(g.get("noul", 0.0))
+    return {**g, "probabilities": {"false": 1 - p, "true": p}}
+
+
+def evaluate(model_dir: str, int8: bool = True, limit: int | None = None) -> dict:
+    d = Decider(model_dir, int8=int8, calibration="soft")  # soft keeps KL comparable with the leaderboard
+    res = evaluate_cases(d, load_td("test")[:limit])
+    return {"model": model_dir, "int8": int8, **res}
 
 
 def main() -> None:

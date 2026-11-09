@@ -19,6 +19,7 @@ models/active.json
 # itself (labels, targets, cases) is committed below data/
 data/decisor.db*
 data/clio-test/
+data/procedural/
 
 # backups of casos.json (casos.json is a superset)
 casos.backup-*.json

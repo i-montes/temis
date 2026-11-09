@@ -31,3 +31,17 @@ def copies(case: dict, options: list[str], dist: list[float]) -> int:
     if top.startswith(CORRECTION_PREFIXES):
         return 1 if _unit(case["id"]) < CORRECTION_KEEP else 0
     return 1
+
+
+def cap_share(rows: list[dict], source: str, max_share: float, seed: int = 0) -> list[dict]:
+    """At most `max_share` of the rows may come from `source`; the excess is dropped deterministically
+    (by position, seeded) and the order of everything else is kept."""
+    import random
+
+    idx = [i for i, r in enumerate(rows) if r.get("source") == source]
+    others = len(rows) - len(idx)
+    allowed = int(max_share * others / (1 - max_share)) if max_share < 1 else len(idx)
+    if len(idx) <= allowed:
+        return list(rows)
+    keep = set(random.Random(seed).sample(idx, allowed))
+    return [r for i, r in enumerate(rows) if r.get("source") != source or i in keep]

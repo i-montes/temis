@@ -20,6 +20,7 @@ from pathlib import Path
 
 import torch
 
+from temis.data.procedural import read_cases as read_procedural_cases
 from temis.data.sources import load_synth, load_td, read_jsonl
 from temis.encoding import Encoder
 from temis.model import Decisor, collate, decision_loss, fit_temperature
@@ -38,7 +39,7 @@ def is_val(key: str) -> bool:
 
 
 def load_examples(extra: list[str]) -> tuple[list[dict], list[dict]]:
-    cases = {c["id"]: c for c in load_td("train") + load_synth()}
+    cases = {c["id"]: c for c in load_td("train") + load_synth() + read_procedural_cases()}
     rows = list(read_jsonl(Path("data/targets.jsonl")))
     for e in extra:
         rows += list(read_jsonl(Path(e)))

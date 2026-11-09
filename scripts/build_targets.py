@@ -4,7 +4,10 @@ Jev is the only teacher. Its raw distributions are overconfident (KL 1.44 on the
 temperature per question type is fitted against the gold of typed-decisions `train` and applied to
 every synthetic case.
 
-Writes data/targets.jsonl ({id, qid, kind, source, schema_id, target, teachers}) and
+tasksource/procedural-typed-decisions (exact gold, no teacher) is added with its case embedded in
+data/procedural/cases.jsonl and capped at PROCEDURAL_SHARE of all targets; the share of every source is printed.
+
+Writes data/targets.jsonl ({id, qid, kind, source, schema_id, target, teachers, case?}) and
 data/teacher_calibration.json.
 """
 
@@ -15,12 +18,15 @@ import math
 from collections import defaultdict
 from pathlib import Path
 
-from temis.data.balance import copies
+from temis.data.balance import cap_share, copies
+from temis.data.procedural import gold_targets, load_procedural, write_cases
 from temis.data.sources import load_synth, load_td, read_jsonl
 from temis.schema import normalize_probs, parse_questions
 
 EPS = 1e-4
 TEACHER = "jev"
+PROCEDURAL_SHARE = 0.25  # at most this share of all targets (0.35 pushed the Clio families under their floor)
+CLIO_SHARE_MIN = 0.35    # warn when the agent families (memory, tools, security, notes) fall below this
 
 
 def temper(p: list[float], t: float) -> list[float]:
@@ -53,35 +59,52 @@ def main() -> None:
         print(f"[calib] {TEACHER} {kind:6s} n={len(ps):4d} acc={acc:.3f} KL raw={raw:.3f} -> T={best[1]} KL={best[0]:.3f}")
     Path("data/teacher_calibration.json").write_text(json.dumps(calib, indent=2))
 
-    n = dropped = 0
-    with Path("data/targets.jsonl").open("w") as f:
-        for c in td:  # typed-decisions train: its own gold
-            qs = {q.qid: q for q in parse_questions(c["questions"])}
-            for qid, g in c["gold"].items():
-                if qid in qs:
-                    q = qs[qid]
-                    f.write(json.dumps({"id": c["id"], "qid": qid, "kind": q.kind, "source": "td-train",
-                                        "schema_id": c["workflow"], "target": normalize_probs(q, g.get("probabilities") or {}),
-                                        "teachers": ["gold"]}) + "\n")
-                    n += 1
-        for c in load_synth():  # synthetic: calibrated Jev
-            try:
-                qs = parse_questions(c["questions"])
-            except Exception:  # noqa: BLE001
+    rows: list[dict] = []
+    dropped = 0
+    for c in td:  # typed-decisions train: its own gold
+        qs = {q.qid: q for q in parse_questions(c["questions"])}
+        for qid, g in c["gold"].items():
+            if qid in qs:
+                q = qs[qid]
+                rows.append({"id": c["id"], "qid": qid, "kind": q.kind, "source": "td-train",
+                             "schema_id": c["workflow"], "target": normalize_probs(q, g.get("probabilities") or {}),
+                             "teachers": ["gold"]})
+    clio = 0
+    for c in load_synth():  # synthetic: calibrated Jev
+        try:
+            qs = parse_questions(c["questions"])
+        except Exception:  # noqa: BLE001
+            continue
+        for q in qs:
+            d = labels.get(c["id"], {}).get(q.qid)
+            if not d or len(d) != q.n:
                 continue
-            for q in qs:
-                d = labels.get(c["id"], {}).get(q.qid)
-                if not d or len(d) != q.n:
-                    continue
-                k = copies(c, list(q.options), d)  # rebalance memory_op (see temis/data/balance.py)
-                dropped += k == 0
-                tgt = temper(d, calib["temperature"].get(q.kind, 1.0))
-                for _ in range(k):
-                    f.write(json.dumps({"id": c["id"], "qid": q.qid, "kind": q.kind, "source": "synth",
-                                        "schema_id": c.get("schema_id", c["id"]), "target": tgt,
-                                        "teachers": [TEACHER]}) + "\n")
-                    n += 1
+            k = copies(c, list(q.options), d)  # rebalance memory_op (see temis/data/balance.py)
+            dropped += k == 0
+            tgt = temper(d, calib["temperature"].get(q.kind, 1.0))
+            for _ in range(k):
+                rows.append({"id": c["id"], "qid": q.qid, "kind": q.kind, "source": "synth",
+                             "schema_id": c.get("schema_id", c["id"]), "target": tgt, "teachers": [TEACHER]})
+                clio += str(c.get("domain", "")).startswith("agent:")
+    proc = {c["id"]: c for c in load_procedural()}  # procedural: exact gold; cases kept in data/procedural/
+    for c in proc.values():
+        for t in gold_targets(c):
+            rows.append({"id": c["id"], "qid": t["qid"], "kind": t["kind"], "source": "procedural",
+                         "schema_id": f"proc-{c['workflow']}-{c['level']}", "target": t["target"], "teachers": ["gold"]})
+    rows = cap_share(rows, "procedural", PROCEDURAL_SHARE)
+    write_cases([proc[i] for i in dict.fromkeys(r["id"] for r in rows if r["source"] == "procedural")])
+    with Path("data/targets.jsonl").open("w") as f:
+        for r in rows:
+            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+    n = len(rows)
     print(f"[targets] wrote {n} question targets ({dropped} left out to rebalance memory_op)")
+    by = defaultdict(int)
+    for r in rows:
+        by[r["source"]] += 1
+    for src, k in sorted(by.items()):
+        print(f"[mix] {src:12s} {k:6d} ({k / n:5.1%})")
+    print(f"[mix] {'agent:*':12s} {clio:6d} ({clio / n:5.1%}) Clio families inside synth"
+          + ("  <-- below the %.0f %% floor" % (CLIO_SHARE_MIN * 100) if clio / n < CLIO_SHARE_MIN else ""))
 
 
 if __name__ == "__main__":
