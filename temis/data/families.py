@@ -25,3 +25,8 @@ def queue_bonus(workflow: str | None) -> float:
     if any(h in w for h in WEAK_HINTS):
         return 0.15
     return 0.0
+
+# Families of the hard cases written by another model (docs/prompt_casos_dificiles.md,
+# docs/prompt_rubrica_corta.md): the task formats JevBench's hard tier measures, in our own scenarios.
+HARD_FAMILIES = ("long_policy", "multi_hop", "trap", "ambiguous", "adversarial", "tradeoff", "routing_hard",
+                 "judge_hard", "temporal_numeric", "probability", "state_tracking", "rubric_short")
