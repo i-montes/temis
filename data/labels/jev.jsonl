@@ -10445,3 +10445,483 @@
 {"id": "ext-c68c9daa3f", "teacher": "jev-1.14.0", "dists": {"enlazar": [0.95, 0.05], "relacion": [0.0, 0.0, 0.0, 0.0, 1.0], "contexto_necesario": [0.81, 0.19]}}
 {"id": "ext-6a5ab62764", "teacher": "jev-1.14.0", "dists": {"enlazar": [0.15000000000000002, 0.85], "relacion": [0.03, 0.0, 0.97, 0.0, 0.0], "contexto_necesario": [0.5900000000000001, 0.41]}}
 {"id": "ext-dc3979b90b", "teacher": "jev-1.14.0", "dists": {"enlazar": [0.95, 0.05], "relacion": [0.0, 0.0, 0.0, 0.0, 1.0], "contexto_necesario": [0.17000000000000004, 0.83]}}
+{"id": "ext-8bde49f267", "teacher": "jev-1.14.0", "dists": {"accion": [0.0, 0.0, 0.0, 0.0, 1.0]}}
+{"id": "ext-0fced44c08", "teacher": "jev-1.14.0", "dists": {"accion": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-b547aca577", "teacher": "jev-1.14.0", "dists": {"gestion": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-bdfc087b04", "teacher": "jev-1.14.0", "dists": {"gestion": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-4f0a9598dd", "teacher": "jev-1.14.0", "dists": {"solicitud": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-89f8abf747", "teacher": "jev-1.14.0", "dists": {"solicitud": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-a7f05c8120", "teacher": "jev-1.14.0", "dists": {"tramite": [0.0, 0.0, 0.0, 0.0, 1.0]}}
+{"id": "ext-b28d2a37a3", "teacher": "jev-1.14.0", "dists": {"tramite": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-47576ccd3c", "teacher": "jev-1.14.0", "dists": {"accion": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-d0f7ee55e9", "teacher": "jev-1.14.0", "dists": {"accion": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-0ee140ad31", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 0.01, 0.99, 0.0, 0.0]}}
+{"id": "ext-20e2aa49ee", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 0.0, 0.0, 0.0, 1.0]}}
+{"id": "ext-f132501224", "teacher": "jev-1.14.0", "dists": {"request": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-d7168c9322", "teacher": "jev-1.14.0", "dists": {"request": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-4222d76cec", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-9d071c3b12", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 0.0, 0.0, 0.01, 0.99]}}
+{"id": "ext-8268cd2f3d", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-ba2b1f38ce", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-5e400c1bfe", "teacher": "jev-1.14.0", "dists": {"request": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-3356816e82", "teacher": "jev-1.14.0", "dists": {"request": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-d8de0986c0", "teacher": "jev-1.14.0", "dists": {"accion": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-cc2a5a20b2", "teacher": "jev-1.14.0", "dists": {"accion": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-ac7734e71f", "teacher": "jev-1.14.0", "dists": {"gestion": [0.0, 0.0, 0.0, 0.0, 1.0]}}
+{"id": "ext-99ef4d18fe", "teacher": "jev-1.14.0", "dists": {"gestion": [0.88, 0.12, 0.0, 0.0, 0.0]}}
+{"id": "ext-9654b71fb2", "teacher": "jev-1.14.0", "dists": {"solicitud": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-50d2065547", "teacher": "jev-1.14.0", "dists": {"solicitud": [0.0, 0.0, 0.91, 0.0, 0.09]}}
+{"id": "ext-e36cac2c4e", "teacher": "jev-1.14.0", "dists": {"tramite": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-f905231b35", "teacher": "jev-1.14.0", "dists": {"tramite": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-eb329d6900", "teacher": "jev-1.14.0", "dists": {"accion": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-c673f5e69e", "teacher": "jev-1.14.0", "dists": {"accion": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-e200a2449d", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-4537fcb1dd", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-242ef46ef5", "teacher": "jev-1.14.0", "dists": {"request": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-aba63e7d51", "teacher": "jev-1.14.0", "dists": {"request": [0.0, 0.89, 0.0, 0.11, 0.0]}}
+{"id": "ext-3fa097e3ee", "teacher": "jev-1.14.0", "dists": {"action": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-f3b3b3cc97", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 0.99, 0.0, 0.01, 0.0]}}
+{"id": "ext-87e413527e", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-f9f494330d", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-16138db5b4", "teacher": "jev-1.14.0", "dists": {"request": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-ef5c2dc56b", "teacher": "jev-1.14.0", "dists": {"request": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-c1611ae818", "teacher": "jev-1.14.0", "dists": {"permitido": [0.08999999999999997, 0.91]}}
+{"id": "ext-556afc6277", "teacher": "jev-1.14.0", "dists": {"permitido": [0.92, 0.08]}}
+{"id": "ext-34ea99772a", "teacher": "jev-1.14.0", "dists": {"permitido": [0.95, 0.05]}}
+{"id": "ext-7497a30c3f", "teacher": "jev-1.14.0", "dists": {"permitido": [0.13, 0.87]}}
+{"id": "ext-804dfa6f52", "teacher": "jev-1.14.0", "dists": {"permitido": [0.10999999999999999, 0.89]}}
+{"id": "ext-a94b2d5674", "teacher": "jev-1.14.0", "dists": {"permitido": [0.84, 0.16]}}
+{"id": "ext-63022fd3d0", "teacher": "jev-1.14.0", "dists": {"permitido": [0.97, 0.03]}}
+{"id": "ext-a121141eef", "teacher": "jev-1.14.0", "dists": {"permitido": [0.09999999999999998, 0.9]}}
+{"id": "ext-1231d4cc38", "teacher": "jev-1.14.0", "dists": {"permitido": [0.97, 0.03]}}
+{"id": "ext-2c44bdc22d", "teacher": "jev-1.14.0", "dists": {"permitido": [0.09999999999999998, 0.9]}}
+{"id": "ext-8610e03afe", "teacher": "jev-1.14.0", "dists": {"allowed": [0.10999999999999999, 0.89]}}
+{"id": "ext-8ef72280bb", "teacher": "jev-1.14.0", "dists": {"allowed": [0.96, 0.04]}}
+{"id": "ext-20a8d85d05", "teacher": "jev-1.14.0", "dists": {"allowed": [0.040000000000000036, 0.96]}}
+{"id": "ext-218b25f475", "teacher": "jev-1.14.0", "dists": {"allowed": [0.95, 0.05]}}
+{"id": "ext-91b88b5cad", "teacher": "jev-1.14.0", "dists": {"allowed": [0.9299999999999999, 0.07]}}
+{"id": "ext-ce75ae9d05", "teacher": "jev-1.14.0", "dists": {"allowed": [0.06000000000000005, 0.94]}}
+{"id": "ext-b80fdc7f43", "teacher": "jev-1.14.0", "dists": {"allowed": [0.10999999999999999, 0.89]}}
+{"id": "ext-151f95eaa4", "teacher": "jev-1.14.0", "dists": {"allowed": [0.050000000000000044, 0.95]}}
+{"id": "ext-0a7ee70ed2", "teacher": "jev-1.14.0", "dists": {"allowed": [0.96, 0.04]}}
+{"id": "ext-6cf4e02829", "teacher": "jev-1.14.0", "dists": {"allowed": [0.92, 0.08]}}
+{"id": "ext-1b1077740b", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.06999999999999995, 0.93]}}
+{"id": "ext-ae331d9d0e", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.030000000000000027, 0.97]}}
+{"id": "ext-09eeb1829d", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.77, 0.23]}}
+{"id": "ext-3b6f48a1f2", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.9, 0.1]}}
+{"id": "ext-c2838f90ab", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.06999999999999995, 0.93]}}
+{"id": "ext-ce4f462578", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.9299999999999999, 0.07]}}
+{"id": "ext-8a34a9f2de", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.94, 0.06]}}
+{"id": "ext-7ad0eea8f5", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.12, 0.88]}}
+{"id": "ext-04e85c7b0a", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.06999999999999995, 0.93]}}
+{"id": "ext-2cf8ac938e", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.94, 0.06]}}
+{"id": "ext-549423e261", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.13, 0.87]}}
+{"id": "ext-83b567e7f6", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.77, 0.23]}}
+{"id": "ext-9238d04062", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.040000000000000036, 0.96]}}
+{"id": "ext-0e70d3c1d9", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.9299999999999999, 0.07]}}
+{"id": "ext-e8ae196935", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.92, 0.08]}}
+{"id": "ext-ac18352298", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.06000000000000005, 0.94]}}
+{"id": "ext-ec6ea7dbec", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.08999999999999997, 0.91]}}
+{"id": "ext-56f6141073", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.98, 0.02]}}
+{"id": "ext-d31416a332", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.020000000000000018, 0.98]}}
+{"id": "ext-aa8d8048bc", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.94, 0.06]}}
+{"id": "ext-26369670d6", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.98, 0.02]}}
+{"id": "ext-8b85f3ed81", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.030000000000000027, 0.97]}}
+{"id": "ext-e4dd674028", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.050000000000000044, 0.95]}}
+{"id": "ext-5a9e48b05f", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.96, 0.04]}}
+{"id": "ext-df3fc14fb4", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.020000000000000018, 0.98]}}
+{"id": "ext-a607ec1315", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.92, 0.08]}}
+{"id": "ext-bd08688df8", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.030000000000000027, 0.97]}}
+{"id": "ext-294aac9142", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.98, 0.02]}}
+{"id": "ext-2e76f75274", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.040000000000000036, 0.96]}}
+{"id": "ext-62fec8e6fa", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.96, 0.04]}}
+{"id": "ext-c1210f25fa", "teacher": "jev-1.14.0", "dists": {"response_adequate": [0.06000000000000005, 0.94]}}
+{"id": "ext-0aa5124ca6", "teacher": "jev-1.14.0", "dists": {"response_adequate": [0.94, 0.06]}}
+{"id": "ext-1e4c0bf025", "teacher": "jev-1.14.0", "dists": {"response_adequate": [0.040000000000000036, 0.96]}}
+{"id": "ext-cd616cbe75", "teacher": "jev-1.14.0", "dists": {"response_adequate": [0.030000000000000027, 0.97]}}
+{"id": "ext-09bc1863b6", "teacher": "jev-1.14.0", "dists": {"response_adequate": [0.95, 0.05]}}
+{"id": "ext-ca08cdcbb6", "teacher": "jev-1.14.0", "dists": {"response_adequate": [0.06000000000000005, 0.94]}}
+{"id": "ext-72b6553f81", "teacher": "jev-1.14.0", "dists": {"response_adequate": [0.020000000000000018, 0.98]}}
+{"id": "ext-b527688ce0", "teacher": "jev-1.14.0", "dists": {"response_adequate": [0.98, 0.02]}}
+{"id": "ext-6d3e412383", "teacher": "jev-1.14.0", "dists": {"response_adequate": [0.96, 0.04]}}
+{"id": "ext-24d7dd1723", "teacher": "jev-1.14.0", "dists": {"response_adequate": [0.96, 0.04]}}
+{"id": "ext-72a04cdb2e", "teacher": "jev-1.14.0", "dists": {"especialista": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-1ecb3f2ad1", "teacher": "jev-1.14.0", "dists": {"especialista": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-e583cc3782", "teacher": "jev-1.14.0", "dists": {"especialista": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-8dc403985f", "teacher": "jev-1.14.0", "dists": {"especialista": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-338aa22067", "teacher": "jev-1.14.0", "dists": {"area": [0.02, 0.0, 0.98, 0.0, 0.0]}}
+{"id": "ext-85c255d9e8", "teacher": "jev-1.14.0", "dists": {"area": [0.0, 0.0, 0.03, 0.97, 0.0]}}
+{"id": "ext-2c1221ad17", "teacher": "jev-1.14.0", "dists": {"area": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-d689c18911", "teacher": "jev-1.14.0", "dists": {"area": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-62f8f624b9", "teacher": "jev-1.14.0", "dists": {"agente": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-321b9e893b", "teacher": "jev-1.14.0", "dists": {"agente": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-14ce855d4b", "teacher": "jev-1.14.0", "dists": {"specialist": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-b2ae5dc4de", "teacher": "jev-1.14.0", "dists": {"specialist": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-9c30669284", "teacher": "jev-1.14.0", "dists": {"specialist": [0.0, 0.93, 0.0, 0.04, 0.03]}}
+{"id": "ext-9d11ca36c1", "teacher": "jev-1.14.0", "dists": {"specialist": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-335cf9c2c9", "teacher": "jev-1.14.0", "dists": {"team": [0.07, 0.93, 0.0, 0.0, 0.0]}}
+{"id": "ext-5ad3380fc1", "teacher": "jev-1.14.0", "dists": {"team": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-736ebf30c2", "teacher": "jev-1.14.0", "dists": {"team": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-6c3e26728b", "teacher": "jev-1.14.0", "dists": {"team": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-db9e059318", "teacher": "jev-1.14.0", "dists": {"agent": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-fa4f4a7473", "teacher": "jev-1.14.0", "dists": {"agent": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-33b9245488", "teacher": "jev-1.14.0", "dists": {"accion": [0.0, 0.0, 0.82, 0.0, 0.18]}}
+{"id": "ext-ab1f1992c1", "teacher": "jev-1.14.0", "dists": {"accion": [0.0, 0.0, 0.0, 0.0, 1.0]}}
+{"id": "ext-1a8a8384be", "teacher": "jev-1.14.0", "dists": {"tramite": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-d3325fdc93", "teacher": "jev-1.14.0", "dists": {"tramite": [0.0, 0.0, 0.0, 0.99, 0.01]}}
+{"id": "ext-af2737000d", "teacher": "jev-1.14.0", "dists": {"gestion": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-6075eb1cea", "teacher": "jev-1.14.0", "dists": {"gestion": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-63923add64", "teacher": "jev-1.14.0", "dists": {"accion": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-980e44727d", "teacher": "jev-1.14.0", "dists": {"accion": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-fd89bde26e", "teacher": "jev-1.14.0", "dists": {"solicitud": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-8c07e50fc8", "teacher": "jev-1.14.0", "dists": {"solicitud": [0.0, 0.0, 0.01, 0.0, 0.99]}}
+{"id": "ext-df993bd739", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-2822964895", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 0.0, 0.0, 0.0, 1.0]}}
+{"id": "ext-b9a95049df", "teacher": "jev-1.14.0", "dists": {"request": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-cda9041946", "teacher": "jev-1.14.0", "dists": {"request": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-4b987a8b16", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-823a520187", "teacher": "jev-1.14.0", "dists": {"request": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-6a19a3576b", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 0.0, 0.0, 0.0, 1.0]}}
+{"id": "ext-4408a47883", "teacher": "jev-1.14.0", "dists": {"request": [0.0, 0.0, 0.0, 0.97, 0.03]}}
+{"id": "ext-b30b47b135", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-622aa6eab9", "teacher": "jev-1.14.0", "dists": {"action": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-223e48e418", "teacher": "jev-1.14.0", "dists": {"accion": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-2e0bae7873", "teacher": "jev-1.14.0", "dists": {"accion": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-a72d449db6", "teacher": "jev-1.14.0", "dists": {"tramite": [0.0, 0.99, 0.0, 0.0, 0.01]}}
+{"id": "ext-cdd392b2b8", "teacher": "jev-1.14.0", "dists": {"tramite": [0.99, 0.0, 0.0, 0.0, 0.01]}}
+{"id": "ext-c4906209a9", "teacher": "jev-1.14.0", "dists": {"gestion": [0.0, 0.0, 0.0, 0.97, 0.03]}}
+{"id": "ext-726cf08711", "teacher": "jev-1.14.0", "dists": {"gestion": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-d90ca2f0b8", "teacher": "jev-1.14.0", "dists": {"accion": [0.0, 0.0, 0.0, 0.01, 0.99]}}
+{"id": "ext-e713528475", "teacher": "jev-1.14.0", "dists": {"accion": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-b49e03a474", "teacher": "jev-1.14.0", "dists": {"solicitud": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-6cde5d3ae8", "teacher": "jev-1.14.0", "dists": {"solicitud": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-6625ff7f49", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-c71dbd3e84", "teacher": "jev-1.14.0", "dists": {"request": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-8f1a2fa632", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-40cbdaed84", "teacher": "jev-1.14.0", "dists": {"request": [0.0, 0.0, 0.97, 0.0, 0.03]}}
+{"id": "ext-d6a5d93838", "teacher": "jev-1.14.0", "dists": {"request": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-e033376f41", "teacher": "jev-1.14.0", "dists": {"action": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-3f90e0b3c7", "teacher": "jev-1.14.0", "dists": {"request": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-60532843db", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-befbbdbf10", "teacher": "jev-1.14.0", "dists": {"permitido": [0.94, 0.06]}}
+{"id": "ext-e35053707b", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-e5d3d2e9aa", "teacher": "jev-1.14.0", "dists": {"permitido": [0.050000000000000044, 0.95]}}
+{"id": "ext-0be37127d9", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-cf590fec70", "teacher": "jev-1.14.0", "dists": {"permitido": [0.95, 0.05]}}
+{"id": "ext-9f3ed3dd6e", "teacher": "jev-1.14.0", "dists": {"permitido": [0.89, 0.11]}}
+{"id": "ext-44662ba3bb", "teacher": "jev-1.14.0", "dists": {"permitido": [0.06000000000000005, 0.94]}}
+{"id": "ext-4af732d9e7", "teacher": "jev-1.14.0", "dists": {"permitido": [0.17000000000000004, 0.83]}}
+{"id": "ext-6b9ec0aee7", "teacher": "jev-1.14.0", "dists": {"permitido": [0.18999999999999995, 0.81]}}
+{"id": "ext-4f4aa0e6a2", "teacher": "jev-1.14.0", "dists": {"permitido": [0.94, 0.06]}}
+{"id": "ext-6745ca4713", "teacher": "jev-1.14.0", "dists": {"permitido": [0.09999999999999998, 0.9]}}
+{"id": "ext-0d0fefc27f", "teacher": "jev-1.14.0", "dists": {"permitido": [0.97, 0.03]}}
+{"id": "ext-c82a3c037f", "teacher": "jev-1.14.0", "dists": {"allowed": [0.94, 0.06]}}
+{"id": "ext-6c6ee9f277", "teacher": "jev-1.14.0", "dists": {"allowed": [0.040000000000000036, 0.96]}}
+{"id": "ext-0d72c96978", "teacher": "jev-1.14.0", "dists": {"allowed": [0.09999999999999998, 0.9]}}
+{"id": "ext-03af6a68d1", "teacher": "jev-1.14.0", "dists": {"allowed": [0.91, 0.09]}}
+{"id": "ext-3c6178123b", "teacher": "jev-1.14.0", "dists": {"allowed": [0.95, 0.05]}}
+{"id": "ext-130182d144", "teacher": "jev-1.14.0", "dists": {"allowed": [0.96, 0.04]}}
+{"id": "ext-7e50e5b3e4", "teacher": "jev-1.14.0", "dists": {"allowed": [0.050000000000000044, 0.95]}}
+{"id": "ext-a2ae6e75aa", "teacher": "jev-1.14.0", "dists": {"allowed": [0.050000000000000044, 0.95]}}
+{"id": "ext-8c762f7c07", "teacher": "jev-1.14.0", "dists": {"allowed": [0.96, 0.04]}}
+{"id": "ext-47eb6330e0", "teacher": "jev-1.14.0", "dists": {"allowed": [0.13, 0.87]}}
+{"id": "ext-98115ec8e6", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.040000000000000036, 0.96]}}
+{"id": "ext-428784e0a5", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.9, 0.1]}}
+{"id": "ext-b7929f693d", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.12, 0.88]}}
+{"id": "ext-17ca7cbb4d", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.89, 0.11]}}
+{"id": "ext-ad6cb38715", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.040000000000000036, 0.96]}}
+{"id": "ext-fd316e1baa", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.91, 0.09]}}
+{"id": "ext-709604a64a", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.030000000000000027, 0.97]}}
+{"id": "ext-e86d23b09d", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.20999999999999996, 0.79]}}
+{"id": "ext-515e072e78", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.96, 0.04]}}
+{"id": "ext-3c1d031aba", "teacher": "jev-1.14.0", "dists": {"dentro_del_limite": [0.94, 0.06]}}
+{"id": "ext-733d0af3bb", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.9299999999999999, 0.07]}}
+{"id": "ext-03a99ef309", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.27, 0.73]}}
+{"id": "ext-a1c29b712e", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.9299999999999999, 0.07]}}
+{"id": "ext-cac907bbc4", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.87, 0.13]}}
+{"id": "ext-1a4d097aa3", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.030000000000000027, 0.97]}}
+{"id": "ext-43d0afe8b0", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.050000000000000044, 0.95]}}
+{"id": "ext-6981f9072b", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.97, 0.03]}}
+{"id": "ext-5bdf782cc9", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.06000000000000005, 0.94]}}
+{"id": "ext-665e00bf21", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.97, 0.03]}}
+{"id": "ext-d90afd3c62", "teacher": "jev-1.14.0", "dists": {"within_limit": [0.030000000000000027, 0.97]}}
+{"id": "ext-39f7699a1a", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.97, 0.03]}}
+{"id": "ext-26a97cecac", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.030000000000000027, 0.97]}}
+{"id": "ext-9845608763", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.050000000000000044, 0.95]}}
+{"id": "ext-a780e33abb", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.96, 0.04]}}
+{"id": "ext-b447626df8", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.06000000000000005, 0.94]}}
+{"id": "ext-7e52f2753f", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.94, 0.06]}}
+{"id": "ext-638f193e7a", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.030000000000000027, 0.97]}}
+{"id": "ext-a26899e429", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.030000000000000027, 0.97]}}
+{"id": "ext-2298cd297f", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.96, 0.04]}}
+{"id": "ext-731b1ddefb", "teacher": "jev-1.14.0", "dists": {"respuesta_adecuada": [0.95, 0.05]}}
+{"id": "ext-28da85018c", "teacher": "jev-1.14.0", "dists": {"response_adequate": [0.020000000000000018, 0.98]}}
+{"id": "ext-6ac337cec2", "teacher": "jev-1.14.0", "dists": {"response_adequate": [0.72, 0.28]}}
+{"id": "ext-ee5d4e60f7", "teacher": "jev-1.14.0", "dists": {"response_adequate": [0.98, 0.02]}}
+{"id": "ext-89c1bfcc7b", "teacher": "jev-1.14.0", "dists": {"response_adequate": [0.050000000000000044, 0.95]}}
+{"id": "ext-3a0dae3ef4", "teacher": "jev-1.14.0", "dists": {"response_adequate": [0.030000000000000027, 0.97]}}
+{"id": "ext-6fe6881a5e", "teacher": "jev-1.14.0", "dists": {"response_adequate": [0.98, 0.02]}}
+{"id": "ext-aad2c61630", "teacher": "jev-1.14.0", "dists": {"adequacy": [0.0, 0.99, 0.01]}}
+{"id": "ext-1e87fee73b", "teacher": "jev-1.14.0", "dists": {"adequacy": [0.0, 0.02, 0.98]}}
+{"id": "ext-2eca3e74d0", "teacher": "jev-1.14.0", "dists": {"adequacy": [1.0, 0.0, 0.0]}}
+{"id": "ext-0e3252b8ab", "teacher": "jev-1.14.0", "dists": {"adequacy": [0.0, 0.02, 0.98]}}
+{"id": "ext-036fddd79c", "teacher": "jev-1.14.0", "dists": {"agente": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-e0777d1848", "teacher": "jev-1.14.0", "dists": {"agente": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-19e7e5cfce", "teacher": "jev-1.14.0", "dists": {"agente": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-1ec1253a72", "teacher": "jev-1.14.0", "dists": {"agente": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-620b1137a9", "teacher": "jev-1.14.0", "dists": {"especialista": [0.99, 0.0, 0.01, 0.0, 0.0]}}
+{"id": "ext-09e1cc6c63", "teacher": "jev-1.14.0", "dists": {"especialista": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-65b5db3ae8", "teacher": "jev-1.14.0", "dists": {"especialista": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-ec99b3cbda", "teacher": "jev-1.14.0", "dists": {"especialista": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-552496a806", "teacher": "jev-1.14.0", "dists": {"especialista": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-cd4565cc6e", "teacher": "jev-1.14.0", "dists": {"especialista": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-11b3f8f268", "teacher": "jev-1.14.0", "dists": {"specialist": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-552eeed354", "teacher": "jev-1.14.0", "dists": {"specialist": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-4fa48f0003", "teacher": "jev-1.14.0", "dists": {"specialist": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-5ab41fa969", "teacher": "jev-1.14.0", "dists": {"specialist": [0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-237cfc6990", "teacher": "jev-1.14.0", "dists": {"specialist": [0.01, 0.0, 0.0, 0.99, 0.0]}}
+{"id": "ext-c7fab9eb7d", "teacher": "jev-1.14.0", "dists": {"specialist": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-fc37042afd", "teacher": "jev-1.14.0", "dists": {"specialist": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-7691a966d1", "teacher": "jev-1.14.0", "dists": {"specialist": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-ae6268009a", "teacher": "jev-1.14.0", "dists": {"specialist": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-3c0451c9b3", "teacher": "jev-1.14.0", "dists": {"specialist": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-d77b24e811", "teacher": "jev-1.14.0", "dists": {"decision": [0.25, 0.0, 0.75, 0.0], "aviso_en_plazo": [0.79, 0.21]}}
+{"id": "ext-7b2a18f273", "teacher": "jev-1.14.0", "dists": {"decision": [0.07, 0.6, 0.32, 0.01], "aviso_en_plazo": [0.91, 0.09]}}
+{"id": "ext-edd841e123", "teacher": "jev-1.14.0", "dists": {"penalidad": [0.27, 0.25, 0.26, 0.19, 0.03]}}
+{"id": "ext-74eb83c2c5", "teacher": "jev-1.14.0", "dists": {"penalidad": [0.36, 0.21, 0.24, 0.17, 0.02]}}
+{"id": "ext-a036a2a1f1", "teacher": "jev-1.14.0", "dists": {"severity": [0.43, 0.14, 0.38, 0.05], "vp_paged": [0.74, 0.26]}}
+{"id": "ext-257f018b03", "teacher": "jev-1.14.0", "dists": {"severity": [0.54, 0.1, 0.31, 0.05], "vp_paged": [0.75, 0.25]}}
+{"id": "ext-a1b15584e8", "teacher": "jev-1.14.0", "dists": {"reimbursement": [0.05, 0.47, 0.45, 0.02, 0.01], "full_rate_applies": [0.98, 0.02]}}
+{"id": "ext-0cc67ce8de", "teacher": "jev-1.14.0", "dists": {"reimbursement": [0.06, 0.41, 0.49, 0.03, 0.01], "full_rate_applies": [0.98, 0.02]}}
+{"id": "ext-2121ad1f40", "teacher": "jev-1.14.0", "dists": {"aprobador": [0.02, 0.48, 0.45, 0.05], "visto_bueno_cumplimiento": [0.6599999999999999, 0.34]}}
+{"id": "ext-ffdf8142bd", "teacher": "jev-1.14.0", "dists": {"aprobador": [0.03, 0.38, 0.54, 0.05], "visto_bueno_cumplimiento": [0.6699999999999999, 0.33]}}
+{"id": "ext-66fff7539a", "teacher": "jev-1.14.0", "dists": {"modalidad": [0.01, 0.09, 0.9, 0.0], "sale_en_fecha": [0.87, 0.13]}}
+{"id": "ext-d44e8cb365", "teacher": "jev-1.14.0", "dists": {"modalidad": [0.01, 0.09, 0.9, 0.0], "sale_en_fecha": [0.89, 0.11]}}
+{"id": "ext-98323399f3", "teacher": "jev-1.14.0", "dists": {"approver": [0.42, 0.17, 0.37, 0.04], "acv_below_150k": [0.85, 0.15]}}
+{"id": "ext-7c6e78b41b", "teacher": "jev-1.14.0", "dists": {"approver": [0.03, 0.08, 0.86, 0.03], "acv_below_150k": [0.83, 0.17]}}
+{"id": "ext-c13bc59ea8", "teacher": "jev-1.14.0", "dists": {"outcome": [0.0, 0.33, 0.66, 0.0, 0.01]}}
+{"id": "ext-a31aad7fc8", "teacher": "jev-1.14.0", "dists": {"outcome": [0.0, 0.36, 0.64, 0.0, 0.0]}}
+{"id": "ext-240a1b55bd", "teacher": "jev-1.14.0", "dists": {"autorizacion_vigente": [0.91, 0.09]}}
+{"id": "ext-c800ebec49", "teacher": "jev-1.14.0", "dists": {"autorizacion_vigente": [0.040000000000000036, 0.96]}}
+{"id": "ext-4414d0127d", "teacher": "jev-1.14.0", "dists": {"over_allowance": [0.92, 0.08]}}
+{"id": "ext-28c6fa1932", "teacher": "jev-1.14.0", "dists": {"over_allowance": [0.06999999999999995, 0.93]}}
+{"id": "ext-7b401dcf38", "teacher": "jev-1.14.0", "dists": {"plazo": [0.14, 0.08, 0.78]}}
+{"id": "ext-f3745db455", "teacher": "jev-1.14.0", "dists": {"anticipacion": [0.72, 0.27, 0.01]}}
+{"id": "ext-2138cd3026", "teacher": "jev-1.14.0", "dists": {"owner": [0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-25dab562a3", "teacher": "jev-1.14.0", "dists": {"coverage": [0.0, 0.0, 1.0]}}
+{"id": "ext-49a22d59cb", "teacher": "jev-1.14.0", "dists": {"correcta": [0.87, 0.13]}}
+{"id": "ext-205a6f6f6f", "teacher": "jev-1.14.0", "dists": {"correcta": [0.25, 0.75]}}
+{"id": "ext-4056f04ce2", "teacher": "jev-1.14.0", "dists": {"correct": [0.020000000000000018, 0.98]}}
+{"id": "ext-8af7fed58c", "teacher": "jev-1.14.0", "dists": {"correct": [0.20999999999999996, 0.79]}}
+{"id": "ext-89405de7f8", "teacher": "jev-1.14.0", "dists": {"respuesta_en_plazo": [0.5900000000000001, 0.41]}}
+{"id": "ext-9bd2576bd5", "teacher": "jev-1.14.0", "dists": {"respuesta_en_plazo": [0.63, 0.37]}}
+{"id": "ext-11e0feead7", "teacher": "jev-1.14.0", "dists": {"throttled": [0.31999999999999995, 0.68]}}
+{"id": "ext-324c31ab8e", "teacher": "jev-1.14.0", "dists": {"throttled": [0.37, 0.63]}}
+{"id": "ext-9332ef0fd5", "teacher": "jev-1.14.0", "dists": {"equipo": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-204daace65", "teacher": "jev-1.14.0", "dists": {"team": [0.0, 1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-6696e41e7b", "teacher": "jev-1.14.0", "dists": {"accion": [0.0, 0.01, 0.99, 0.0]}}
+{"id": "ext-aee95537fe", "teacher": "jev-1.14.0", "dists": {"action": [0.01, 0.99, 0.0, 0.0]}}
+{"id": "ext-ce1752e86f", "teacher": "jev-1.14.0", "dists": {"procede_reembolso": [0.61, 0.39]}}
+{"id": "ext-4ab6b7faa0", "teacher": "jev-1.14.0", "dists": {"approval": [0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-5d10fdefbd", "teacher": "jev-1.14.0", "dists": {"resultado_mas_probable": [0.98, 0.01, 0.01]}}
+{"id": "ext-a7555a6adf", "teacher": "jev-1.14.0", "dists": {"most_likely_carrier": [0.05, 0.95, 0.0]}}
+{"id": "ext-204af64733", "teacher": "jev-1.14.0", "dists": {"horas_en_dinero": [0.03, 0.0, 0.32, 0.65], "requeria_autorizacion": [0.85, 0.15]}}
+{"id": "ext-4bc5fbe5f1", "teacher": "jev-1.14.0", "dists": {"horas_en_dinero": [0.01, 0.0, 0.14, 0.85], "requeria_autorizacion": [0.85, 0.15]}}
+{"id": "ext-5bd788e763", "teacher": "jev-1.14.0", "dists": {"decision": [0.54, 0.45, 0.01, 0.0], "exento_de_residencia": [0.020000000000000018, 0.98]}}
+{"id": "ext-868b1aefe6", "teacher": "jev-1.14.0", "dists": {"decision": [0.14, 0.32, 0.0, 0.54], "exento_de_residencia": [0.020000000000000018, 0.98]}}
+{"id": "ext-fde55097ec", "teacher": "jev-1.14.0", "dists": {"determination": [0.0, 0.9, 0.04, 0.0, 0.06], "authorization_required": [0.030000000000000027, 0.97]}}
+{"id": "ext-614515860c", "teacher": "jev-1.14.0", "dists": {"determination": [0.0, 0.06, 0.88, 0.0, 0.06], "authorization_required": [0.030000000000000027, 0.97]}}
+{"id": "ext-ad4f5bea0e", "teacher": "jev-1.14.0", "dists": {"credit": [0.52, 0.18, 0.15, 0.01, 0.14], "firewall_minutes_count": [0.96, 0.04]}}
+{"id": "ext-d7043d5e8e", "teacher": "jev-1.14.0", "dists": {"credit": [0.36, 0.25, 0.22, 0.01, 0.16], "firewall_minutes_count": [0.96, 0.04]}}
+{"id": "ext-9a7f5cf5bb", "teacher": "jev-1.14.0", "dists": {"total_a_pagar": [0.18, 0.17, 0.17, 0.19, 0.21, 0.08], "descuentos_se_acumulan": [0.86, 0.14]}}
+{"id": "ext-c5bc2043dd", "teacher": "jev-1.14.0", "dists": {"total_a_pagar": [0.19, 0.17, 0.15, 0.23, 0.18, 0.08], "descuentos_se_acumulan": [0.86, 0.14]}}
+{"id": "ext-f0a24ddddb", "teacher": "jev-1.14.0", "dists": {"prioridad": [0.03, 0.52, 0.39, 0.06], "resuelto_en_sla": [0.36, 0.64]}}
+{"id": "ext-227b1d7bf2", "teacher": "jev-1.14.0", "dists": {"prioridad": [0.06, 0.45, 0.44, 0.05], "resuelto_en_sla": [0.31999999999999995, 0.68]}}
+{"id": "ext-4d6f2a647e", "teacher": "jev-1.14.0", "dists": {"entry_decision": [0.19, 0.01, 0.74, 0.06], "preferential_rate_applies": [0.040000000000000036, 0.96]}}
+{"id": "ext-42d505cbb7", "teacher": "jev-1.14.0", "dists": {"entry_decision": [0.26, 0.02, 0.66, 0.06], "preferential_rate_applies": [0.040000000000000036, 0.96]}}
+{"id": "ext-dbf84866b6", "teacher": "jev-1.14.0", "dists": {"status": [0.81, 0.12, 0.07, 0.0]}}
+{"id": "ext-9d1a5f380e", "teacher": "jev-1.14.0", "dists": {"status": [0.94, 0.04, 0.02, 0.0]}}
+{"id": "ext-3de00d0bd6", "teacher": "jev-1.14.0", "dists": {"gestion": [0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-79331fc901", "teacher": "jev-1.14.0", "dists": {"gestion": [0.4, 0.01, 0.59, 0.0]}}
+{"id": "ext-1b8e0c054c", "teacher": "jev-1.14.0", "dists": {"arrives_by_monday_9am": [0.26, 0.74]}}
+{"id": "ext-cae4e61ced", "teacher": "jev-1.14.0", "dists": {"arrives_by_monday_9am": [0.20999999999999996, 0.79]}}
+{"id": "ext-4f1cc6bd59", "teacher": "jev-1.14.0", "dists": {"quorum": [0.67, 0.32, 0.01]}}
+{"id": "ext-9593e32b8d", "teacher": "jev-1.14.0", "dists": {"pagador": [0.05, 0.08, 0.87]}}
+{"id": "ext-cf5c900d1d", "teacher": "jev-1.14.0", "dists": {"notice": [0.03, 0.04, 0.93]}}
+{"id": "ext-f40dda587b", "teacher": "jev-1.14.0", "dists": {"receipt": [0.05, 0.95, 0.0]}}
+{"id": "ext-e20ab3c45b", "teacher": "jev-1.14.0", "dists": {"correcta": [0.09999999999999998, 0.9]}}
+{"id": "ext-4c25e27fcf", "teacher": "jev-1.14.0", "dists": {"correcta": [0.9299999999999999, 0.07]}}
+{"id": "ext-a9ab205646", "teacher": "jev-1.14.0", "dists": {"correct": [0.87, 0.13]}}
+{"id": "ext-0edc919fed", "teacher": "jev-1.14.0", "dists": {"correct": [0.030000000000000027, 0.97]}}
+{"id": "ext-697fb56a64", "teacher": "jev-1.14.0", "dists": {"puede_cruzar": [0.38, 0.62]}}
+{"id": "ext-ffd28555da", "teacher": "jev-1.14.0", "dists": {"puede_cruzar": [0.43000000000000005, 0.57]}}
+{"id": "ext-685a527cfc", "teacher": "jev-1.14.0", "dists": {"received_before_deadline": [0.44999999999999996, 0.55]}}
+{"id": "ext-553559a165", "teacher": "jev-1.14.0", "dists": {"received_before_deadline": [0.47, 0.53]}}
+{"id": "ext-11a2f8d42a", "teacher": "jev-1.14.0", "dists": {"dependencia": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-b86c5382de", "teacher": "jev-1.14.0", "dists": {"department": [0.0, 0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-2c0eacdb96", "teacher": "jev-1.14.0", "dists": {"accion": [0.01, 0.62, 0.35, 0.02]}}
+{"id": "ext-fa97b1bb52", "teacher": "jev-1.14.0", "dists": {"decision": [0.02, 0.98, 0.0]}}
+{"id": "ext-926a23b099", "teacher": "jev-1.14.0", "dists": {"reimbursable": [0.040000000000000036, 0.96]}}
+{"id": "ext-a476252ace", "teacher": "jev-1.14.0", "dists": {"causa_mas_probable": [0.0, 1.0, 0.0]}}
+{"id": "ext-fea28ba095", "teacher": "jev-1.14.0", "dists": {"most_likely_resolution": [0.0, 1.0, 0.0]}}
+{"id": "ext-bd395d3878", "teacher": "jev-1.14.0", "dists": {"canon_abril_2026": [0.07, 0.48, 0.31, 0.14], "estuvo_al_dia": [0.6799999999999999, 0.32]}}
+{"id": "ext-1f55094c6e", "teacher": "jev-1.14.0", "dists": {"canon_abril_2026": [0.06, 0.53, 0.31, 0.1], "estuvo_al_dia": [0.81, 0.19]}}
+{"id": "ext-bdb8a21863", "teacher": "jev-1.14.0", "dists": {"condonacion": [0.92, 0.04, 0.04], "cumple_promedio": [0.050000000000000044, 0.95]}}
+{"id": "ext-b561b343bf", "teacher": "jev-1.14.0", "dists": {"action": [0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-d8f190c410", "teacher": "jev-1.14.0", "dists": {"condonacion": [0.37, 0.44, 0.19], "cumple_promedio": [0.050000000000000044, 0.95]}}
+{"id": "ext-c58c8de94e", "teacher": "jev-1.14.0", "dists": {"days_paid_out": [0.01, 0.26, 0.09, 0.38, 0.26], "payout_lost_by_resigning": [0.98, 0.02]}}
+{"id": "ext-9b1d2c80ca", "teacher": "jev-1.14.0", "dists": {"days_paid_out": [0.01, 0.3, 0.12, 0.36, 0.21], "payout_lost_by_resigning": [0.98, 0.02]}}
+{"id": "ext-46ecf04e56", "teacher": "jev-1.14.0", "dists": {"ruling": [0.0, 0.01, 0.99, 0.0]}}
+{"id": "ext-a0a75f7171", "teacher": "jev-1.14.0", "dists": {"ruling": [1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-6eaf4c2fa1", "teacher": "jev-1.14.0", "dists": {"porcentaje_comision": [0.02, 0.32, 0.35, 0.31], "supero_la_meta": [0.54, 0.46]}}
+{"id": "ext-d1a7312452", "teacher": "jev-1.14.0", "dists": {"porcentaje_comision": [0.0, 0.41, 0.24, 0.35], "supero_la_meta": [0.17000000000000004, 0.83]}}
+{"id": "ext-5417fe6215", "teacher": "jev-1.14.0", "dists": {"decision": [0.03, 0.95, 0.02, 0.0]}}
+{"id": "ext-0e994de35f", "teacher": "jev-1.14.0", "dists": {"decision": [0.04, 0.95, 0.01, 0.0]}}
+{"id": "ext-aa266f9fd1", "teacher": "jev-1.14.0", "dists": {"amount_payable": [0.17, 0.53, 0.26, 0.04], "claim_exceeds_payable": [0.18000000000000005, 0.82]}}
+{"id": "ext-e7e963c553", "teacher": "jev-1.14.0", "dists": {"amount_payable": [0.02, 0.35, 0.48, 0.15], "claim_exceeds_payable": [0.41000000000000003, 0.59]}}
+{"id": "ext-b1ae3535d0", "teacher": "jev-1.14.0", "dists": {"outcome": [0.38, 0.51, 0.0, 0.11, 0.0]}}
+{"id": "ext-1d1591c541", "teacher": "jev-1.14.0", "dists": {"outcome": [0.18, 0.76, 0.0, 0.06, 0.0]}}
+{"id": "ext-4e9f2d0195", "teacher": "jev-1.14.0", "dists": {"tipo_de_cita": [0.97, 0.03, 0.0]}}
+{"id": "ext-d98f061ee9", "teacher": "jev-1.14.0", "dists": {"tipo_de_cita": [0.01, 0.99, 0.0]}}
+{"id": "ext-718100d0f9", "teacher": "jev-1.14.0", "dists": {"reviewer_experience": [0.0, 1.0, 0.0]}}
+{"id": "ext-054bf873a7", "teacher": "jev-1.14.0", "dists": {"reviewer_experience": [1.0, 0.0, 0.0]}}
+{"id": "ext-b4211e2ad3", "teacher": "jev-1.14.0", "dists": {"responsable": [0.01, 0.0, 0.99]}}
+{"id": "ext-7fb076c0d1", "teacher": "jev-1.14.0", "dists": {"cierre": [1.0, 0.0, 0.0]}}
+{"id": "ext-334c2f3c67", "teacher": "jev-1.14.0", "dists": {"bonus": [0.96, 0.04, 0.0]}}
+{"id": "ext-f25fdfdee7", "teacher": "jev-1.14.0", "dists": {"approver": [0.08, 0.1, 0.82]}}
+{"id": "ext-92052b1dba", "teacher": "jev-1.14.0", "dists": {"correcta": [0.96, 0.04]}}
+{"id": "ext-aee5a50825", "teacher": "jev-1.14.0", "dists": {"correcta": [0.030000000000000027, 0.97]}}
+{"id": "ext-e86d602891", "teacher": "jev-1.14.0", "dists": {"correct": [0.06999999999999995, 0.93]}}
+{"id": "ext-364a846779", "teacher": "jev-1.14.0", "dists": {"correct": [0.85, 0.15]}}
+{"id": "ext-2e9f093642", "teacher": "jev-1.14.0", "dists": {"dentro_de_garantia": [0.16000000000000003, 0.84]}}
+{"id": "ext-500ac8597a", "teacher": "jev-1.14.0", "dists": {"dentro_de_garantia": [0.28, 0.72]}}
+{"id": "ext-f20ab6f148", "teacher": "jev-1.14.0", "dists": {"transfer_allowed": [0.73, 0.27]}}
+{"id": "ext-b1d6fe5452", "teacher": "jev-1.14.0", "dists": {"transfer_allowed": [0.71, 0.29]}}
+{"id": "ext-db341ae3e8", "teacher": "jev-1.14.0", "dists": {"dependencia": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-6ad202978d", "teacher": "jev-1.14.0", "dists": {"team": [0.0, 0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-abedd973d2", "teacher": "jev-1.14.0", "dists": {"opcion": [0.0, 0.0, 0.75, 0.25]}}
+{"id": "ext-04649cec87", "teacher": "jev-1.14.0", "dists": {"allocation": [0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-aa9e365574", "teacher": "jev-1.14.0", "dists": {"decision": [0.0, 1.0, 0.0]}}
+{"id": "ext-631225a2d7", "teacher": "jev-1.14.0", "dists": {"qualifies": [0.88, 0.12]}}
+{"id": "ext-377fab72cd", "teacher": "jev-1.14.0", "dists": {"most_likely_state": [0.2, 0.8, 0.0]}}
+{"id": "ext-6979ec9dfd", "teacher": "jev-1.14.0", "dists": {"ganador_mas_probable": [0.97, 0.03, 0.0]}}
+{"id": "ext-d33b38e369", "teacher": "jev-1.14.0", "dists": {"liquidacion": [0.0, 0.64, 0.02, 0.33, 0.01], "es_perdida_parcial": [0.4, 0.6]}}
+{"id": "ext-af018cf14f", "teacher": "jev-1.14.0", "dists": {"liquidacion": [0.02, 0.58, 0.28, 0.11, 0.01], "es_perdida_parcial": [0.45999999999999996, 0.54]}}
+{"id": "ext-4c7b4a8801", "teacher": "jev-1.14.0", "dists": {"resultado": [0.41, 0.0, 0.59, 0.0], "defecto_subsanable": [0.020000000000000018, 0.98]}}
+{"id": "ext-359049d60d", "teacher": "jev-1.14.0", "dists": {"resultado": [0.56, 0.0, 0.44, 0.0], "defecto_subsanable": [0.020000000000000018, 0.98]}}
+{"id": "ext-eb997e3acb", "teacher": "jev-1.14.0", "dists": {"top_up": [0.82, 0.05, 0.0, 0.0, 0.13], "treated_as_primary": [0.050000000000000044, 0.95]}}
+{"id": "ext-e368ad188e", "teacher": "jev-1.14.0", "dists": {"top_up": [0.29, 0.02, 0.0, 0.66, 0.03], "treated_as_primary": [0.07999999999999996, 0.92]}}
+{"id": "ext-800b453519", "teacher": "jev-1.14.0", "dists": {"compensation": [0.06, 0.0, 0.0, 0.0, 0.94], "strike_is_extraordinary": [0.98, 0.02]}}
+{"id": "ext-43d634bc9a", "teacher": "jev-1.14.0", "dists": {"compensation": [0.14, 0.0, 0.0, 0.0, 0.86], "strike_is_extraordinary": [0.98, 0.02]}}
+{"id": "ext-0a485d9ac1", "teacher": "jev-1.14.0", "dists": {"valor_a_pagar": [0.24, 0.52, 0.04, 0.18, 0.02], "todo_subsidiado": [0.07999999999999996, 0.92]}}
+{"id": "ext-c260adc328", "teacher": "jev-1.14.0", "dists": {"valor_a_pagar": [0.75, 0.18, 0.05, 0.02, 0.0], "todo_subsidiado": [0.08999999999999997, 0.91]}}
+{"id": "ext-98894f63f8", "teacher": "jev-1.14.0", "dists": {"resultado": [0.6, 0.15, 0.0, 0.25]}}
+{"id": "ext-109bf16dda", "teacher": "jev-1.14.0", "dists": {"resultado": [0.51, 0.19, 0.01, 0.29]}}
+{"id": "ext-6fcb0c4190", "teacher": "jev-1.14.0", "dists": {"fee_decision": [0.08, 0.0, 0.69, 0.23], "balance_waiver_met": [0.62, 0.38]}}
+{"id": "ext-420423db10", "teacher": "jev-1.14.0", "dists": {"fee_decision": [0.08, 0.04, 0.65, 0.23], "balance_waiver_met": [0.53, 0.47]}}
+{"id": "ext-0dd390f662", "teacher": "jev-1.14.0", "dists": {"screening_outcome": [0.73, 0.1, 0.16, 0.01], "hba1c_within_range": [0.20999999999999996, 0.79]}}
+{"id": "ext-1ca5ad8ad7", "teacher": "jev-1.14.0", "dists": {"screening_outcome": [0.04, 0.09, 0.12, 0.75], "hba1c_within_range": [0.25, 0.75]}}
+{"id": "ext-820148161f", "teacher": "jev-1.14.0", "dists": {"autoriza_fines_comerciales": [0.97, 0.03]}}
+{"id": "ext-9b9b85af34", "teacher": "jev-1.14.0", "dists": {"autoriza_fines_comerciales": [0.37, 0.63]}}
+{"id": "ext-53bf1e3e07", "teacher": "jev-1.14.0", "dists": {"first_response_in_time": [0.18000000000000005, 0.82]}}
+{"id": "ext-f265ecadab", "teacher": "jev-1.14.0", "dists": {"first_response_in_time": [0.89, 0.11]}}
+{"id": "ext-67e3aab2d3", "teacher": "jev-1.14.0", "dists": {"descuento": [0.99, 0.0, 0.01]}}
+{"id": "ext-31b78c543c", "teacher": "jev-1.14.0", "dists": {"tarifa": [0.04, 0.11, 0.85]}}
+{"id": "ext-ea5e4e9e09", "teacher": "jev-1.14.0", "dists": {"overtime": [1.0, 0.0, 0.0]}}
+{"id": "ext-6155ec061a", "teacher": "jev-1.14.0", "dists": {"patch_decision": [0.0, 0.0, 1.0]}}
+{"id": "ext-3ae82585aa", "teacher": "jev-1.14.0", "dists": {"correcta": [0.020000000000000018, 0.98]}}
+{"id": "ext-9d42f23c8a", "teacher": "jev-1.14.0", "dists": {"correcta": [0.98, 0.02]}}
+{"id": "ext-b01ad5ca16", "teacher": "jev-1.14.0", "dists": {"correct": [0.97, 0.03]}}
+{"id": "ext-af0236baaa", "teacher": "jev-1.14.0", "dists": {"correct": [0.020000000000000018, 0.98]}}
+{"id": "ext-025ef551e5", "teacher": "jev-1.14.0", "dists": {"una_bolsa_alcanza": [0.52, 0.48]}}
+{"id": "ext-4bd629f3fd", "teacher": "jev-1.14.0", "dists": {"una_bolsa_alcanza": [0.53, 0.47]}}
+{"id": "ext-eb7a804c5a", "teacher": "jev-1.14.0", "dists": {"paid_on_time": [0.43000000000000005, 0.57]}}
+{"id": "ext-1f0ab6d2fe", "teacher": "jev-1.14.0", "dists": {"paid_on_time": [0.69, 0.31]}}
+{"id": "ext-6c53c4e90a", "teacher": "jev-1.14.0", "dists": {"area": [1.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-973779a914", "teacher": "jev-1.14.0", "dists": {"team": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-cb4e73c0bb", "teacher": "jev-1.14.0", "dists": {"alternativa": [0.01, 0.83, 0.13, 0.03]}}
+{"id": "ext-927866f2dd", "teacher": "jev-1.14.0", "dists": {"decision": [0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-e8b5395a2e", "teacher": "jev-1.14.0", "dists": {"cumple_asistencia": [0.45999999999999996, 0.54]}}
+{"id": "ext-9d4ce3f028", "teacher": "jev-1.14.0", "dists": {"plan": [0.0, 0.82, 0.18, 0.0]}}
+{"id": "ext-8db133b613", "teacher": "jev-1.14.0", "dists": {"resultado_mas_probable": [0.0, 1.0, 0.0]}}
+{"id": "ext-49992595c1", "teacher": "jev-1.14.0", "dists": {"most_likely_outcome": [0.99, 0.01, 0.0]}}
+{"id": "ext-1f2f5c9f0f", "teacher": "jev-1.14.0", "dists": {"valor_a_pagar": [0.42, 0.06, 0.52, 0.0], "incumplio_calidad": [0.030000000000000027, 0.97]}}
+{"id": "ext-7bbc79f0b2", "teacher": "jev-1.14.0", "dists": {"valor_a_pagar": [0.58, 0.03, 0.39, 0.0], "incumplio_calidad": [0.5, 0.5]}}
+{"id": "ext-fe0c07b2b5", "teacher": "jev-1.14.0", "dists": {"numero_de_cuotas": [0.69, 0.02, 0.27, 0.02], "supera_tope_de_ingresos": [0.20999999999999996, 0.79]}}
+{"id": "ext-501f6f778e", "teacher": "jev-1.14.0", "dists": {"numero_de_cuotas": [0.6900000000000001, 0.29000000000000004, 0.020000000000000004, 0.0], "supera_tope_de_ingresos": [0.20999999999999996, 0.79]}}
+{"id": "ext-3c29a59a08", "teacher": "jev-1.14.0", "dists": {"attrition_charge": [0.14, 0.41, 0.4, 0.05], "resold_nights_credited": [0.010000000000000009, 0.99]}}
+{"id": "ext-7f77b8fd50", "teacher": "jev-1.14.0", "dists": {"inspection_result": [0.0, 0.0, 0.01, 0.99], "critical_scores_full_points": [0.19999999999999996, 0.8]}}
+{"id": "ext-cc396503c9", "teacher": "jev-1.14.0", "dists": {"inspection_result": [0.28, 0.61, 0.1, 0.01], "critical_scores_full_points": [0.88, 0.12]}}
+{"id": "ext-c71eeedba6", "teacher": "jev-1.14.0", "dists": {"retencion": [0.24, 0.14, 0.28, 0.16, 0.18], "supera_base_minima": [0.43000000000000005, 0.57]}}
+{"id": "ext-a388bc66b9", "teacher": "jev-1.14.0", "dists": {"retencion": [0.3, 0.2, 0.15, 0.25, 0.1], "supera_base_minima": [0.45999999999999996, 0.54]}}
+{"id": "ext-08968cb04b", "teacher": "jev-1.14.0", "dists": {"resultado": [0.75, 0.25, 0.0], "suma_puntos_por_hermano": [0.72, 0.28]}}
+{"id": "ext-b76bd76aa2", "teacher": "jev-1.14.0", "dists": {"resultado": [0.83, 0.17, 0.0], "suma_puntos_por_hermano": [0.54, 0.46]}}
+{"id": "ext-54bc404bc8", "teacher": "jev-1.14.0", "dists": {"storage_charge": [0.03, 0.14, 0.4, 0.43], "weekends_skipped": [0.96, 0.04]}}
+{"id": "ext-d04a793556", "teacher": "jev-1.14.0", "dists": {"storage_charge": [0.06, 0.18, 0.39, 0.37], "weekends_skipped": [0.96, 0.04]}}
+{"id": "ext-30f23fa2aa", "teacher": "jev-1.14.0", "dists": {"commission_rate": [0.0, 0.55, 0.45], "accounts_aggregated": [0.030000000000000027, 0.97]}}
+{"id": "ext-3d66fab73f", "teacher": "jev-1.14.0", "dists": {"valor_a_cobrar": [0.0, 0.9, 0.09, 0.01]}}
+{"id": "ext-44cf154481", "teacher": "jev-1.14.0", "dists": {"commission_rate": [0.0, 0.42, 0.58], "accounts_aggregated": [0.030000000000000027, 0.97]}}
+{"id": "ext-0756dcad8e", "teacher": "jev-1.14.0", "dists": {"valor_a_cobrar": [0.04, 0.04, 0.91, 0.01]}}
+{"id": "ext-2a356aa3ff", "teacher": "jev-1.14.0", "dists": {"warranty_void": [0.13, 0.87]}}
+{"id": "ext-c1c433ccef", "teacher": "jev-1.14.0", "dists": {"warranty_void": [0.9, 0.1]}}
+{"id": "ext-6e567798d4", "teacher": "jev-1.14.0", "dists": {"attrition_charge": [0.09, 0.41, 0.4, 0.1], "resold_nights_credited": [0.010000000000000009, 0.99]}}
+{"id": "ext-7033750eef", "teacher": "jev-1.14.0", "dists": {"horas_extras": [0.0, 0.0, 1.0]}}
+{"id": "ext-09c4a7e06f", "teacher": "jev-1.14.0", "dists": {"ganadora": [0.99, 0.01, 0.0]}}
+{"id": "ext-6bf2e01b7c", "teacher": "jev-1.14.0", "dists": {"tier": [0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-d62a59dd95", "teacher": "jev-1.14.0", "dists": {"deduction": [0.0, 0.07, 0.93]}}
+{"id": "ext-9855b84c3f", "teacher": "jev-1.14.0", "dists": {"correcta": [0.32999999999999996, 0.67]}}
+{"id": "ext-78e8c48b61", "teacher": "jev-1.14.0", "dists": {"correct": [0.020000000000000018, 0.98]}}
+{"id": "ext-63bb2e56d7", "teacher": "jev-1.14.0", "dists": {"correct": [0.97, 0.03]}}
+{"id": "ext-1e3cb9a3eb", "teacher": "jev-1.14.0", "dists": {"correcta": [0.19999999999999996, 0.8]}}
+{"id": "ext-781d725f07", "teacher": "jev-1.14.0", "dists": {"recibe_constancia": [0.38, 0.62]}}
+{"id": "ext-26a809985f", "teacher": "jev-1.14.0", "dists": {"recibe_constancia": [0.5900000000000001, 0.41]}}
+{"id": "ext-b1e3ed5e89", "teacher": "jev-1.14.0", "dists": {"refund_owed": [0.5800000000000001, 0.42]}}
+{"id": "ext-9b9b91f6f8", "teacher": "jev-1.14.0", "dists": {"refund_owed": [0.87, 0.13]}}
+{"id": "ext-82a8649672", "teacher": "jev-1.14.0", "dists": {"equipo": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-7e3e13fab5", "teacher": "jev-1.14.0", "dists": {"team": [0.0, 0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-16ceb27edd", "teacher": "jev-1.14.0", "dists": {"opcion": [0.0, 0.0, 0.99, 0.01]}}
+{"id": "ext-fcac4b7194", "teacher": "jev-1.14.0", "dists": {"choice": [0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-7c2ccd0a99", "teacher": "jev-1.14.0", "dists": {"length_level": [0.0, 0.88, 0.12]}}
+{"id": "ext-8add550c3a", "teacher": "jev-1.14.0", "dists": {"envio_gratis": [0.5900000000000001, 0.41]}}
+{"id": "ext-2f188cddcf", "teacher": "jev-1.14.0", "dists": {"resultado_mas_probable": [0.02, 0.97, 0.01]}}
+{"id": "ext-f4f1cc8e1c", "teacher": "jev-1.14.0", "dists": {"more_likely_to_renew": [0.06000000000000005, 0.94]}}
+{"id": "ext-b85043d6af", "teacher": "jev-1.14.0", "dists": {"decision": [0.89, 0.07, 0.0, 0.04], "acuerdo_impide_suspension": [0.79, 0.21]}}
+{"id": "ext-ce8c4e5ce1", "teacher": "jev-1.14.0", "dists": {"decision": [0.56, 0.39, 0.0, 0.05], "acuerdo_impide_suspension": [0.72, 0.28]}}
+{"id": "ext-5a0cb7f613", "teacher": "jev-1.14.0", "dists": {"decision": [0.9, 0.0, 0.1, 0.0], "aviso_en_plazo": [0.30000000000000004, 0.7]}}
+{"id": "ext-bc8dd86c79", "teacher": "jev-1.14.0", "dists": {"decision": [0.56, 0.32, 0.12, 0.0], "aviso_en_plazo": [0.30000000000000004, 0.7]}}
+{"id": "ext-ab6bd9e7a1", "teacher": "jev-1.14.0", "dists": {"decision": [0.29000000000000004, 0.7000000000000001, 0.0, 0.010000000000000002], "extended_allowance_applies": [0.06000000000000005, 0.94]}}
+{"id": "ext-535817b3f0", "teacher": "jev-1.14.0", "dists": {"decision": [0.01, 0.99, 0.0, 0.0], "extended_allowance_applies": [0.91, 0.09]}}
+{"id": "ext-943ed2c9f8", "teacher": "jev-1.14.0", "dists": {"handling": [0.0, 0.0, 0.0, 1.0]}}
+{"id": "ext-21f56f6ada", "teacher": "jev-1.14.0", "dists": {"handling": [0.0, 0.98, 0.01, 0.01]}}
+{"id": "ext-c3bd77f210", "teacher": "jev-1.14.0", "dists": {"prima_del_productor": [0.24, 0.39, 0.19, 0.11, 0.07], "es_pequeno_productor": [0.9299999999999999, 0.07]}}
+{"id": "ext-95460411b5", "teacher": "jev-1.14.0", "dists": {"prima_del_productor": [0.37, 0.35, 0.14, 0.09, 0.05], "es_pequeno_productor": [0.020000000000000018, 0.98]}}
+{"id": "ext-3d4f2cb36b", "teacher": "jev-1.14.0", "dists": {"resultado": [0.39, 0.35, 0.26], "cuenta_bloqueada": [0.62, 0.38]}}
+{"id": "ext-60619e699f", "teacher": "jev-1.14.0", "dists": {"resultado": [0.45, 0.3, 0.25], "cuenta_bloqueada": [0.36, 0.64]}}
+{"id": "ext-13bb41ab95", "teacher": "jev-1.14.0", "dists": {"member_pays": [0.23, 0.28, 0.21, 0.21, 0.07], "deductible_already_met": [0.94, 0.06]}}
+{"id": "ext-c95b5465d7", "teacher": "jev-1.14.0", "dists": {"member_pays": [0.24, 0.19, 0.3, 0.23, 0.04], "deductible_already_met": [0.9299999999999999, 0.07]}}
+{"id": "ext-87b9df3168", "teacher": "jev-1.14.0", "dists": {"budget_outcome": [0.86, 0.14, 0.0], "equipment_excluded_from_base": [0.010000000000000009, 0.99]}}
+{"id": "ext-8d53a2aac9", "teacher": "jev-1.14.0", "dists": {"budget_outcome": [0.81, 0.19, 0.0], "equipment_excluded_from_base": [0.010000000000000009, 0.99]}}
+{"id": "ext-194b40730b", "teacher": "jev-1.14.0", "dists": {"tarifa": [0.0, 1.0, 0.0]}}
+{"id": "ext-a3f7713e83", "teacher": "jev-1.14.0", "dists": {"tarifa": [1.0, 0.0, 0.0]}}
+{"id": "ext-1a60d6f520", "teacher": "jev-1.14.0", "dists": {"assistant_action": [0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-0b6180ad52", "teacher": "jev-1.14.0", "dists": {"assistant_action": [0.0, 0.98, 0.02, 0.0]}}
+{"id": "ext-8e78b7e295", "teacher": "jev-1.14.0", "dists": {"multa_por_retraso": [0.0, 0.01, 0.99]}}
+{"id": "ext-2edbed70d1", "teacher": "jev-1.14.0", "dists": {"tarjeta": [0.81, 0.16, 0.03]}}
+{"id": "ext-e9bdcef71c", "teacher": "jev-1.14.0", "dists": {"approver": [0.0, 0.0, 1.0]}}
+{"id": "ext-89838f0954", "teacher": "jev-1.14.0", "dists": {"quorum": [0.89, 0.1, 0.01]}}
+{"id": "ext-1315ad23e9", "teacher": "jev-1.14.0", "dists": {"correcta": [0.050000000000000044, 0.95]}}
+{"id": "ext-a83e8cc47f", "teacher": "jev-1.14.0", "dists": {"correcta": [0.28, 0.72]}}
+{"id": "ext-fa669a394e", "teacher": "jev-1.14.0", "dists": {"correct": [0.96, 0.04]}}
+{"id": "ext-45f47baff6", "teacher": "jev-1.14.0", "dists": {"correct": [0.36, 0.64]}}
+{"id": "ext-9c626f966e", "teacher": "jev-1.14.0", "dists": {"puede_concederse": [0.8200000000000001, 0.18]}}
+{"id": "ext-ff5eab7fcd", "teacher": "jev-1.14.0", "dists": {"may_use_route": [0.56, 0.44]}}
+{"id": "ext-917e30b066", "teacher": "jev-1.14.0", "dists": {"puede_concederse": [0.76, 0.24]}}
+{"id": "ext-76ba284ba3", "teacher": "jev-1.14.0", "dists": {"may_use_route": [0.6699999999999999, 0.33]}}
+{"id": "ext-8dac80fc83", "teacher": "jev-1.14.0", "dists": {"equipo": [0.0, 1.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-a4634869c2", "teacher": "jev-1.14.0", "dists": {"alternativa": [0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-afa11fe891", "teacher": "jev-1.14.0", "dists": {"team": [0.0, 0.0, 1.0, 0.0, 0.0]}}
+{"id": "ext-e429b0dd0e", "teacher": "jev-1.14.0", "dists": {"booking": [0.0, 0.93, 0.01, 0.06]}}
+{"id": "ext-e8ef694ea7", "teacher": "jev-1.14.0", "dists": {"valor_a_reconocer": [0.99, 0.01, 0.0]}}
+{"id": "ext-4a5ba0de98", "teacher": "jev-1.14.0", "dists": {"refund_within_policy": [0.45999999999999996, 0.54]}}
+{"id": "ext-0048a6d26b", "teacher": "jev-1.14.0", "dists": {"maquina_mas_probable": [0.02, 0.98, 0.0]}}
+{"id": "ext-7578545dca", "teacher": "jev-1.14.0", "dists": {"most_likely_classification": [0.99, 0.01, 0.0]}}
