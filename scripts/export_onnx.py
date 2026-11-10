@@ -55,7 +55,7 @@ def main() -> None:
     out.mkdir(parents=True, exist_ok=True)
     meta = json.loads((run / "meta.json").read_text())
     base = meta.get("base", BASE)
-    model = Decisor(base, attn="eager")
+    model = Decisor(base, attn="eager", head_norm=bool(meta.get("head_norm", False)))
     model.load_state_dict(torch.load(run / "model.pt", map_location="cpu"))
     model.eval()
     w = Wrapped(model).eval()

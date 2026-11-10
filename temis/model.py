@@ -11,17 +11,22 @@ KIND_ID = {"choice": 0, "score": 1, "noul": 2}
 
 
 class Decisor(nn.Module):
-    def __init__(self, base: str = "jhu-clsp/mmBERT-small", attn: str | None = None) -> None:
+    def __init__(self, base: str = "jhu-clsp/mmBERT-small", attn: str | None = None, head_norm: bool = False) -> None:
+        """head_norm: LayerNorm the encoder states before the head, so the head sees the same scale
+        whatever the base (MrBERT-es states are ~7x mmBERT's there and saturate the head)."""
         super().__init__()
         kw = {"attn_implementation": attn} if attn else {}
         self.encoder = AutoModel.from_pretrained(base, **kw)
         h = self.encoder.config.hidden_size
+        self.head_norm = nn.LayerNorm(h) if head_norm else None
         self.head = nn.Sequential(nn.Linear(2 * h, h), nn.GELU(), nn.Dropout(0.1), nn.Linear(h, 1))
 
     def forward(self, input_ids: Tensor, attention_mask: Tensor, opt_pos: Tensor, opt_mask: Tensor) -> Tensor:
         """input_ids/attention_mask (B, T); opt_pos/opt_mask (B, K) -> logits (B, K)."""
         hs = self.encoder(input_ids=input_ids, attention_mask=attention_mask).last_hidden_state
-        opt = torch.gather(hs, 1, opt_pos.unsqueeze(-1).expand(-1, -1, hs.size(-1)))  # (B, K, H)
+        if self.head_norm is not None:
+            hs = self.head_norm(hs)
+        opt =torch.gather(hs, 1, opt_pos.unsqueeze(-1).expand(-1, -1, hs.size(-1)))  # (B, K, H)
         cls = hs[:, :1].expand_as(opt)
         logits = self.head(torch.cat([opt, opt * cls], -1)).squeeze(-1)
         return logits.masked_fill(~opt_mask, -1e4)

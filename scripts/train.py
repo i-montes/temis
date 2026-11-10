@@ -175,6 +175,8 @@ def main() -> None:
     ap.add_argument("--long-max-len", type=int, default=1536, help="budget for states that overflow --max-len")
     ap.add_argument("--long-bs", type=int, default=4, help="batch size for batches holding a long state")
     ap.add_argument("--bf16", action=argparse.BooleanOptionalAction, default=None, help="default: on CUDA only")
+    ap.add_argument("--head-norm", action="store_true",
+                    help="LayerNorm the encoder states before the head (bases whose states are large, e.g. MrBERT-es)")
     ap.add_argument("--val-limit", type=int, default=None, help="validate on the first N questions (smoke tests)")
     a = ap.parse_args()
     torch.set_num_threads(a.threads)
@@ -197,7 +199,7 @@ def main() -> None:
           flush=True)
     ctx_pool = [e["state"] for e in train[:5000]]
 
-    model = Decisor(a.base, attn=attn)
+    model = Decisor(a.base, attn=attn, head_norm=a.head_norm)
     if a.init:
         model.load_state_dict(torch.load(Path("runs") / a.init / "model.pt", map_location="cpu"))
     model.to(device)
@@ -276,7 +278,7 @@ def main() -> None:
     for s, idx in by.items():
         report[s] = metrics(lg[idx], tg[idx], mk[idx], temps, [kinds[i] for i in idx])
     meta = {"base": a.base, "init": a.init, "max_len": a.max_len, "long_max_len": a.long_max_len, "twin": a.twin,
-            "consistency": a.consistency, "bf16": bf16, "attn": attn or "eager",
+            "consistency": a.consistency, "head_norm": a.head_norm, "bf16": bf16, "attn": attn or "eager",
             "temperatures": temps, "val": report, "log": log,
             "n_train": len(train), "n_val": len(val), "created": time.strftime("%Y-%m-%d %H:%M:%S")}
     (out / "meta.json").write_text(json.dumps(meta, indent=2))
