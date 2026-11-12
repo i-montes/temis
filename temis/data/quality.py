@@ -3,7 +3,9 @@
 A `noul` question must be a statement that is true or false about the state. The generator often
 writes commands instead ("Determine if X", "Evalúa el peso emocional"). Conditional ones are rewritten
 into the statement they contain ("Determine if X" -> "X"); vague ones, or either/or ones, are dropped.
-States that are almost empty ("Layer 30 failed.") are dropped too.
+States that are almost empty ("Layer 30 failed.") are dropped too, unless the case is marked `short`:
+what a person types to an agent is often shorter than that, and those batches are written to be short
+(docs/prompt_casos_cortos.md).
 """
 
 from __future__ import annotations
@@ -25,6 +27,7 @@ WH = re.compile(r"^\s*¿?\s*(qu[eé]|cu[aá]l|cu[aá]les|c[oó]mo|cu[aá]nto|cu[
                 r"por qu[eé]|what|which|how|when|where|who|why)\b", re.IGNORECASE)
 EITHER_OR = re.compile(r"\s(o si|or whether|or if)\s", re.IGNORECASE)
 MIN_STATE_CHARS = 120
+MIN_SHORT_TEXT_CHARS = 2  # a case marked short still has to say something
 
 
 def normalize_noul(instructions: str) -> str | None:
@@ -48,7 +51,20 @@ def normalize_noul(instructions: str) -> str | None:
     return s
 
 
-def state_ok(state: Any) -> bool:
+def _words(state: Any) -> str:
+    """The text a state carries, without its keys."""
+    if isinstance(state, str):
+        return state
+    if isinstance(state, dict):
+        return " ".join(_words(v) for v in state.values())
+    if isinstance(state, (list, tuple)):
+        return " ".join(_words(v) for v in state)
+    return ""
+
+
+def state_ok(state: Any, short: bool = False) -> bool:
+    if short:
+        return len(_words(state).strip()) >= MIN_SHORT_TEXT_CHARS
     text = state if isinstance(state, str) else json.dumps(state, ensure_ascii=False)
     return len(text) >= MIN_STATE_CHARS
 

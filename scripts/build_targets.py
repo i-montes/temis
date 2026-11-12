@@ -18,7 +18,7 @@ import math
 from collections import defaultdict
 from pathlib import Path
 
-from temis.data.balance import NO_OPINION, cap_share, copies, hard_target, write_held_back
+from temis.data.balance import NO_OPINION, cap_share, copies, question_target, write_held_back
 from temis.data.procedural import budget_filter, gold_targets, load_procedural, write_cases
 from temis.data.sources import load_synth, load_td, read_jsonl
 from scripts.second_opinion import load_author_gold, load_second_opinions
@@ -72,8 +72,8 @@ def main() -> None:
                              "teachers": ["gold"]})
     clio = 0
     held: list[tuple[str, str]] = []
-    second = load_second_opinions()  # {(case id, qid): label | None} from another model, hard cases only
-    gold = load_author_gold()        # {(case id, qid): label}: the answers of the model that wrote the hard cases
+    second = load_second_opinions()  # {(case id, qid): label | None} from another model
+    gold = load_author_gold()        # {(case id, qid): label}: the answers of the model that wrote the case
     for c in load_synth():  # synthetic: calibrated Jev
         try:
             qs = parse_questions(c["questions"])
@@ -83,14 +83,13 @@ def main() -> None:
             d = labels.get(c["id"], {}).get(q.qid)
             if not d or len(d) != q.n:
                 continue
-            tgt = temper(d, calib["temperature"].get(q.kind, 1.0))
-            if str(c.get("domain", "")).startswith("hard:"):
-                key = (c["id"], q.qid)
-                tgt = hard_target(d, list(q.options), tgt, surface=(c.get("surface_answer") or {}).get(q.qid),
+            key = (c["id"], q.qid)
+            tgt = question_target(c, list(q.options), d, temper(d, calib["temperature"].get(q.kind, 1.0)),
+                                  surface=(c.get("surface_answer") or {}).get(q.qid),
                                   second=second.get(key, NO_OPINION), author=gold.get(key))
-                if tgt is None:
-                    held.append(key)  # trap, disagreement or unverified: not a target; import_queue puts it first
-                    continue
+            if tgt is None:
+                held.append(key)  # trap, disagreement or unverified: not a target; import_queue puts it first
+                continue
             k = copies(c, list(q.options), d)  # rebalance memory_op (see temis/data/balance.py)
             dropped += k == 0
             for _ in range(k):
@@ -112,7 +111,7 @@ def main() -> None:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
     n = len(rows)
     print(f"[targets] wrote {n} question targets ({dropped} left out to rebalance memory_op, "
-          f"{len(held)} hard questions held back: trap, disagreement or unverified)")
+          f"{len(held)} questions held back: trap, disagreement with the author or unverified)")
     by = defaultdict(int)
     for r in rows:
         by[r["source"]] += 1

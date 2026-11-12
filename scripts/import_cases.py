@@ -3,10 +3,13 @@
   python -m scripts.import_cases salida.jsonl --source gpt-5
 
 Each line: {"family", "language", "workflow"?, "state", "questions"} (TypeSafe question format).
-Hard families (temis/data/families.py::HARD_FAMILIES) also carry "rationale" (required) and may
-carry "expected" {qid: option} (the author's answer, kept as "author_gold"), "surface_answer"
+Any case may carry "expected" {qid: option}: the author's answer, kept as "author_gold" (training uses
+it when Jev or a second opinion agrees, see temis/data/balance.py). Hard families
+(temis/data/families.py::HARD_FAMILIES) also carry "rationale" (required) and may carry "surface_answer"
 {qid: option} and "contrast_of" (the workflow of their contrast twin);
 those fields are kept with the case (the rationale feeds training later, never the model's input).
+With --short the 120-character floor of the state is lifted and the cases are marked `short`: batches
+written to look like what a person types to an agent (scripts/expand_short.py, docs/prompt_casos_cortos.md).
 Lines that fail validation are reported and skipped. Valid cases go to data/synth/external.jsonl;
 Jev labels them on its next pass and the next training uses them. Nothing here is a label.
 """
@@ -24,7 +27,10 @@ from temis.data.sources import EXTERNAL, load_synth
 from temis.schema import SchemaError, parse_questions
 
 AGENT_FAMILIES = {"memory_op", "tool_choice", "memory_relation", "note_link", "needs_memory", "asks_to_forget",
-                  "tools", "injection", "command_safety", "worth_remembering", "note_tags", "go_no_go"}
+                  "tools", "injection", "command_safety", "worth_remembering", "note_tags", "go_no_go",
+                  # Clio's other calls (scripts/expand_short.py): which memories help with a message, the
+                  # guard of a save, whether a merge keeps everything, where a memory belongs
+                  "memory_relevance", "memory_guard", "memory_preserved", "memory_place"}
 FAMILIES = AGENT_FAMILIES | set(HARD_FAMILIES) | {"other"}
 MIN_RATIONALE = 40
 SHINGLE = 6  # a case sharing a 6-word phrase with a public benchmark item is a copy, not our own scenario
@@ -61,9 +67,10 @@ def _texts_of(c: dict) -> list[str]:
     return out
 
 
-def parse_line(line: str, source: str, leaks: set | None = None) -> dict | None:
+def parse_line(line: str, source: str, leaks: set | None = None, short: bool = False) -> dict | None:
     """One JSONL line from the other model -> a normalized case, or None (the reason is printed).
-    `leaks`: word shingles of public benchmark items; a case sharing one is rejected."""
+    `leaks`: word shingles of public benchmark items; a case sharing one is rejected.
+    `short`: the batch is short on purpose, so its states only have to say something."""
     try:
         c = json.loads(line)
         fam = c.get("family", "other")
@@ -73,13 +80,13 @@ def parse_line(line: str, source: str, leaks: set | None = None) -> dict | None:
             raise SchemaError("copies a public JevBench item (shared phrase); benchmark items never enter training")
         if c.get("language") not in ("es", "en"):
             raise SchemaError("language must be es or en")
-        if not state_ok(c.get("state")):
-            raise SchemaError("state too short (min 120 characters)")
+        if not state_ok(c.get("state"), short=short):
+            raise SchemaError("empty state" if short else "state too short (min 120 characters; --short for short batches)")
         qs, rewritten, dropped = clean_questions(c.get("questions") or {})
         if dropped:
             raise SchemaError(f"{dropped} yes/no question(s) are not statements")
         parsed = {q.qid: q for q in parse_questions(qs)}
-        extra: dict = {}
+        extra: dict = {"short": True} if short else {}
         if fam in HARD_FAMILIES:
             rationale = " ".join(str(c.get("rationale") or "").split())
             if len(rationale) < MIN_RATIONALE:
@@ -95,16 +102,16 @@ def parse_line(line: str, source: str, leaks: set | None = None) -> dict | None:
                 extra["surface_answer"] = {k: str(v) for k, v in surface.items()}
             if c.get("contrast_of"):
                 extra["contrast_of"] = str(c["contrast_of"])
-            expected = c.get("expected")
-            if expected:
-                if not isinstance(expected, dict):
-                    raise SchemaError("expected must be {question_id: option}")
-                for qid, opt in expected.items():
-                    if qid not in parsed or str(opt) not in parsed[qid].options:
-                        raise SchemaError(f"expected {qid!r}: {opt!r} is not one of its options")
-                    if str(opt) == extra.get("surface_answer", {}).get(qid):
-                        raise SchemaError(f"expected {qid!r} equals its surface_answer")
-                extra["author_gold"] = {k: str(v) for k, v in expected.items()}
+        expected = c.get("expected")
+        if expected:
+            if not isinstance(expected, dict):
+                raise SchemaError("expected must be {question_id: option}")
+            for qid, opt in expected.items():
+                if qid not in parsed or str(opt) not in parsed[qid].options:
+                    raise SchemaError(f"expected {qid!r}: {opt!r} is not one of its options")
+                if str(opt) == extra.get("surface_answer", {}).get(qid):
+                    raise SchemaError(f"expected {qid!r} equals its surface_answer")
+            extra["author_gold"] = {k: str(v) for k, v in expected.items()}
     except (json.JSONDecodeError, SchemaError, AttributeError, TypeError) as e:
         print(f"[import] skipped ({e})")
         return None
@@ -122,6 +129,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("path")
     ap.add_argument("--source", required=True, help="which model wrote them, e.g. gpt-5")
+    ap.add_argument("--short", action="store_true", help="a batch of short cases: no 120-character floor for the state")
     a = ap.parse_args()
     seen = {json.dumps(c["state"], sort_keys=True, ensure_ascii=False) for c in load_synth(clean=False)}
     leaks = public_shingles()
@@ -133,7 +141,7 @@ def main() -> None:
         line = line.strip().strip(",")
         if not line or line.startswith(("```", "//", "#")):
             continue
-        c = parse_line(line, a.source, leaks)
+        c = parse_line(line, a.source, leaks, short=a.short)
         if c is None:
             print(f"[import]   ... at line {i}")
             bad += 1
