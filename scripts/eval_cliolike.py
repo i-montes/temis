@@ -70,8 +70,10 @@ def main() -> None:
     d = Decider(a.model)
     res = score(cases, lambda c: {k: v.to_typesafe() for k, v in d.decide(c["state"], c["questions"]).items()})
     res["model"] = a.model
-    print(json.dumps({k: v for k, v in res.items() if k != "rows"}, indent=2))
-    (Path(a.model).parent / "eval_cliolike.json").write_text(json.dumps(res, indent=2))
+    (Path(a.model).parent / "eval_cliolike.json").write_text(json.dumps(res, indent=2))  # before printing: a closed pipe must not lose it
+    print(f"accuracy {res['accuracy']:.4f} (n={res['n']}) · yes/no " + json.dumps(res["yes_no"]))
+    for fam, r in res["by_family"].items():
+        print(f"  {fam:18s} {r['accuracy']:.3f} (n={r['n']}) · whole case {res['whole_case'][fam]['accuracy']:.3f}")
 
 
 if __name__ == "__main__":

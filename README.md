@@ -76,11 +76,16 @@ version (Temis 2.0.0).
 | Temis 1.0.10 · v1108-2024 | + memory_op rebalance, 900 external cases | 0.762 / — / — | 80 / 94 / 93 / 81 % (mean 0.87) | 309 MB |
 | Temis 1.0.11 · v1108-2307 | + 200 external cases, 484 reviewer answers | 0.766 / 0.098 / 0.054 | 77 / 94 / 93 / 81 % (mean 0.86) | 309 MB |
 | **Temis 2.0.0 · v1109-1028 (active)** | MrBERT-es, from scratch, same data as 1.0.11 | **0.772 / 0.104 / 0.057** | **90 / 94 / 86 / 81 %** (mean 0.88) | **152 MB** |
+| Temis 2.2.0 · v1111-mrbert-td2 | MrBERT-es + extra typed-decisions training data | 0.780 / — / — | 87 / 88 / 86 / 83 % (mean 0.86) | 161 MB |
+| Temis 2.4.0 · v1112-mrbert-cortos (candidate) | td2's recipe + 1,375 short cases, from scratch | 0.772 / — / — | 97 / 88 / 79 / 94 % (mean 0.89) | 161 MB |
 | Jev (API, reference) | — | 0.727 / 1.442 / 0.148 | 93 / 100 / 100 / 88 % | — |
 
 - The typed-decisions test split was never used for training. Clio's benchmark
   (`external/clio/testing/decisiones`) wasn't either, but it is used to pick which version goes
   live, so its numbers are somewhat optimistic.
+- Held-out short set (`data/cliolike.jsonl`, 2,045 questions shaped like Clio's calls): 2.2.0 gets
+  0.779 (tools: yes 0.66 / no 0.80); 2.4.0 gets 0.966 (yes 0.86 / no 0.98), and hard-like goes from
+  0.507 to 0.550. Typed-decisions and JevBench (58.4 → 57.1 %) move within their noise.
 - CPU latency (int8): 29 ms median per call on Clio's benchmark (1 to 4 questions) on a Mac; about
   100–170 ms for 3 questions on the 4-core ARM VPS.
 - The 1.0.10 jump on `op` comes from the rebalance: Qwen's memory cases were 51 % "corrects a
@@ -205,10 +210,12 @@ Everything used for training is in `data/`; the trained models are not (they wei
 | File | What it is |
 |---|---|
 | `data/synth/cases.jsonl` | 8,147 synthetic cases written by a local Qwen3.5-9B (state + questions, no answers) |
-| `data/synth/external.jsonl` | 1,100 cases written by other models (`casos.json` → `scripts.import_cases`) |
+| `data/synth/external.jsonl` | 3,035 cases written by other models (`scripts.import_cases`): 1,660 regular and 1,375 short ones (what a person types to an agent, with the questions Clio asks in production; `docs/prompt_casos_cortos.md`) |
 | `data/synth/rejected.txt` | broken cases, left out of training and of the queue |
 | `data/labels/jev.jsonl` | Jev's distributions (TypeSafe, the teacher) for every case |
 | `data/labels/ollama.jsonl` | test labels from a local model (not used for training) |
+| `data/author_gold.jsonl`, `data/second_opinion.jsonl` | the answers of the model that wrote a case and a blind second opinion: a question trains on the author's answer only when Jev or the second opinion agrees |
+| `data/cliolike.jsonl` | held-out short set (never trained on): 316 cases, 2,045 questions shaped like Clio's calls, written by one model and answered blind by another; only shared answers are kept |
 | `data/targets.jsonl` | the training targets: typed-decisions + synthetic, calibrated and rebalanced |
 | `data/user_targets.jsonl` | my labels (gold), except the ones in my personal test |
 | `data/reviewer_targets.jsonl` | answers from reviewers (other models), with lower weight |
@@ -237,7 +244,11 @@ python -m scripts.export_onnx --name v1                      # ONNX fp32 + int8
 python -m scripts.evaluate --model runs/v1/onnx              # typed-decisions test (official metrics)
 python -m scripts.build_hardlike                            # internal hard-like set (procedural, held-out tasks)
 python -m scripts.eval_hardlike --model runs/v1/onnx         # part of the promotion gate
+python -m scripts.eval_cliolike --model runs/v1/onnx         # held-out short set, scored as Clio uses the answers
 python -m scripts.eval_jevbench --model runs/v1/onnx --fetch --probes  # JevBench public items, local (reported only)
+python -m scripts.expand_short lote.jsonl > casos.jsonl      # compact short cases -> Clio's questions
+python -m scripts.import_cases casos.jsonl --source X --short  # short batch: no 120-character floor
+python -m scripts.second_opinion export f.jsonl --only-disagreeing  # questions where Jev differs from the author
 python -m scripts.import_queue                               # fill the doubtful queue
 python -m scripts.retrain                                    # Jev labels what's new, train, evaluate, promote
 python -m scripts.nightly                                    # automatic loop (off: runs/nightly.stop)
