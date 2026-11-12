@@ -21,6 +21,8 @@ from temis.schema import Answer, Question, parse_questions, render_state
 def _providers(prefer: str | None) -> list[str]:
     import onnxruntime as ort
     avail = ort.get_available_providers()
+    if prefer == "CPUExecutionProvider":
+        return [prefer]  # CPU only: no GPU provider loaded on the side (CPU benchmarks)
     order = [prefer] if prefer else []
     order += ["CUDAExecutionProvider", "CPUExecutionProvider"]
     return [p for p in dict.fromkeys(order) if p and p in avail]
@@ -58,6 +60,7 @@ class Decider:
         encs = [self.encoder.encode(q, state_text, context, max_len=2048 if context else self.long_max_len) for q in qs]
         self.last_input_tokens = sum(len(e.ids) for e in encs)  # read under the caller's lock (API usage)
         B, T, K = len(encs), max(len(e.ids) for e in encs), max(len(e.opt_pos) for e in encs)
+        self.last_padded_tokens = B * T  # what the model actually computes (questions padded to the longest)
         ids = np.zeros((B, T), np.int64)
         am = np.zeros((B, T), np.int64)
         pos = np.zeros((B, K), np.int64)
