@@ -159,19 +159,39 @@ def augment_pack(pack: dict, rng: random.Random | None, ctx_pool: list[str] | No
     return qs, ctx
 
 
-def encode_pack_one(enc: Encoder, pack: dict, qs, ctx, rng: random.Random | None, max_len: int) -> dict:
-    p = enc.encode_pack(qs, pack["state"], ctx, rng=rng, max_len=max_len)
-    return {"ids": p.ids, "opt_pos": p.opt_pos, "slots": p.slots, "targets": pack["targets"], "kinds": pack["kinds"]}
+def encode_pack_one(enc: Encoder, pack: dict, qs, ctx, rng: random.Random | None, max_len: int,
+                    which: list[int] | None = None, pack_no: int = 0) -> dict:
+    """One pack (or the questions `which` of it) encoded; `keys` = (pack_no, question index) per target."""
+    which = list(range(len(qs))) if which is None else which
+    p = enc.encode_pack([qs[i] for i in which], pack["state"], ctx, rng=rng, max_len=max_len)
+    return {"ids": p.ids, "opt_pos": p.opt_pos, "slots": p.slots, "targets": [pack["targets"][i] for i in which],
+            "kinds": [pack["kinds"][i] for i in which], "keys": [(pack_no, i) for i in which]}
 
 
 def encode_pack_twins(enc: Encoder, packs: list[dict], rng: random.Random, ctx_pool: list[str] | None,
-                      max_len: int) -> tuple[list[dict], list[dict]]:
+                      max_len: int, split: float = 0.0) -> tuple[list[dict], list[dict]]:
+    """Two encodings of the same packs. With probability `split` the second twin of a pack with 2+
+    questions has them spread over two packs, so the consistency term teaches the same answer
+    whatever the grouping (a call's questions arrive in any combination)."""
     a, b = [], []
-    for pk in packs:
+    for n, pk in enumerate(packs):
         qs, ctx = augment_pack(pk, rng, ctx_pool)
-        a.append(encode_pack_one(enc, pk, qs, ctx, rng, max_len))
-        b.append(encode_pack_one(enc, pk, qs, ctx, rng, max_len))
+        a.append(encode_pack_one(enc, pk, qs, ctx, rng, max_len, pack_no=n))
+        if len(qs) > 1 and rng.random() < split:
+            idx = list(range(len(qs)))
+            rng.shuffle(idx)
+            cut = rng.randint(1, len(idx) - 1)
+            for part in (sorted(idx[:cut]), sorted(idx[cut:])):
+                b.append(encode_pack_one(enc, pk, qs, ctx, rng, max_len, which=part, pack_no=n))
+        else:
+            b.append(encode_pack_one(enc, pk, qs, ctx, rng, max_len, pack_no=n))
     return a, b
+
+
+def twin_alignment(keys_a: list, keys_b: list) -> list[int]:
+    """Indices into the second twin's questions, in the first twin's question order."""
+    where = {k: i for i, k in enumerate(keys_b)}
+    return [where[k] for k in keys_a]
 
 
 def collate_packs(items: list[dict], device: str | torch.device = "cpu", k: int = 12) -> dict:
@@ -195,6 +215,7 @@ def collate_packs(items: list[dict], device: str | torch.device = "cpu", k: int 
     out["slots"] = [b["slots"] for b in items]
     out["kinds"] = kinds
     out["n"] = [len(t) for b in items for t in b["targets"]]
+    out["keys"] = [k for b in items for k in b.get("keys", [None] * len(b["targets"]))]
     return out
 
 
@@ -213,7 +234,9 @@ def pack_loss(model: Decisor, batch: dict, n_twin: int = 0, consistency: float =
         h = sum(len(s) for s in batch["slots"][:n_twin])
         n = batch["n"][:h]
         same = [list(range(x)) for x in n]
-        loss = loss + consistency * consistency_loss(lg[:h], lg[h:], mask[:h], mask[h:], same, same, n)
+        perm = torch.tensor(twin_alignment(batch["keys"][:h], batch["keys"][h:]), device=lg.device)
+        lb, mb = lg[h:][perm], mask[h:][perm]
+        loss = loss + consistency * consistency_loss(lg[:h], lb, mask[:h], mb, same, same, n)
     return loss
 
 
@@ -296,6 +319,8 @@ def parser() -> argparse.ArgumentParser:
     ap.add_argument("--val-limit", type=int, default=None, help="validate on the first N questions (smoke tests)")
     ap.add_argument("--layout", choices=["per_question", "packed"], default="per_question",
                     help="packed: every question of a case in one sequence, the state read once")
+    ap.add_argument("--split-twin", type=float, default=0.0,
+                    help="packed: chance that the second twin's questions are spread over two packs")
     ap.add_argument("--seed", type=int, default=0, help="data order, shuffles, augmentation and head init")
     ap.add_argument("--ckpt-tokens", type=int, default=None,
                     help="gradient checkpointing only for micro-batches over this many padded tokens "
@@ -362,7 +387,7 @@ def main() -> None:
                 break
             if packed:
                 if a.twin:
-                    enc_a, enc_b = encode_pack_twins(enc, chunk, rng, ctx_pool, a.long_max_len)
+                    enc_a, enc_b = encode_pack_twins(enc, chunk, rng, ctx_pool, a.long_max_len, a.split_twin)
                 else:
                     enc_a = [encode_pack_one(enc, pk, *augment_pack(pk, rng, ctx_pool), rng, a.long_max_len) for pk in chunk]
                     enc_b = []
@@ -428,7 +453,7 @@ def main() -> None:
     for s, idx in by.items():
         report[s] = metrics(lg[idx], tg[idx], mk[idx], temps, [kinds[i] for i in idx])
     meta = {"base": a.base, "init": a.init, "max_len": a.max_len, "long_max_len": a.long_max_len, "twin": a.twin,
-            "consistency": a.consistency, "bf16": bf16, "seed": a.seed, "ckpt_tokens": ckpt_tokens, "layout": a.layout, "attn": attn or "eager",
+            "consistency": a.consistency, "bf16": bf16, "seed": a.seed, "ckpt_tokens": ckpt_tokens, "layout": a.layout, "split_twin": a.split_twin, "attn": attn or "eager",
             "temperatures": temps, "val": report, "log": log,
             "n_train": len(train), "n_val": len(val), "created": time.strftime("%Y-%m-%d %H:%M:%S")}
     (out / "meta.json").write_text(json.dumps(meta, indent=2))

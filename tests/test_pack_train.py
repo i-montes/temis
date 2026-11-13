@@ -111,3 +111,51 @@ def test_twin_consistency_adds_to_the_loss_when_the_twins_disagree(tmp_path):
         plain = pack_loss(m, batch, n_twin=len(a), consistency=0.0).item()
         with_kl = pack_loss(m, batch, n_twin=len(a), consistency=0.5).item()
     assert with_kl > plain
+
+
+def test_a_split_twin_holds_the_same_questions_in_several_packs():
+    from scripts.train import encode_pack_twins, group_packs
+    from temis.encoding import Encoder
+    from tests.test_core import tok_path
+    enc = Encoder(tok_path(), 512)
+    packs = group_packs([ex(QS[0]), ex(QS[1]), ex(QS[2]), ex(QS[0], case="c2")])
+    a, b = encode_pack_twins(enc, packs, random.Random(0), None, 512, split=1.0)
+    assert len(a) == 2 and len(b) == 3          # the 3-question pack is split in two, the single one is not
+    keys = lambda items: sorted(k for it in items for k in it["keys"])  # noqa: E731
+    assert keys(a) == keys(b) == [(0, 0), (0, 1), (0, 2), (1, 0)]
+    a, b = encode_pack_twins(enc, packs, random.Random(0), None, 512, split=0.0)
+    assert len(b) == 2
+    for seed in range(20):   # never an empty half
+        _, b = encode_pack_twins(enc, packs, random.Random(seed), None, 512, split=1.0)
+        assert all(it["targets"] for it in b)
+
+
+def test_twin_consistency_compares_the_same_question_across_a_split(tmp_path):
+    from scripts.train import twin_alignment
+    ka = [(0, 0), (0, 1), (0, 2), (1, 0)]
+    kb = [(0, 2), (0, 0), (1, 0), (0, 1)]
+    assert [kb[i] for i in twin_alignment(ka, kb)] == ka
+
+
+def test_split_twin_consistency_matches_each_question_with_itself(tmp_path):
+    from scripts.train import collate_packs, encode_pack_twins, group_packs, pack_logits, pack_loss, twin_alignment
+    from temis.encoding import Encoder
+    from temis.model import Decisor, consistency_loss
+    from tests.tiny import mrbert_tokenizer, tiny_base
+    enc = Encoder(mrbert_tokenizer(), 256)
+    m = Decisor(tiny_base(tmp_path), attn="eager").eval()
+    torch.manual_seed(0)
+    for lin in (m.head[0], m.head[3]):
+        torch.nn.init.normal_(lin.weight, std=3.0)
+    packs = group_packs([ex(QS[0]), ex(QS[1]), ex(QS[2])])
+    a, b = encode_pack_twins(enc, packs, random.Random(5), None, 256, split=1.0)
+    batch = collate_packs(a + b)
+    h = sum(len(x["targets"]) for x in a)
+    with torch.no_grad():
+        lg, mask = pack_logits(m, batch)
+        perm = twin_alignment(batch["keys"][:h], batch["keys"][h:])
+        same = [list(range(n)) for n in batch["n"][:h]]
+        want = consistency_loss(lg[:h], lg[h:][perm], mask[:h], mask[h:][perm], same, same, batch["n"][:h]).item()
+        got = pack_loss(m, batch, len(a), 1.0).item() - pack_loss(m, batch, len(a), 0.0).item()
+    assert batch["keys"][h:] != batch["keys"][:h]   # the split really reordered the questions
+    assert abs(got - want) < 1e-5
