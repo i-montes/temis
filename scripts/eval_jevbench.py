@@ -12,11 +12,10 @@ from __future__ import annotations
 import argparse
 import json
 import time
-from pathlib import Path
 
 from temis.jevbench import (PUBLIC_DIR, fetch_public, load_public, options_only_request, probs_for_labels,
                             rotate_question, score_item, summarize, to_request)
-from temis.runtime import Decider
+from temis.runtime import Decider, eval_path
 
 
 def run(d: Decider, items: list[dict], probes: bool = False) -> list[dict]:
@@ -77,7 +76,7 @@ def main() -> None:
     s["rows"] = [{k: r.get(k) for k in ("id", "tier", "family", "type", "predicted", "correct", "v15_correct", "conf", "ms")}
                  for r in rows]
     print_report(s)
-    out = Path(a.model).parent / "eval_jevbench.json"
+    out = eval_path(a.model, "eval_jevbench")
     out.write_text(json.dumps(s, indent=2))
     print(f"[eval_jevbench] wrote {out}")
 

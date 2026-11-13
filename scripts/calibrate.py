@@ -41,7 +41,7 @@ def main() -> None:
     ap.add_argument("--name", required=True)
     a = ap.parse_args()
     cfg_path = Path("runs") / a.name / "onnx" / "config.json"
-    d = Decider(cfg_path.parent, calibration="soft")
+    d = Decider(cfg_path.parent, calibration="soft", backend="onnx")  # temperatures for what ships: ONNX int8
     _, val = load_examples([])
     by_kind: dict[str, list] = defaultdict(list)
     by_kind_n: dict[tuple[str, int], list] = defaultdict(list)
