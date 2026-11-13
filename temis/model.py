@@ -12,15 +12,28 @@ KIND_ID = {"choice": 0, "score": 1, "noul": 2}
 
 class Decisor(nn.Module):
     def __init__(self, base: str = "jhu-clsp/mmBERT-small", attn: str | None = None) -> None:
+        """attn: transformers' implementation ("eager", "sdpa"...), or "banded" (temis/banded.py: the
+        sliding-window layers read only their window; for the CPU export)."""
         super().__init__()
-        kw = {"attn_implementation": attn} if attn else {}
+        self.banded = attn == "banded"
+        kw = {"attn_implementation": "eager" if self.banded else attn} if attn else {}
         self.encoder = AutoModel.from_pretrained(base, **kw)
+        if self.banded:
+            from temis import banded
+            banded.register()
+            self.encoder.config._attn_implementation = banded.NAME
         h = self.encoder.config.hidden_size
         self.head = nn.Sequential(nn.Linear(2 * h, h), nn.GELU(), nn.Dropout(0.1), nn.Linear(h, 1))
 
+    def encode(self, input_ids: Tensor, attention_mask: Tensor) -> Tensor:
+        if self.banded:
+            from temis.banded import key_mask
+            attention_mask = key_mask(attention_mask)
+        return self.encoder(input_ids=input_ids, attention_mask=attention_mask).last_hidden_state
+
     def forward(self, input_ids: Tensor, attention_mask: Tensor, opt_pos: Tensor, opt_mask: Tensor) -> Tensor:
         """input_ids/attention_mask (B, T); opt_pos/opt_mask (B, K) -> logits (B, K)."""
-        hs = self.encoder(input_ids=input_ids, attention_mask=attention_mask).last_hidden_state
+        hs = self.encode(input_ids, attention_mask)
         opt = torch.gather(hs, 1, opt_pos.unsqueeze(-1).expand(-1, -1, hs.size(-1)))  # (B, K, H)
         cls = hs[:, :1].expand_as(opt)
         logits = self.head(torch.cat([opt, opt * cls], -1)).squeeze(-1)
