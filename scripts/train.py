@@ -33,7 +33,7 @@ import torch
 from temis.data.procedural import read_cases as read_procedural_cases
 from temis.data.sources import load_synth, load_td, read_jsonl
 from temis.encoding import Encoder
-from temis.model import Decisor, collate, consistency_loss, decision_loss, fit_temperature
+from temis.model import Decisor, collate, consistency_loss, decision_loss, fit_temperature, pack_question_logits
 from temis.schema import NOUL_DEFAULT, parse_questions, render_state
 
 BASE = "jhu-clsp/mmBERT-small"  # default; --base overrides (saved in meta.json)
@@ -66,7 +66,8 @@ def load_examples(extra: list[str]) -> tuple[list[dict], list[dict]]:
         if q is None or len(r["target"]) != q.n:
             continue
         ex = {"q": q, "state": render_state(c["state"]), "target": r["target"], "kind": q.kind,
-              "source": r.get("source", "synth"), "weight": float(r.get("weight", 1.0))}
+              "source": r.get("source", "synth"), "weight": float(r.get("weight", 1.0)),
+              "case": f"{r.get('source', 'synth')}:{r['id']}"}
         key = r["id"] if r.get("source") == "td-train" else str(r.get("schema_id", r["id"]))
         (val if is_val(key) and r.get("source") != "user" else train).append(ex)
     return train, val
@@ -128,6 +129,105 @@ def batches(exs: list[dict], bs: int, rng: random.Random, long_bs: int | None = 
         bl = split
     rng.shuffle(bl)
     return bl
+
+
+# ---- packed layout: every question of a case in one sequence (temis/encoding.py Encoder.encode_pack)
+
+def group_packs(exs: list[dict]) -> list[dict]:
+    """Per-question examples -> one pack per case. A question repeated in a case (rebalancing copies,
+    duplicated rows) goes to a second pack, a third copy to a third, and so on."""
+    by_case: dict[str, list[list[dict]]] = {}
+    for e in exs:
+        packs = by_case.setdefault(e["case"], [])
+        j = 0
+        while j < len(packs) and any(x["q"].qid == e["q"].qid for x in packs[j]):
+            j += 1
+        if j == len(packs):
+            packs.append([])
+        packs[j].append(e)
+    return [{"case": case, "qs": [x["q"] for x in g], "targets": [x["target"] for x in g],
+             "kinds": [x["kind"] for x in g], "state": g[0]["state"], "source": g[0]["source"]}
+            for case, packs in by_case.items() for g in packs]
+
+
+def augment_pack(pack: dict, rng: random.Random | None, ctx_pool: list[str] | None):
+    """The training-time augmentation of a pack, drawn once so twins differ only in question order,
+    option order and dropout (as augment() does per question)."""
+    ctx = rng.choice(ctx_pool)[:600] if rng is not None and ctx_pool and rng.random() < 0.15 else None
+    qs = [dataclasses.replace(q, descriptions=(NOUL_DEFAULT["false"], NOUL_DEFAULT["true"]))
+          if rng is not None and q.kind == "noul" and rng.random() < 0.3 else q for q in pack["qs"]]
+    return qs, ctx
+
+
+def encode_pack_one(enc: Encoder, pack: dict, qs, ctx, rng: random.Random | None, max_len: int) -> dict:
+    p = enc.encode_pack(qs, pack["state"], ctx, rng=rng, max_len=max_len)
+    return {"ids": p.ids, "opt_pos": p.opt_pos, "slots": p.slots, "targets": pack["targets"], "kinds": pack["kinds"]}
+
+
+def encode_pack_twins(enc: Encoder, packs: list[dict], rng: random.Random, ctx_pool: list[str] | None,
+                      max_len: int) -> tuple[list[dict], list[dict]]:
+    a, b = [], []
+    for pk in packs:
+        qs, ctx = augment_pack(pk, rng, ctx_pool)
+        a.append(encode_pack_one(enc, pk, qs, ctx, rng, max_len))
+        b.append(encode_pack_one(enc, pk, qs, ctx, rng, max_len))
+    return a, b
+
+
+def collate_packs(items: list[dict], device: str | torch.device = "cpu", k: int = 12) -> dict:
+    T = ((max(len(b["ids"]) for b in items) + 63) // 64) * 64
+    M = max(len(b["opt_pos"]) for b in items)
+    B = len(items)
+    ids = torch.zeros(B, T, dtype=torch.long)
+    am = torch.zeros(B, T, dtype=torch.long)
+    pos = torch.zeros(B, M, dtype=torch.long)
+    om = torch.zeros(B, M, dtype=torch.bool)
+    for i, b in enumerate(items):
+        ids[i, :len(b["ids"])] = torch.tensor(b["ids"])
+        am[i, :len(b["ids"])] = 1
+        pos[i, :len(b["opt_pos"])] = torch.tensor(b["opt_pos"])
+        om[i, :len(b["opt_pos"])] = True
+    tg = [t + [0.0] * (k - len(t)) for b in items for t in b["targets"]]
+    kinds = [kd for b in items for kd in b["kinds"]]
+    out = {"input_ids": ids, "attention_mask": am, "opt_pos": pos, "opt_mask": om, "target": torch.tensor(tg),
+           "is_score": torch.tensor([kd == "score" for kd in kinds])}
+    out = {key: v.to(device) for key, v in out.items()}
+    out["slots"] = [b["slots"] for b in items]
+    out["kinds"] = kinds
+    out["n"] = [len(t) for b in items for t in b["targets"]]
+    return out
+
+
+def pack_logits(model: Decisor, batch: dict, autocast=None):
+    with autocast() if autocast else contextlib.nullcontext():
+        marker = model(batch["input_ids"], batch["attention_mask"], batch["opt_pos"], batch["opt_mask"])
+    return pack_question_logits(marker.float(), batch["slots"])
+
+
+def pack_loss(model: Decisor, batch: dict, n_twin: int = 0, consistency: float = 0.0, autocast=None):
+    """Decision loss over every question of every pack; with twins (the first n_twin packs and the
+    rest are the same packs reshuffled) plus the symmetric KL between them, both already in option order."""
+    lg, mask = pack_logits(model, batch, autocast)
+    loss = decision_loss(lg, batch["target"], mask, batch["is_score"])
+    if n_twin and consistency > 0:
+        h = sum(len(s) for s in batch["slots"][:n_twin])
+        n = batch["n"][:h]
+        same = [list(range(x)) for x in n]
+        loss = loss + consistency * consistency_loss(lg[:h], lg[h:], mask[:h], mask[h:], same, same, n)
+    return loss
+
+
+@torch.no_grad()
+def predict_packs(model: Decisor, enc: Encoder, packs: list[dict], device, max_len: int, bs: int = 16, autocast=None):
+    model.eval()
+    logits, targets, masks, kinds, srcs = [], [], [], [], []
+    for i in range(0, len(packs), bs):
+        chunk = packs[i:i + bs]
+        b = collate_packs([encode_pack_one(enc, pk, pk["qs"], None, None, max_len) for pk in chunk], device)
+        lg, mk = pack_logits(model, b, autocast)
+        logits.append(lg.cpu()); targets.append(b["target"].cpu()); masks.append(mk.cpu())
+        kinds += b["kinds"]; srcs += [pk["source"] for pk in chunk for _ in pk["qs"]]
+    return torch.cat(logits), torch.cat(targets), torch.cat(masks), kinds, srcs
 
 
 @torch.no_grad()
@@ -194,6 +294,8 @@ def parser() -> argparse.ArgumentParser:
     ap.add_argument("--long-bs", type=int, default=4, help="batch size for batches holding a long state")
     ap.add_argument("--bf16", action=argparse.BooleanOptionalAction, default=None, help="default: on CUDA only")
     ap.add_argument("--val-limit", type=int, default=None, help="validate on the first N questions (smoke tests)")
+    ap.add_argument("--layout", choices=["per_question", "packed"], default="per_question",
+                    help="packed: every question of a case in one sequence, the state read once")
     ap.add_argument("--seed", type=int, default=0, help="data order, shuffles, augmentation and head init")
     ap.add_argument("--ckpt-tokens", type=int, default=None,
                     help="gradient checkpointing only for micro-batches over this many padded tokens "
@@ -216,14 +318,22 @@ def main() -> None:
 
     enc = Encoder(tokenizer_path(a.base), a.max_len)
     train, val = load_examples(a.extra)
+    packed = a.layout == "packed"
+    if packed:  # same questions, grouped by case: val metrics stay comparable with the other layout
+        train, val = group_packs(train), group_packs(val)
     val = val[: a.val_limit] if a.val_limit else val
-    for ex in train:
-        ex["ntok"] = len(enc._ids(ex["state"]))  # for length batching (tokenizers: a few seconds)
-    print(f"[train] {len(train)} train / {len(val)} val questions on {device} "
+    for ex in train:  # for length batching (tokenizers: a few seconds)
+        ex["ntok"] = len(enc._ids(ex["state"])) + (len(enc.question_ids_pack(ex["qs"])) if packed else 0)
+    print(f"[train] {len(train)} train / {len(val)} val {'packs' if packed else 'questions'} on {device} "
           f"(twin={a.twin}, consistency={a.consistency}, long_max_len={a.long_max_len}, bf16={bf16}, attn={attn or 'eager'}, "
           f"seed={a.seed}, checkpointing above {ckpt_tokens} tokens)",
           flush=True)
     ctx_pool = [e["state"] for e in train[:5000]]
+
+    def validate():
+        if packed:
+            return predict_packs(model, enc, val, device, a.long_max_len, autocast=autocast)
+        return predict(model, enc, val, device, a.max_len, long_max_len=a.long_max_len, autocast=autocast)
 
     model = Decisor(a.base, attn=attn)
     if a.init:
@@ -250,24 +360,38 @@ def main() -> None:
         for chunk in batches(train, a.bs, rng, a.long_bs, a.max_len):
             if step >= total:
                 break
-            if a.twin:
+            if packed:
+                if a.twin:
+                    enc_a, enc_b = encode_pack_twins(enc, chunk, rng, ctx_pool, a.long_max_len)
+                else:
+                    enc_a = [encode_pack_one(enc, pk, *augment_pack(pk, rng, ctx_pool), rng, a.long_max_len) for pk in chunk]
+                    enc_b = []
+                b = collate_packs(enc_a + enc_b, device)
+                set_checkpointing(model, needs_checkpointing(*b["input_ids"].shape, ckpt_tokens))
+                loss = pack_loss(model, b, len(enc_a) if enc_b else 0, a.consistency, autocast)
+                (loss / a.accum).backward()
+                micro += 1
+                if micro % a.accum:
+                    continue
+            elif a.twin:
                 enc_a, enc_b = encode_twins(enc, chunk, rng, ctx_pool, a.max_len, a.long_max_len)
             else:
                 enc_a, enc_b = encode_batch(enc, chunk, rng, ctx_pool, a.max_len, a.long_max_len), []
-            b = collate(enc_a + enc_b, device)
-            set_checkpointing(model, needs_checkpointing(*b["input_ids"].shape, ckpt_tokens))
-            with autocast() if autocast else contextlib.nullcontext():
-                logits = model(b["input_ids"], b["attention_mask"], b["opt_pos"], b["opt_mask"])
-            loss = decision_loss(logits, b["target"], b["opt_mask"], b["is_score"])
-            if a.twin and a.consistency > 0:
-                h = len(enc_a)
-                loss = loss + a.consistency * consistency_loss(
-                    logits[:h], logits[h:], b["opt_mask"][:h], b["opt_mask"][h:],
-                    [e["order"] for e in enc_a], [e["order"] for e in enc_b], [e["n"] for e in enc_a])
-            (loss / a.accum).backward()
-            micro += 1
-            if micro % a.accum:
-                continue
+            if not packed:
+                b = collate(enc_a + enc_b, device)
+                set_checkpointing(model, needs_checkpointing(*b["input_ids"].shape, ckpt_tokens))
+                with autocast() if autocast else contextlib.nullcontext():
+                    logits = model(b["input_ids"], b["attention_mask"], b["opt_pos"], b["opt_mask"])
+                loss = decision_loss(logits, b["target"], b["opt_mask"], b["is_score"])
+                if a.twin and a.consistency > 0:
+                    h = len(enc_a)
+                    loss = loss + a.consistency * consistency_loss(
+                        logits[:h], logits[h:], b["opt_mask"][:h], b["opt_mask"][h:],
+                        [e["order"] for e in enc_a], [e["order"] for e in enc_b], [e["n"] for e in enc_a])
+                (loss / a.accum).backward()
+                micro += 1
+                if micro % a.accum:
+                    continue
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             opt.step(); sched.step(); step += 1
             opt.zero_grad(set_to_none=True)
@@ -278,7 +402,7 @@ def main() -> None:
                     torch.cuda.empty_cache()
                 print(f"[train] step {step}/{total} loss {loss.item():.4f} {(time.time() - t0) / step:.2f}s/step", flush=True)
             if step % steps_per_epoch == 0 or step == total:
-                lg, tg, mk, kinds, srcs = predict(model, enc, val, device, a.max_len, long_max_len=a.long_max_len, autocast=autocast)
+                lg, tg, mk, kinds, srcs = validate()
                 m = metrics(lg, tg, mk, None, kinds)
                 log.append({"step": step, **m})
                 print(f"[val] step {step} {m}", flush=True)
@@ -291,7 +415,7 @@ def main() -> None:
     # calibration on val with the best weights
     model.load_state_dict(torch.load(out / "model.pt", map_location="cpu"))
     model.to(device)
-    lg, tg, mk, kinds, srcs = predict(model, enc, val, device, a.max_len, long_max_len=a.long_max_len, autocast=autocast)
+    lg, tg, mk, kinds, srcs = validate()
     temps = {}
     for k in ("choice", "score", "noul"):
         idx = [i for i, x in enumerate(kinds) if x == k]
@@ -304,7 +428,7 @@ def main() -> None:
     for s, idx in by.items():
         report[s] = metrics(lg[idx], tg[idx], mk[idx], temps, [kinds[i] for i in idx])
     meta = {"base": a.base, "init": a.init, "max_len": a.max_len, "long_max_len": a.long_max_len, "twin": a.twin,
-            "consistency": a.consistency, "bf16": bf16, "seed": a.seed, "ckpt_tokens": ckpt_tokens, "attn": attn or "eager",
+            "consistency": a.consistency, "bf16": bf16, "seed": a.seed, "ckpt_tokens": ckpt_tokens, "layout": a.layout, "attn": attn or "eager",
             "temperatures": temps, "val": report, "log": log,
             "n_train": len(train), "n_val": len(val), "created": time.strftime("%Y-%m-%d %H:%M:%S")}
     (out / "meta.json").write_text(json.dumps(meta, indent=2))

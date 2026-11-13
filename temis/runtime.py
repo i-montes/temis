@@ -98,6 +98,8 @@ class Decider:
         if per_question is None:
             per_question = self.backend == "onnx" and self.session.get_providers()[0] == "CPUExecutionProvider"
         self.per_question = per_question
+        # "packed": every question of a call in one sequence, the state read once (Encoder.encode_pack)
+        self.layout = self.config.get("layout", "per_question")
         # long states are read up to long_max_len tokens (short ones cost the same as before)
         self.long_max_len = int(self.config.get("long_max_len", 1024))
         self.encoder = Encoder(str(d / "tokenizer.json"), max(int(self.config.get("max_len", 1024)), self.long_max_len))
@@ -110,6 +112,8 @@ class Decider:
         self.temps = {"soft": self.temps_soft, "accuracy": acc, "jevbench": jev}[self.calibration] or {}
 
     def logits(self, qs: list[Question], state_text: str, context: str | None = None) -> list[np.ndarray]:
+        if self.layout == "packed":
+            return self._logits_packed(qs, state_text, context)
         encs = [self.encoder.encode(q, state_text, context, max_len=2048 if context else self.long_max_len) for q in qs]
         self.last_input_tokens = sum(len(e.ids) for e in encs)  # read under the caller's lock (API usage)
         groups = [[i] for i in range(len(qs))] if self.per_question else [list(range(len(qs)))]
@@ -118,6 +122,32 @@ class Decider:
         for g in groups:
             for i, lg in zip(g, self._run([qs[i] for i in g], [encs[i] for i in g])):
                 res[i] = lg
+        return res
+
+    def _logits_packed(self, qs: list[Question], state_text: str, context: str | None) -> list[np.ndarray]:
+        from temis.encoding import split_for_packs
+        max_len = 2048 if context else self.long_max_len
+        groups = split_for_packs(self.encoder, qs, max_len)
+        packs = [self.encoder.encode_pack([qs[i] for i in g], state_text, context, max_len=max_len) for g in groups]
+        self.last_input_tokens = sum(len(p.ids) for p in packs)
+        self.last_padded_tokens = 0
+        runs = [[i] for i in range(len(packs))] if self.per_question else [list(range(len(packs)))]
+        res: list[np.ndarray] = [None] * len(qs)  # type: ignore[list-item]
+        for r in runs:
+            B, T, M = len(r), max(len(packs[i].ids) for i in r), max(len(packs[i].opt_pos) for i in r)
+            self.last_padded_tokens += B * T
+            ids, am = np.zeros((B, T), np.int64), np.zeros((B, T), np.int64)
+            pos, om = np.zeros((B, M), np.int64), np.zeros((B, M), np.int64)
+            for j, i in enumerate(r):
+                p = packs[i]
+                ids[j, :len(p.ids)] = p.ids
+                am[j, :len(p.ids)] = 1
+                pos[j, :len(p.opt_pos)] = p.opt_pos
+                om[j, :len(p.opt_pos)] = 1
+            out = self.session.run(None, {"input_ids": ids, "attention_mask": am, "opt_pos": pos, "opt_mask": om})[0]
+            for j, i in enumerate(r):
+                for qi, lg in zip(groups[i], slots_to_logits(out[j], packs[i].slots)):
+                    res[qi] = lg
         return res
 
     def _run(self, qs: list[Question], encs: list) -> list[np.ndarray]:
@@ -154,6 +184,11 @@ class Decider:
         for q, lg in zip(qs, self.logits(qs, st, context)):
             out[q.qid] = make_answer(q, self.probabilities(q, lg))
         return out
+
+
+def slots_to_logits(marker: np.ndarray, slots: list[list[int]]) -> list[np.ndarray]:
+    """One pack's marker logits (M,) -> per-question logits in option order (-1 = fixed 0)."""
+    return [np.array([0.0 if m < 0 else marker[m] for m in q], np.float32) for q in slots]
 
 
 def make_answer(q: Question, p: np.ndarray) -> Answer:

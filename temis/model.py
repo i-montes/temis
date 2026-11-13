@@ -27,6 +27,23 @@ class Decisor(nn.Module):
         return logits.masked_fill(~opt_mask, -1e4)
 
 
+def pack_question_logits(marker: Tensor, slots: list[list[list[int]]], k: int = 12) -> tuple[Tensor, Tensor]:
+    """Packed layout: marker logits (B, M) and, per pack, per question, per option, the marker index
+    (or -1 for a fixed 0) -> per-question logits (Q, k) in each question's own option order, and
+    their option mask. Questions are numbered pack by pack."""
+    B, M = marker.shape
+    flat = torch.cat([marker.reshape(-1), marker.new_zeros(1)])  # the last entry is the fixed 0
+    zero = B * M
+    idx, mask = [], []
+    for b, pack in enumerate(slots):
+        for q in pack:
+            idx.append([zero if m < 0 else b * M + m for m in q] + [zero] * (k - len(q)))
+            mask.append([True] * len(q) + [False] * (k - len(q)))
+    idx_t = torch.tensor(idx, device=marker.device)
+    mask_t = torch.tensor(mask, device=marker.device)
+    return flat[idx_t].masked_fill(~mask_t, -1e4), mask_t
+
+
 def decision_loss(logits: Tensor, target: Tensor, mask: Tensor, is_score: Tensor,
                   brier_w: float = 0.25, ordinal_w: float = 0.25) -> Tensor:
     logp = logits.float().masked_fill(~mask, -1e4).log_softmax(-1)
@@ -104,4 +121,4 @@ def fit_temperature(logits: Tensor, target: Tensor, mask: Tensor) -> float:
     return best_t
 
 
-__all__ = ["Decisor", "decision_loss", "consistency_loss", "align_to_options", "collate", "fit_temperature", "KIND_ID", "F"]
+__all__ = ["Decisor", "pack_question_logits", "decision_loss", "consistency_loss", "align_to_options", "collate", "fit_temperature", "KIND_ID", "F"]

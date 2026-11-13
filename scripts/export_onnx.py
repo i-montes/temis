@@ -129,7 +129,8 @@ def main() -> None:
     (out / "config.json").write_text(json.dumps({"version": a.name, "name": NAME, "semver": semver, "base": base,
                                                  "max_len": meta["max_len"], "long_max_len": inference_long_max_len(meta),
                                                  "temperatures": meta["temperatures"],
-                                                 "int8_fp32_layers": fp32_layers},
+                                                 "int8_fp32_layers": fp32_layers,
+                                                 "layout": meta.get("layout", "per_question")},
                                                 indent=2))
     print(f"[export] {NAME} {semver} ({a.name})")
     # parity check

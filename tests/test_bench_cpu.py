@@ -126,7 +126,7 @@ def test_logits_record_real_and_padded_tokens():
 
     d = object.__new__(Decider)
     d.encoder = Encoder(hf_hub_download("jhu-clsp/mmBERT-small", "tokenizer.json"), 1024)
-    d.long_max_len, d.session, d.per_question = 1024, Session(), False  # batched: padded to the longest
+    d.long_max_len, d.session, d.per_question, d.layout = 1024, Session(), False, "per_question"  # batched
     qs = parse_questions({"a": {"type": "noul", "instructions": "x"},
                           "b": {"type": "noul", "instructions": "a much longer instruction with many more words in it"}})
     d.logits(qs, "state")
