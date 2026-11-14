@@ -88,6 +88,11 @@ version (Temis 2.0.0).
   0.507 to 0.550. Typed-decisions and JevBench (58.4 → 57.1 %) move within their noise.
 - CPU latency (int8): 29 ms median per call on Clio's benchmark (1 to 4 questions) on a Mac; about
   100–170 ms for 3 questions on the 4-core ARM VPS.
+- On CPU each question gets its own forward pass at its own length (a batch costs the sum of its rows
+  there, so padding to the longest question was pure waste). On 2.4.0 int8 (Ryzen 5700X, 4 threads):
+  typed-decisions 856 → 682 ms per case, hard-like 1,322 → 1,176 ms, same answers within noise
+  (td 0.772 → 0.770, hard-like 0.550 → 0.543, Clio and JevBench identical), and an answer no longer
+  depends on which other questions came in the same call.
 - The 1.0.10 jump on `op` comes from the rebalance: Qwen's memory cases were 51 % "corrects a
   memory" and 4 % "already stored", so Temis called every already-stored proposal a correction
   (0 of 6 on Clio's benchmark). After rebalancing and adding contrast pairs it gets 5 of 6.

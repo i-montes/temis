@@ -66,12 +66,18 @@ class TorchSession:
 
 class Decider:
     def __init__(self, model_dir: str | Path, int8: bool = True, provider: str | None = None,
-                 threads: int = 4, calibration: str = "accuracy", backend: str | None = None) -> None:
+                 threads: int = 4, calibration: str = "accuracy", backend: str | None = None,
+                 per_question: bool | None = None) -> None:
         """calibration: "accuracy" (a 70 % answer is right ~70 % of the time; default), "soft"
         (matches the teachers' distributions, which is what the KL benchmarks measure) or "jevbench"
         (by type and number of options, decisive on yes/no; see temis/calibration.py).
         backend: "onnx" (default) or "torch" (fp32 weights in ../model.pt, GPU if any); None reads
-        TEMIS_BACKEND."""
+        TEMIS_BACKEND.
+        per_question: one forward pass per question, at its own length. Default on the CPU: there a
+        batch costs the sum of its rows, so padding every question to the longest one is pure waste
+        (2.4.0 int8, 4 threads: p50 579 -> 522 ms, typed-decisions 1001 -> 742 ms), and with dynamic
+        int8 the padding rows even move the other questions' quantization scale, so an answer depended
+        on which questions came with it. GPUs keep batching."""
         d = Path(model_dir)
         self.config = json.loads((d / "config.json").read_text())
         self.version = self.config.get("version", d.parent.name)  # run id, e.g. v1108-1022
@@ -89,6 +95,9 @@ class Decider:
             self.session = ort.InferenceSession(str(f), so, providers=_providers(provider))
         else:
             raise ValueError(f"unknown backend {self.backend!r} (onnx or torch)")
+        if per_question is None:
+            per_question = self.backend == "onnx" and self.session.get_providers()[0] == "CPUExecutionProvider"
+        self.per_question = per_question
         # long states are read up to long_max_len tokens (short ones cost the same as before)
         self.long_max_len = int(self.config.get("long_max_len", 1024))
         self.encoder = Encoder(str(d / "tokenizer.json"), max(int(self.config.get("max_len", 1024)), self.long_max_len))
@@ -103,8 +112,17 @@ class Decider:
     def logits(self, qs: list[Question], state_text: str, context: str | None = None) -> list[np.ndarray]:
         encs = [self.encoder.encode(q, state_text, context, max_len=2048 if context else self.long_max_len) for q in qs]
         self.last_input_tokens = sum(len(e.ids) for e in encs)  # read under the caller's lock (API usage)
+        groups = [[i] for i in range(len(qs))] if self.per_question else [list(range(len(qs)))]
+        self.last_padded_tokens = 0  # what the model actually computes (a batch is padded to its longest)
+        res: list[np.ndarray] = [None] * len(qs)  # type: ignore[list-item]
+        for g in groups:
+            for i, lg in zip(g, self._run([qs[i] for i in g], [encs[i] for i in g])):
+                res[i] = lg
+        return res
+
+    def _run(self, qs: list[Question], encs: list) -> list[np.ndarray]:
         B, T, K = len(encs), max(len(e.ids) for e in encs), max(len(e.opt_pos) for e in encs)
-        self.last_padded_tokens = B * T  # what the model actually computes (questions padded to the longest)
+        self.last_padded_tokens += B * T
         ids = np.zeros((B, T), np.int64)
         am = np.zeros((B, T), np.int64)
         pos = np.zeros((B, K), np.int64)
