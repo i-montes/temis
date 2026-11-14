@@ -102,7 +102,7 @@ version (Temis 2.0.0).
 [JevBench](https://github.com/fstandhartinger/jevbench) is the community benchmark for typed
 decision models. Only part of it is public, so Temis was run on the 231 public items of its v1.2
 set (easy 48, standard 72, hard 111), through JevBench's own TypeSafe adapter against the Temis API
-(the model alone, on a Mac CPU). JevBench publishes per-item outcomes of 52 other systems on those
+(the model alone, on CPU: a Mac for 1.0.11 and 2.0.0, a Ryzen 5700X for 2.4.0). JevBench publishes per-item outcomes of 52 other systems on those
 same items, so the comparison is item by item. This is **not** an official JevBench score, which
 also needs the sealed and judge items.
 
@@ -114,6 +114,7 @@ also needs the sealed and judge items.
 | GLiNER2 (gliner2.5-base) | 98 % | 64 % | 37 % | 58.0 % |
 | **Temis 2.0.0 (MrBERT-es, int8)** | **94 %** | **57 %** | **41 %** | **57.1 % (#40 of 53)** |
 | Temis 1.0.11 (mmBERT-base, int8) | 100 % | 65 % | 33 % | 57.1 % |
+| Temis 2.4.0 (candidate, MrBERT-es, int8) | 92 % | 61 % | 39 % | 56.7 % (#40 of 53, tied with GLiNER2 large) |
 | Verdict (ModernBERT-base, 151M) | 85 % | 62 % | 38 % | 55.4 % |
 
 - Temis sits with the other encoders of its size; the systems above it are 4B–27B-parameter LLMs.
@@ -122,9 +123,15 @@ also needs the sealed and judge items.
   (hard 33 % → 34 %), so the limit is reasoning, not truncation.
 - Speed and cost are where it shines: 24 ms median per decision on CPU, and no API cost.
 - 2.0.0 and 1.0.11 tie overall: 2.0.0 is better on hard items (+8) and worse on easy and standard ones.
+- 2.4.0 lands in the same place as 2.0.0 (131 of 231 against 132): it gets 28 items right that
+  2.0.0 missed and misses 29 that 2.0.0 got. It is better on standard items (+4) and worse on
+  easy and hard ones (−2 and −3).
+- JevBench counts an answer as wrong when its probabilities add up to 1.02 or more (or 0.98 or
+  less). The API rounds each probability to 2 decimals, so an answer with 5 options can get
+  there: that happened to 3 answers of 2.4.0 (one of them was right) and to 2 of 2.0.0.
 - JevBench measures general decisions (insurance, finance, rules, support), not Clio's. On what
   Temis was trained for (memory, tools, security) 2.0.0 gets 88 % on Clio's benchmark.
-- Per-item answers, summaries and run manifests for both versions: [`benchmarks/jevbench/`](benchmarks/jevbench/).
+- Per-item answers, summaries and run manifests for the three versions: [`benchmarks/jevbench/`](benchmarks/jevbench/).
 - `scripts/eval_jevbench.py` reproduces this locally (57.6 % for 1.0.11 with the same calibration)
   and adds an estimate of the v1.5 rules (noul abstention band, score by expected level) plus bias
   probes. It runs after every training; its accuracy never decides which version goes live (only a
