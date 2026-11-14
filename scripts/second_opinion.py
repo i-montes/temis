@@ -6,7 +6,7 @@
 --as gold: the answers are the AUTHOR's own (the model that wrote the cases) -> data/author_gold.jsonl;
 build_targets then uses them as the target when Jev or the second opinion agrees (temis/data/balance.py::
 hard_target). --only-disagreeing: export only questions where Jev's top option differs from the
-author's gold (the ones a second opinion can settle).
+author's gold (the ones a second opinion can settle), in any family that carries it.
 
 export: hard cases (domain hard:*) that have no second opinion yet, one per line:
         {"id", "family", "state", "questions", "rationale"} (no labels of any kind).
@@ -36,7 +36,7 @@ def load_second_opinions(path: Path = SECOND_OPINION) -> dict[tuple[str, str], s
 def load_author_gold(path: Path = AUTHOR_GOLD) -> dict[tuple[str, str], str]:
     """The author's answers: from data/author_gold.jsonl plus the `author_gold` field of the cases."""
     out = {(r["id"], r["qid"]): str(r["label"]) for r in read_jsonl(path) if r.get("label") is not None}
-    for c in hard_cases():
+    for c in load_synth():
         for qid, label in (c.get("author_gold") or {}).items():
             out.setdefault((c["id"], qid), str(label))
     return out
@@ -69,7 +69,11 @@ def export(path: Path, families: set[str] | None, include_done: bool, only_disag
     gold = load_author_gold() if only_disagreeing else {}
     n = 0
     with path.open("w") as f:
-        for c in hard_cases(families):
+        # settling a disagreement with the author covers every family that carries author gold (the short
+        # batches too); the plain export stays on the hard cases
+        pool = [c for c in load_synth() if not families or c.get("workflow") in families] if only_disagreeing \
+            else hard_cases(families)
+        for c in pool:
             if c["id"] in done and not include_done:
                 continue
             questions = c["questions"]
@@ -87,7 +91,7 @@ def export(path: Path, families: set[str] | None, include_done: bool, only_disag
 
 
 def import_answers(path: Path, by: str, as_gold: bool = False) -> tuple[int, int]:
-    cases = {c["id"]: c for c in hard_cases()}
+    cases = {c["id"]: c for c in load_synth()}
     ok = bad = 0
     target = AUTHOR_GOLD if as_gold else SECOND_OPINION
     target.parent.mkdir(parents=True, exist_ok=True)

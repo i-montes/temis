@@ -91,6 +91,16 @@ def hard_target(jev_dist: list[float], options: list[str], jev_target: list[floa
     return jev_target if agree(jev_dist, options, second) else None
 
 
+def question_target(case: dict, options: list[str], jev_dist: list[float], jev_target: list[float], *, second,
+                    author: str | None, surface: str | None = None) -> list[float] | None:
+    """The training target of one synthetic question, or None to hold it back. A hard question, or any
+    question that carries its author's answer (the short batches do), follows hard_target; the rest
+    train on Jev's calibrated distribution alone, as always."""
+    if author is not None or str(case.get("domain", "")).startswith("hard:"):
+        return hard_target(jev_dist, options, jev_target, surface=surface, second=second, author=author)
+    return jev_target
+
+
 def write_held_back(pairs: list[tuple[str, str]], path: Path = HELD_BACK) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w") as f:

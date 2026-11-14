@@ -89,6 +89,7 @@ def test_second_opinion_import_as_gold_writes_author_file(tmp_path, monkeypatch)
     monkeypatch.setattr(so, "AUTHOR_GOLD", tmp_path / "gold.jsonl")
     case = parse_line(line(), "gpt")
     monkeypatch.setattr(so, "hard_cases", lambda families=None: [case])
+    monkeypatch.setattr(so, "load_synth", lambda clean=True: [case])   # the gold is read from every case that carries it
     ans = tmp_path / "answers.jsonl"
     ans.write_text(json.dumps({"id": case["id"], "answers": {"ok": "false"}}) + "\n")
     assert so.import_answers(ans, "gpt", as_gold=True) == (1, 0)

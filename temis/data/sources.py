@@ -36,7 +36,7 @@ def load_td(split: str) -> list[dict]:
 
 def load_synth(clean: bool = True) -> list[dict]:
     """Synthetic cases. With clean=True (default) the quality filter runs: yes/no questions that are
-    commands become statements or are dropped, and near-empty states are dropped."""
+    commands become statements or are dropped, and near-empty states are dropped (cases marked `short` keep theirs)."""
     from temis.data.quality import clean_questions, state_ok
 
     lines = []
@@ -53,7 +53,7 @@ def load_synth(clean: bool = True) -> list[dict]:
         if clean:
             if c.get("id") in bad:
                 continue
-            if not state_ok(c.get("state")):
+            if not state_ok(c.get("state"), short=bool(c.get("short"))):
                 continue
             c["questions"], _, _ = clean_questions(c.get("questions") or {})
             if not c["questions"]:
