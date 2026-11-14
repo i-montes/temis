@@ -25,6 +25,18 @@ def inference_long_max_len(meta: dict, cap: int = INFER_LONG_MAX_LEN) -> int:
     return min(int(meta.get("long_max_len", cap)), cap)
 
 
+def quantize_int8(src: Path, dst: Path) -> None:
+    """Dynamic int8 for the encoder; the scoring head (2 small MatMuls, +4 MB) stays fp32.
+    Quantizing the head turns its error straight into the logits: on v1109-gpu it moved typed-decisions
+    KL from 0.119 (fp32) to 0.186, and to 0.135 with the head left out. Per-channel is avoided on
+    purpose: without reduce_range it saturates on x86 CPUs without VNNI (accuracy fell to 0.31)."""
+    from onnxruntime.quantization import QuantType, quantize_dynamic
+    import onnx
+    graph = onnx.load(str(src), load_external_data=False).graph
+    head = [n.name for n in graph.node if n.op_type in ("MatMul", "Gemm") and n.name.startswith("/m/head/")]
+    quantize_dynamic(str(src), str(dst), weight_type=QuantType.QInt8, nodes_to_exclude=head)
+
+
 class Wrapped(torch.nn.Module):
     def __init__(self, m: Decisor) -> None:
         super().__init__()
@@ -59,8 +71,7 @@ def main() -> None:
         output_names=["logits"], opset_version=18, dynamo=False,
         dynamic_axes={"input_ids": {0: "b", 1: "t"}, "attention_mask": {0: "b", 1: "t"},
                       "opt_pos": {0: "b", 1: "k"}, "opt_mask": {0: "b", 1: "k"}, "logits": {0: "b", 1: "k"}})
-    from onnxruntime.quantization import QuantType, quantize_dynamic
-    quantize_dynamic(str(path), str(out / "decisor.int8.onnx"), weight_type=QuantType.QInt8)
+    quantize_int8(path, out / "decisor.int8.onnx")
     (out / "tokenizer.json").unlink(missing_ok=True)
     shutil.copyfile(tokenizer_path(base), out / "tokenizer.json")
     from temis.naming import NAME, assign
