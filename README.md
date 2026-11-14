@@ -132,6 +132,24 @@ also needs the sealed and judge items.
   on: the importer rejects any case that shares a phrase with them. The improvement plan is in
   [docs/specs/2026-11-09-plan-jevbench.md](docs/specs/2026-11-09-plan-jevbench.md).
 
+### Tried and not adopted
+
+Measured with 2.4.0's recipe and data (accuracy in fp32 on the GPU, speed in int8 on a Ryzen 5700X
+with 4 threads). None of this code is in `main`; each closed pull request keeps its commits and the
+full numbers.
+
+- **Packed layout** ([#9](https://github.com/i-montes/temis/pull/9)): every question of a call in
+  one sequence, the state read once. About twice as fast on CPU (median 522 → 255 ms, memory
+  1,135 → 614 MB), but less accurate: held-out short set 0.967 → 0.955, hard-like 0.551 → 0.512,
+  typed-decisions 0.775 → 0.767. Training the second twin with its questions split over two packs
+  did not recover it (0.944 / 0.504 / 0.761).
+- **Banded local attention in the export** ([#8](https://github.com/i-montes/temis/pull/8)): exact
+  in fp32, but in int8 on CPU it only helps long single sequences (JevBench p95 754 → 620 ms) and
+  is slower on Clio's short calls (median 173 → 211 ms), with 220 MB more memory.
+- **LayerNorm before the head** (`--head-norm`, [#7](https://github.com/i-montes/temis/pull/7)):
+  written for the head saturating with MrBERT-es; lowering `--head-lr` to 5e-5 fixed that without
+  touching the model.
+
 ## Using it
 
 ```sh
