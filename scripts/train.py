@@ -10,6 +10,9 @@ different dropout, and a symmetric KL between the two answers (in option order) 
 loss (--consistency). That removes the option-position bias and doubles as R-Drop. Long states
 (truncated at --max-len) are re-encoded at --long-max-len and batched --long-bs at a time.
 On CUDA the forward runs in bf16 with SDPA attention; MPS/CPU stay in fp32.
+Gradient checkpointing only goes on for micro-batches over --ckpt-tokens padded tokens (5 120 on
+CUDA: 1.50 -> 1.40 s/step on the RTX 4060 with the same memory ceiling); --seed changes data order,
+shuffles, augmentation and the head's init (default 0, saved in meta.json).
 """
 
 from __future__ import annotations
@@ -155,7 +158,22 @@ def metrics(logits, target, mask, temps: dict[str, float] | None, kinds) -> dict
     return {"acc": float(acc.mean()), "kl": float((ce - ent).mean()), "brier": float(brier.mean()), "n": len(kinds)}
 
 
-def main() -> None:
+CKPT_TOKENS_CUDA = 5120  # padded tokens per micro-batch above which checkpointing goes on (RTX 4060, 8 GB)
+
+
+def needs_checkpointing(rows: int, length: int, budget: int) -> bool:
+    """Gradient checkpointing re-runs every layer's forward in the backward pass (~30 % slower on
+    the RTX 4060: 16x448 tokens 801 vs 612 ms), so it only goes on for micro-batches whose padded size
+    (rows x length, twins included) would not fit without it. budget 0 = always on."""
+    return rows * length > budget
+
+
+def set_checkpointing(model: Decisor, on: bool) -> None:
+    if any(getattr(layer, "gradient_checkpointing", None) != on for layer in model.encoder.layers):
+        (model.encoder.gradient_checkpointing_enable if on else model.encoder.gradient_checkpointing_disable)()
+
+
+def parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser()
     ap.add_argument("--name", default="v1")
     ap.add_argument("--epochs", type=float, default=3)
@@ -176,7 +194,15 @@ def main() -> None:
     ap.add_argument("--long-bs", type=int, default=4, help="batch size for batches holding a long state")
     ap.add_argument("--bf16", action=argparse.BooleanOptionalAction, default=None, help="default: on CUDA only")
     ap.add_argument("--val-limit", type=int, default=None, help="validate on the first N questions (smoke tests)")
-    a = ap.parse_args()
+    ap.add_argument("--seed", type=int, default=0, help="data order, shuffles, augmentation and head init")
+    ap.add_argument("--ckpt-tokens", type=int, default=None,
+                    help="gradient checkpointing only for micro-batches over this many padded tokens "
+                         f"(default: {CKPT_TOKENS_CUDA} on CUDA, always elsewhere; 0 = always)")
+    return ap
+
+
+def main() -> None:
+    a = parser().parse_args()
     torch.set_num_threads(a.threads)
     device = "mps" if torch.backends.mps.is_available() else ("cuda" if torch.cuda.is_available() else "cpu")
     bf16 = (device == "cuda") if a.bf16 is None else a.bf16
@@ -184,8 +210,9 @@ def main() -> None:
     attn = "sdpa" if device == "cuda" else None
     out = Path("runs") / a.name
     out.mkdir(parents=True, exist_ok=True)
-    rng = random.Random(0)
-    torch.manual_seed(0)
+    rng = random.Random(a.seed)
+    torch.manual_seed(a.seed)
+    ckpt_tokens = a.ckpt_tokens if a.ckpt_tokens is not None else (CKPT_TOKENS_CUDA if device == "cuda" else 0)
 
     enc = Encoder(tokenizer_path(a.base), a.max_len)
     train, val = load_examples(a.extra)
@@ -193,7 +220,8 @@ def main() -> None:
     for ex in train:
         ex["ntok"] = len(enc._ids(ex["state"]))  # for length batching (tokenizers: a few seconds)
     print(f"[train] {len(train)} train / {len(val)} val questions on {device} "
-          f"(twin={a.twin}, consistency={a.consistency}, long_max_len={a.long_max_len}, bf16={bf16}, attn={attn or 'eager'})",
+          f"(twin={a.twin}, consistency={a.consistency}, long_max_len={a.long_max_len}, bf16={bf16}, attn={attn or 'eager'}, "
+          f"seed={a.seed}, checkpointing above {ckpt_tokens} tokens)",
           flush=True)
     ctx_pool = [e["state"] for e in train[:5000]]
 
@@ -204,7 +232,6 @@ def main() -> None:
     # token embeddings stay frozen (98M of the 140M parameters): less memory, keeps multilinguality
     emb = model.encoder.get_input_embeddings()
     emb.weight.requires_grad_(a.train_emb)
-    model.encoder.gradient_checkpointing_enable()  # ~7 GB -> ~2 GB on MPS at the same speed
     opt = torch.optim.AdamW([
         {"params": [p for p in model.encoder.parameters() if p.requires_grad], "lr": a.lr},
         {"params": model.head.parameters(), "lr": a.head_lr},
@@ -228,6 +255,7 @@ def main() -> None:
             else:
                 enc_a, enc_b = encode_batch(enc, chunk, rng, ctx_pool, a.max_len, a.long_max_len), []
             b = collate(enc_a + enc_b, device)
+            set_checkpointing(model, needs_checkpointing(*b["input_ids"].shape, ckpt_tokens))
             with autocast() if autocast else contextlib.nullcontext():
                 logits = model(b["input_ids"], b["attention_mask"], b["opt_pos"], b["opt_mask"])
             loss = decision_loss(logits, b["target"], b["opt_mask"], b["is_score"])
@@ -276,7 +304,7 @@ def main() -> None:
     for s, idx in by.items():
         report[s] = metrics(lg[idx], tg[idx], mk[idx], temps, [kinds[i] for i in idx])
     meta = {"base": a.base, "init": a.init, "max_len": a.max_len, "long_max_len": a.long_max_len, "twin": a.twin,
-            "consistency": a.consistency, "bf16": bf16, "attn": attn or "eager",
+            "consistency": a.consistency, "bf16": bf16, "seed": a.seed, "ckpt_tokens": ckpt_tokens, "attn": attn or "eager",
             "temperatures": temps, "val": report, "log": log,
             "n_train": len(train), "n_val": len(val), "created": time.strftime("%Y-%m-%d %H:%M:%S")}
     (out / "meta.json").write_text(json.dumps(meta, indent=2))

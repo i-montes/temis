@@ -247,6 +247,7 @@ python -m scripts.eval_hardlike --model runs/v1/onnx         # part of the promo
 python -m scripts.eval_cliolike --model runs/v1/onnx         # held-out short set, scored as Clio uses the answers
 python -m scripts.eval_jevbench --model runs/v1/onnx --fetch --probes  # JevBench public items, local (reported only)
 python -m scripts.bench_cpu --model runs/v1/onnx --precision int8,fp32  # CPU only, over td/hard-like/JevBench/cliolike: speed, accuracy, ECE, stability
+TEMIS_BACKEND=torch python -m scripts.eval_hardlike --model runs/v1/onnx  # any eval on the GPU (fp32 model.pt, ~10x faster): results go to eval_*.torch.json
 python -m scripts.expand_short lote.jsonl > casos.jsonl      # compact short cases -> Clio's questions
 python -m scripts.import_cases casos.jsonl --source X --short  # short batch: no 120-character floor
 python -m scripts.second_opinion export f.jsonl --only-disagreeing  # questions where Jev differs from the author
@@ -254,6 +255,11 @@ python -m scripts.import_queue                               # fill the doubtful
 python -m scripts.retrain                                    # Jev labels what's new, train, evaluate, promote
 python -m scripts.nightly                                    # automatic loop (off: runs/nightly.stop)
 ```
+
+`TEMIS_BACKEND=torch` is for exploring: it gives the same answers as the ONNX fp32 model, not the
+int8 one that ships (on 2.4.0 int8 costs 3.6 points on Clio's benchmark and 0.3 on typed-decisions), so
+its results never replace the `eval_*.json` the promotion gate reads. `scripts.train --seed N` repeats a
+run with another seed, to see how much of a difference is noise.
 
 After every run, `scripts/prune_runs.py` keeps old versions with only their ONNX int8 and
 keeps the active one, the two best and the best on typed-decisions complete.

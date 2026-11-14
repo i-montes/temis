@@ -181,7 +181,8 @@ def worker(a: argparse.Namespace) -> dict:
     from temis.runtime import Decider
     calls = read_jsonl(Path(a.workload))
     t0 = time.perf_counter()
-    d = Decider(a.model, int8=a.precision == "int8", provider="CPUExecutionProvider", threads=a.threads)
+    d = Decider(a.model, int8=a.precision == "int8", provider="CPUExecutionProvider", threads=a.threads,
+                backend="onnx")
     d.decide(calls[0]["state"], calls[0]["questions"])
     cold_ms = (time.perf_counter() - t0) * 1000
     for c in calls[:a.warmup]:

@@ -4,11 +4,17 @@
     d = Decider("runs/v1/onnx")
     answers = d.decide(state, questions)              # {qid: Answer}
     d.decide(state, questions, context="...")        # with retrieved evidence
+
+Evaluations can run the same model on PyTorch instead (`backend="torch"` or TEMIS_BACKEND=torch): the
+fp32 weights in runs/<name>/model.pt, on the GPU when there is one. That is for quick exploration only:
+what ships, and what the promotion gate compares, is the ONNX int8 model on CPU, so those results go
+to their own files (eval_path).
 """
 
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -28,23 +34,61 @@ def _providers(prefer: str | None) -> list[str]:
     return [p for p in dict.fromkeys(order) if p and p in avail]
 
 
+def backend_from_env() -> str:
+    return os.environ.get("TEMIS_BACKEND", "onnx").strip().lower() or "onnx"
+
+
+def eval_path(model_dir: str | Path, stem: str) -> Path:
+    """Where an evaluation writes its result: next to the run, with `.torch` in the name when it did
+    not come from the ONNX model (so it never stands in for the numbers the promotion gate reads)."""
+    suffix = "" if backend_from_env() == "onnx" else f".{backend_from_env()}"
+    return Path(model_dir).parent / f"{stem}{suffix}.json"
+
+
+class TorchSession:
+    """The ONNX session's `run` on the PyTorch model (fp32), for evaluations on the GPU."""
+
+    def __init__(self, model_pt: Path, base: str, device: str | None = None) -> None:
+        import torch
+        from temis.model import Decisor
+        self.torch = torch
+        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+        self.model = Decisor(base, attn="sdpa" if self.device == "cuda" else "eager")
+        self.model.load_state_dict(torch.load(model_pt, map_location="cpu"))
+        self.model.to(self.device).eval()
+
+    def run(self, _outputs, feed: dict) -> list:
+        t = {k: self.torch.from_numpy(v).to(self.device) for k, v in feed.items()}
+        with self.torch.inference_mode():
+            out = self.model(t["input_ids"], t["attention_mask"], t["opt_pos"], t["opt_mask"].bool())
+        return [out.float().cpu().numpy()]
+
+
 class Decider:
     def __init__(self, model_dir: str | Path, int8: bool = True, provider: str | None = None,
-                 threads: int = 4, calibration: str = "accuracy") -> None:
+                 threads: int = 4, calibration: str = "accuracy", backend: str | None = None) -> None:
         """calibration: "accuracy" (a 70 % answer is right ~70 % of the time; default), "soft"
         (matches the teachers' distributions, which is what the KL benchmarks measure) or "jevbench"
-        (by type and number of options, decisive on yes/no; see temis/calibration.py)."""
-        import onnxruntime as ort
+        (by type and number of options, decisive on yes/no; see temis/calibration.py).
+        backend: "onnx" (default) or "torch" (fp32 weights in ../model.pt, GPU if any); None reads
+        TEMIS_BACKEND."""
         d = Path(model_dir)
         self.config = json.loads((d / "config.json").read_text())
         self.version = self.config.get("version", d.parent.name)  # run id, e.g. v1108-1022
         from temis.naming import display, model_id
         self.display = display(self.version)   # "Temis 1.0.5"
         self.model_id = model_id(self.version)  # "temis-1.0.5"
-        f = d / ("decisor.int8.onnx" if int8 and (d / "decisor.int8.onnx").exists() else "decisor.onnx")
-        so = ort.SessionOptions()
-        so.intra_op_num_threads = threads
-        self.session = ort.InferenceSession(str(f), so, providers=_providers(provider))
+        self.backend = backend or backend_from_env()
+        if self.backend == "torch":
+            self.session = TorchSession(d.parent / "model.pt", self.config["base"])
+        elif self.backend == "onnx":
+            import onnxruntime as ort
+            f = d / ("decisor.int8.onnx" if int8 and (d / "decisor.int8.onnx").exists() else "decisor.onnx")
+            so = ort.SessionOptions()
+            so.intra_op_num_threads = threads
+            self.session = ort.InferenceSession(str(f), so, providers=_providers(provider))
+        else:
+            raise ValueError(f"unknown backend {self.backend!r} (onnx or torch)")
         # long states are read up to long_max_len tokens (short ones cost the same as before)
         self.long_max_len = int(self.config.get("long_max_len", 1024))
         self.encoder = Encoder(str(d / "tokenizer.json"), max(int(self.config.get("max_len", 1024)), self.long_max_len))

@@ -12,7 +12,7 @@ import importlib.util
 import json
 from pathlib import Path
 
-from temis.runtime import Decider
+from temis.runtime import Decider, eval_path
 
 CASES = Path("external/clio/testing/decisiones/cases.py")
 # Jev's published result on this set (2026-11-03): op 93 %, mem 100 %, del 100 %, tool 88 %.
@@ -54,7 +54,7 @@ def main() -> None:
     a = ap.parse_args()
     r = evaluate(a.model)
     print(json.dumps(r))
-    (Path(a.model).parent / "eval_clio.json").write_text(json.dumps(r, indent=2))
+    eval_path(a.model, "eval_clio").write_text(json.dumps(r, indent=2))
 
 
 if __name__ == "__main__":

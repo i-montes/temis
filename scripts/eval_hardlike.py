@@ -10,12 +10,11 @@ from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path
 
 from scripts.build_hardlike import HARDLIKE
 from scripts.evaluate import evaluate_cases
 from temis.data.sources import read_jsonl
-from temis.runtime import Decider
+from temis.runtime import Decider, eval_path
 
 
 def main() -> None:
@@ -31,7 +30,7 @@ def main() -> None:
     res["model"] = a.model
     print(json.dumps({k: v for k, v in res.items() if k != "by_level"}, indent=2))
     print("by level:", res["by_level"])
-    out = Path(a.model).parent / "eval_hardlike.json"
+    out = eval_path(a.model, "eval_hardlike")
     out.write_text(json.dumps(res, indent=2))
 
 

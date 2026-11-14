@@ -11,11 +11,10 @@ import json
 import math
 import time
 from collections import defaultdict
-from pathlib import Path
 
 from temis.data.sources import load_td
 from temis.jevbench import ece
-from temis.runtime import Decider
+from temis.runtime import Decider, eval_path
 
 
 def score_one(probs: dict[str, float], gold: dict) -> tuple[bool, float, float, float]:
@@ -66,7 +65,7 @@ def _noul_gold(g: dict) -> dict:
 def evaluate(model_dir: str, int8: bool = True, limit: int | None = None) -> dict:
     d = Decider(model_dir, int8=int8, calibration="soft")  # soft keeps KL comparable with the leaderboard
     res = evaluate_cases(d, load_td("test")[:limit])
-    return {"model": model_dir, "int8": int8, **res}
+    return {"model": model_dir, "int8": int8, "backend": d.backend, **res}
 
 
 def main() -> None:
@@ -77,7 +76,7 @@ def main() -> None:
     a = ap.parse_args()
     res = evaluate(a.model, int8=not a.fp32, limit=a.limit)
     print(json.dumps(res, indent=2))
-    out = Path(a.model).parent / f"eval_td_test{'_fp32' if a.fp32 else ''}.json"
+    out = eval_path(a.model, f"eval_td_test{'_fp32' if a.fp32 else ''}")
     out.write_text(json.dumps(res, indent=2))
 
 

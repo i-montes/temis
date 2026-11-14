@@ -15,7 +15,6 @@ import argparse
 import json
 from collections import defaultdict
 from collections.abc import Callable
-from pathlib import Path
 
 from scripts.build_cliolike import CLIOLIKE
 from temis.data.sources import read_jsonl
@@ -59,7 +58,7 @@ def score(cases: list[dict], decide: Callable[[dict], dict]) -> dict:
 
 
 def main() -> None:
-    from temis.runtime import Decider
+    from temis.runtime import Decider, eval_path
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
@@ -70,7 +69,7 @@ def main() -> None:
     d = Decider(a.model)
     res = score(cases, lambda c: {k: v.to_typesafe() for k, v in d.decide(c["state"], c["questions"]).items()})
     res["model"] = a.model
-    (Path(a.model).parent / "eval_cliolike.json").write_text(json.dumps(res, indent=2))  # before printing: a closed pipe must not lose it
+    eval_path(a.model, "eval_cliolike").write_text(json.dumps(res, indent=2))  # before printing: a closed pipe must not lose it
     print(f"accuracy {res['accuracy']:.4f} (n={res['n']}) · yes/no " + json.dumps(res["yes_no"]))
     for fam, r in res["by_family"].items():
         print(f"  {fam:18s} {r['accuracy']:.3f} (n={r['n']}) · whole case {res['whole_case'][fam]['accuracy']:.3f}")
