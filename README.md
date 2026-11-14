@@ -75,9 +75,9 @@ version (Temis 2.0.0).
 | Temis 1.0.9 · v1108-1756 | + more of my labels | 0.774 / — / — | 60 / 88 / 93 / 83 % (mean 0.81) | 309 MB |
 | Temis 1.0.10 · v1108-2024 | + memory_op rebalance, 900 external cases | 0.762 / — / — | 80 / 94 / 93 / 81 % (mean 0.87) | 309 MB |
 | Temis 1.0.11 · v1108-2307 | + 200 external cases, 484 reviewer answers | 0.766 / 0.098 / 0.054 | 77 / 94 / 93 / 81 % (mean 0.86) | 309 MB |
-| **Temis 2.0.0 · v1109-1028 (active)** | MrBERT-es, from scratch, same data as 1.0.11 | **0.772 / 0.104 / 0.057** | **90 / 94 / 86 / 81 %** (mean 0.88) | **152 MB** |
+| Temis 2.0.0 · v1109-1028 | MrBERT-es, from scratch, same data as 1.0.11 | 0.772 / 0.104 / 0.057 | 90 / 94 / 86 / 81 % (mean 0.88) | 152 MB |
 | Temis 2.2.0 · v1111-mrbert-td2 | MrBERT-es + extra typed-decisions training data | 0.780 / — / — | 87 / 88 / 86 / 83 % (mean 0.86) | 161 MB |
-| Temis 2.4.0 · v1112-mrbert-cortos (candidate) | td2's recipe + 1,375 short cases, from scratch | 0.772 / — / — | 97 / 88 / 79 / 94 % (mean 0.89) | 161 MB |
+| **Temis 2.4.0 · v1112-mrbert-cortos (active)** | td2's recipe + 1,375 short cases, from scratch | **0.772 / — / —** | **97 / 88 / 79 / 94 %** (mean 0.89) | **161 MB** |
 | Jev (API, reference) | — | 0.727 / 1.442 / 0.148 | 93 / 100 / 100 / 88 % | — |
 
 - The typed-decisions test split was never used for training. Clio's benchmark
@@ -114,7 +114,7 @@ also needs the sealed and judge items.
 | GLiNER2 (gliner2.5-base) | 98 % | 64 % | 37 % | 58.0 % |
 | **Temis 2.0.0 (MrBERT-es, int8)** | **94 %** | **57 %** | **41 %** | **57.1 % (#40 of 53)** |
 | Temis 1.0.11 (mmBERT-base, int8) | 100 % | 65 % | 33 % | 57.1 % |
-| Temis 2.4.0 (candidate, MrBERT-es, int8) | 92 % | 61 % | 39 % | 56.7 % (#40 of 53, tied with GLiNER2 large) |
+| Temis 2.4.0 (active, MrBERT-es, int8) | 92 % | 61 % | 39 % | 56.7 % (#40 of 53, tied with GLiNER2 large) |
 | Verdict (ModernBERT-base, 151M) | 85 % | 62 % | 38 % | 55.4 % |
 
 - Temis sits with the other encoders of its size; the systems above it are 4B–27B-parameter LLMs.
@@ -153,6 +153,11 @@ full numbers.
 - **Banded local attention in the export** ([#8](https://github.com/i-montes/temis/pull/8)): exact
   in fp32, but in int8 on CPU it only helps long single sequences (JevBench p95 754 → 620 ms) and
   is slower on Clio's short calls (median 173 → 211 ms), with 220 MB more memory.
+- **General data from public sets** ([#14](https://github.com/i-montes/temis/pull/14)): 11,874 policy,
+  finance, insurance, support and knowledge items of `sn92-generalist-train-v1` (only those not built
+  to imitate a benchmark) plus typed-decisions `train` in Spanish. JevBench stays in the same place
+  (131 → 132 of 231: better on long policies, worse on short standard items) and everything Clio
+  uses drops 1–2 points (held-out short set 0.967 → 0.958, Clio's benchmark 0.927 → 0.914).
 - **LayerNorm before the head** (`--head-norm`, [#7](https://github.com/i-montes/temis/pull/7)):
   written for the head saturating with MrBERT-es; lowering `--head-lr` to 5e-5 fixed that without
   touching the model.
