@@ -192,3 +192,21 @@ def test_cliolike_scores_decisions_the_way_clio_uses_them():
     assert r["whole_case"]["tools"] == {"n": 2, "accuracy": 0.5}          # every question of the message right
     assert [x["right"] for x in r["rows"]] == [True, False, True, False] and r["rows"][0]["p"] == 0.5
     assert score(cases, lambda c: {})["accuracy"] == 0.0                  # an unanswered question is a miss
+
+
+def test_cliolike_evaluates_another_held_out_set_into_its_own_file(tmp_path, monkeypatch):
+    import json
+    import sys
+    from scripts import eval_cliolike
+    from tests.tiny import tiny_run
+    d = tiny_run(tmp_path)
+    data = tmp_path / "patrones.jsonl"
+    data.write_text(json.dumps({"id": "p1", "family": "tools", "language": "es",
+                                "state": {"mensaje_de_la_persona": "corre los tests"},
+                                "questions": {"bash": {"type": "noul", "instructions": "Hace falta la terminal."}},
+                                "gold": {"bash": "true"}}) + "\n")
+    monkeypatch.setattr(sys, "argv", ["x", "--model", str(d), "--data", str(data), "--name", "eval_patrones"])
+    eval_cliolike.main()
+    out = json.loads((d.parent / "eval_patrones.json").read_text())   # runs/<run>/, beside the others
+    assert out["n"] == 1 and out["data"] == str(data)
+    assert not (d.parent / "eval_cliolike.json").exists()                     # the held-out set's result is untouched
