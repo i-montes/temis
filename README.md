@@ -86,6 +86,13 @@ version (Temis 2.0.0).
 - Held-out short set (`data/cliolike.jsonl`, 2,045 questions shaped like Clio's calls): 2.2.0 gets
   0.779 (tools: yes 0.66 / no 0.80); 2.4.0 gets 0.966 (yes 0.86 / no 0.98), and hard-like goes from
   0.507 to 0.550. Typed-decisions and JevBench (58.4 → 57.1 %) move within their noise.
+- Second held-out short set (`data/patrones.jsonl`, 159 messages / 1,668 questions written around
+  2.4.0's failure patterns, never trained on): 2.4.0 gets 0.939 (tools: yes 0.73 / no 0.97).
+- Noise between seeds: 2.4.0's recipe trained three times (seeds 0, 1, 2; fp32 on the GPU) spans
+  held-out short sets 0.954–0.959, typed-decisions 0.767–0.775 (KL 0.095–0.099), hard-like
+  0.532–0.557, Clio's benchmark 0.927–0.930, JevBench 0.554–0.580 and the option-rotation flip rate
+  0.115–0.151. A 1–2 point difference in hard-like or JevBench from one run is noise; in Clio's
+  benchmark or the short sets, half a point is not.
 - CPU latency (int8): 29 ms median per call on Clio's benchmark (1 to 4 questions) on a Mac; about
   100–170 ms for 3 questions on the 4-core ARM VPS.
 - On CPU each question gets its own forward pass at its own length (a batch costs the sum of its rows
@@ -158,6 +165,13 @@ full numbers.
   to imitate a benchmark) plus typed-decisions `train` in Spanish. JevBench stays in the same place
   (131 → 132 of 231: better on long policies, worse on short standard items) and everything Clio
   uses drops 1–2 points (held-out short set 0.967 → 0.958, Clio's benchmark 0.927 → 0.914).
+- **Short cases written around 2.4.0's failure patterns** (batches 10 and 10b, 374 + 152 cases on
+  top of 2.4.0's data; three seeds per recipe against three of 2.4.0's, compared question by
+  question with a 95 % case bootstrap): both lift the held-out short sets (+0.6 and
+  +0.9 points, 95 % intervals above zero) and tools that are needed (0.786 → 0.884 and 0.895), but
+  Clio's benchmark drops beyond the seed noise (0.928 → 0.861 with batch 10, 0.917 with 10 + 10b)
+  and 10b also lowers hard-like (0.547 → 0.521). The cases were not added to the repo; they live
+  only in the history of the `feat/lote10-patrones` branch.
 - **LayerNorm before the head** (`--head-norm`, [#7](https://github.com/i-montes/temis/pull/7)):
   written for the head saturating with MrBERT-es; lowering `--head-lr` to 5e-5 fixed that without
   touching the model.

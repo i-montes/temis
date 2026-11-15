@@ -1,7 +1,7 @@
 """Evaluate an exported model on the held-out short set (data/cliolike.jsonl, scripts/build_cliolike.py):
 messages and memories shaped like Clio's production calls, far shorter than the generated cases.
 
-  python -m scripts.eval_cliolike --model runs/<run>/onnx
+  python -m scripts.eval_cliolike --model runs/<run>/onnx [--data data/patrones.jsonl --name eval_patrones]
 
 Decisions are scored the way Clio uses them: a yes/no counts as yes from 0.5, a choice by its most
 likely option. Reports accuracy by family, the yes/no split (a model that never says yes gets most
@@ -15,6 +15,7 @@ import argparse
 import json
 from collections import defaultdict
 from collections.abc import Callable
+from pathlib import Path
 
 from scripts.build_cliolike import CLIOLIKE
 from temis.data.sources import read_jsonl
@@ -62,14 +63,16 @@ def main() -> None:
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", required=True)
+    ap.add_argument("--data", default=str(CLIOLIKE), help="another held-out set in the same format")
+    ap.add_argument("--name", default="eval_cliolike", help="result file stem in the model dir")
     a = ap.parse_args()
-    cases = list(read_jsonl(CLIOLIKE))
+    cases = list(read_jsonl(Path(a.data)))
     if not cases:
-        raise SystemExit(f"{CLIOLIKE} missing or empty: python -m scripts.build_cliolike")
+        raise SystemExit(f"{a.data} missing or empty: python -m scripts.build_cliolike")
     d = Decider(a.model)
     res = score(cases, lambda c: {k: v.to_typesafe() for k, v in d.decide(c["state"], c["questions"]).items()})
-    res["model"] = a.model
-    eval_path(a.model, "eval_cliolike").write_text(json.dumps(res, indent=2))  # before printing: a closed pipe must not lose it
+    res["model"], res["data"] = a.model, a.data
+    eval_path(a.model, a.name).write_text(json.dumps(res, indent=2))  # before printing: a closed pipe must not lose it
     print(f"accuracy {res['accuracy']:.4f} (n={res['n']}) · yes/no " + json.dumps(res["yes_no"]))
     for fam, r in res["by_family"].items():
         print(f"  {fam:18s} {r['accuracy']:.3f} (n={r['n']}) · whole case {res['whole_case'][fam]['accuracy']:.3f}")
