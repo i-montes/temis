@@ -75,9 +75,9 @@ version (Temis 2.0.0).
 | Temis 1.0.9 · v1108-1756 | + more of my labels | 0.774 / — / — | 60 / 88 / 93 / 83 % (mean 0.81) | 309 MB |
 | Temis 1.0.10 · v1108-2024 | + memory_op rebalance, 900 external cases | 0.762 / — / — | 80 / 94 / 93 / 81 % (mean 0.87) | 309 MB |
 | Temis 1.0.11 · v1108-2307 | + 200 external cases, 484 reviewer answers | 0.766 / 0.098 / 0.054 | 77 / 94 / 93 / 81 % (mean 0.86) | 309 MB |
-| **Temis 2.0.0 · v1109-1028 (active)** | MrBERT-es, from scratch, same data as 1.0.11 | **0.772 / 0.104 / 0.057** | **90 / 94 / 86 / 81 %** (mean 0.88) | **152 MB** |
+| Temis 2.0.0 · v1109-1028 | MrBERT-es, from scratch, same data as 1.0.11 | 0.772 / 0.104 / 0.057 | 90 / 94 / 86 / 81 % (mean 0.88) | 152 MB |
 | Temis 2.2.0 · v1111-mrbert-td2 | MrBERT-es + extra typed-decisions training data | 0.780 / — / — | 87 / 88 / 86 / 83 % (mean 0.86) | 161 MB |
-| Temis 2.4.0 · v1112-mrbert-cortos (candidate) | td2's recipe + 1,375 short cases, from scratch | 0.772 / — / — | 97 / 88 / 79 / 94 % (mean 0.89) | 161 MB |
+| **Temis 2.4.0 · v1112-mrbert-cortos (active)** | td2's recipe + 1,375 short cases, from scratch | **0.772 / — / —** | **97 / 88 / 79 / 94 %** (mean 0.89) | **161 MB** |
 | Jev (API, reference) | — | 0.727 / 1.442 / 0.148 | 93 / 100 / 100 / 88 % | — |
 
 - The typed-decisions test split was never used for training. Clio's benchmark
@@ -102,7 +102,7 @@ version (Temis 2.0.0).
 [JevBench](https://github.com/fstandhartinger/jevbench) is the community benchmark for typed
 decision models. Only part of it is public, so Temis was run on the 231 public items of its v1.2
 set (easy 48, standard 72, hard 111), through JevBench's own TypeSafe adapter against the Temis API
-(the model alone, on a Mac CPU). JevBench publishes per-item outcomes of 52 other systems on those
+(the model alone, on CPU: a Mac for 1.0.11 and 2.0.0, a Ryzen 5700X for 2.4.0). JevBench publishes per-item outcomes of 52 other systems on those
 same items, so the comparison is item by item. This is **not** an official JevBench score, which
 also needs the sealed and judge items.
 
@@ -114,6 +114,7 @@ also needs the sealed and judge items.
 | GLiNER2 (gliner2.5-base) | 98 % | 64 % | 37 % | 58.0 % |
 | **Temis 2.0.0 (MrBERT-es, int8)** | **94 %** | **57 %** | **41 %** | **57.1 % (#40 of 53)** |
 | Temis 1.0.11 (mmBERT-base, int8) | 100 % | 65 % | 33 % | 57.1 % |
+| Temis 2.4.0 (active, MrBERT-es, int8) | 92 % | 61 % | 39 % | 56.7 % (#40 of 53, tied with GLiNER2 large) |
 | Verdict (ModernBERT-base, 151M) | 85 % | 62 % | 38 % | 55.4 % |
 
 - Temis sits with the other encoders of its size; the systems above it are 4B–27B-parameter LLMs.
@@ -122,9 +123,15 @@ also needs the sealed and judge items.
   (hard 33 % → 34 %), so the limit is reasoning, not truncation.
 - Speed and cost are where it shines: 24 ms median per decision on CPU, and no API cost.
 - 2.0.0 and 1.0.11 tie overall: 2.0.0 is better on hard items (+8) and worse on easy and standard ones.
+- 2.4.0 lands in the same place as 2.0.0 (131 of 231 against 132): it gets 28 items right that
+  2.0.0 missed and misses 29 that 2.0.0 got. It is better on standard items (+4) and worse on
+  easy and hard ones (−2 and −3).
+- JevBench counts an answer as wrong when its probabilities add up to 1.02 or more (or 0.98 or
+  less). The API rounds each probability to 2 decimals, so an answer with 5 options can get
+  there: that happened to 3 answers of 2.4.0 (one of them was right) and to 2 of 2.0.0.
 - JevBench measures general decisions (insurance, finance, rules, support), not Clio's. On what
   Temis was trained for (memory, tools, security) 2.0.0 gets 88 % on Clio's benchmark.
-- Per-item answers, summaries and run manifests for both versions: [`benchmarks/jevbench/`](benchmarks/jevbench/).
+- Per-item answers, summaries and run manifests for the three versions: [`benchmarks/jevbench/`](benchmarks/jevbench/).
 - `scripts/eval_jevbench.py` reproduces this locally (57.6 % for 1.0.11 with the same calibration)
   and adds an estimate of the v1.5 rules (noul abstention band, score by expected level) plus bias
   probes. It runs after every training; its accuracy never decides which version goes live (only a
@@ -146,6 +153,11 @@ full numbers.
 - **Banded local attention in the export** ([#8](https://github.com/i-montes/temis/pull/8)): exact
   in fp32, but in int8 on CPU it only helps long single sequences (JevBench p95 754 → 620 ms) and
   is slower on Clio's short calls (median 173 → 211 ms), with 220 MB more memory.
+- **General data from public sets** ([#14](https://github.com/i-montes/temis/pull/14)): 11,874 policy,
+  finance, insurance, support and knowledge items of `sn92-generalist-train-v1` (only those not built
+  to imitate a benchmark) plus typed-decisions `train` in Spanish. JevBench stays in the same place
+  (131 → 132 of 231: better on long policies, worse on short standard items) and everything Clio
+  uses drops 1–2 points (held-out short set 0.967 → 0.958, Clio's benchmark 0.927 → 0.914).
 - **LayerNorm before the head** (`--head-norm`, [#7](https://github.com/i-montes/temis/pull/7)):
   written for the head saturating with MrBERT-es; lowering `--head-lr` to 5e-5 fixed that without
   touching the model.
