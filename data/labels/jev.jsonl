@@ -12762,3 +12762,155 @@
 {"id": "ext-8a51ff78a2", "teacher": "jev-1.14.0", "dists": {"relacion": [0.0, 0.07, 0.23, 0.68, 0.02]}}
 {"id": "ext-6e2428c506", "teacher": "jev-1.14.0", "dists": {"relacion": [0.01, 0.01, 0.14, 0.75, 0.09]}}
 {"id": "ext-02912db2c5", "teacher": "jev-1.14.0", "dists": {"relacion": [0.0, 0.01, 0.31, 0.59, 0.09]}}
+{"id": "ext-1b0a4928fb", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.77, 0.23]}}
+{"id": "ext-e7f653d83e", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.65, 0.35]}}
+{"id": "ext-37ccb45dcb", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.4, 0.6]}}
+{"id": "ext-68e68c5b0a", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.43999999999999995, 0.56]}}
+{"id": "ext-2a39b5b5b1", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.24, 0.76]}}
+{"id": "ext-b13def4712", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.85, 0.15]}}
+{"id": "ext-f6644eaf10", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.19999999999999996, 0.8]}}
+{"id": "ext-dee227a7be", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.5900000000000001, 0.41]}}
+{"id": "ext-bc501f3b79", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.38, 0.62]}}
+{"id": "ext-1915db86aa", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.19999999999999996, 0.8]}}
+{"id": "ext-c13fa4118e", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.42000000000000004, 0.58]}}
+{"id": "ext-2d981f13fe", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.24, 0.76]}}
+{"id": "ext-d85ce7b886", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.64, 0.36]}}
+{"id": "ext-6f6a29e7ff", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.42000000000000004, 0.58]}}
+{"id": "ext-b899515323", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.56, 0.44]}}
+{"id": "ext-6db8cfcf65", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.21999999999999997, 0.78]}}
+{"id": "ext-f87c36d726", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.63, 0.37]}}
+{"id": "ext-4f16303500", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.95, 0.05]}}
+{"id": "ext-20d4c10f0b", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.30000000000000004, 0.7]}}
+{"id": "ext-55f31b828c", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.95, 0.05]}}
+{"id": "ext-c5061d1c0d", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.21999999999999997, 0.78]}}
+{"id": "ext-0999b4d73f", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.8, 0.2]}}
+{"id": "ext-e63b01b578", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.26, 0.74]}}
+{"id": "ext-47885ee8b0", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.7, 0.3]}}
+{"id": "ext-3ef433964e", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.6799999999999999, 0.32]}}
+{"id": "ext-4ea6657255", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.29000000000000004, 0.71]}}
+{"id": "ext-1044269da0", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.83, 0.17]}}
+{"id": "ext-5dc1505bdd", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.21999999999999997, 0.78]}}
+{"id": "ext-12f5641d1c", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.78, 0.22]}}
+{"id": "ext-8579ccaf08", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.98, 0.02]}}
+{"id": "ext-e2c15c1938", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.51, 0.49]}}
+{"id": "ext-a84753aa62", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.98, 0.02]}}
+{"id": "ext-5dcf19a7db", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.39, 0.61]}}
+{"id": "ext-7b645aab18", "teacher": "jev-1.14.0", "dists": {"pide_olvidar": [0.98, 0.02]}}
+{"id": "ext-3543680412", "teacher": "jev-1.14.0", "dists": {"inseguro": [0.96, 0.04], "se_puede_guardar": [0.050000000000000044, 0.95], "categoria": [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-c4141f441e", "teacher": "jev-1.14.0", "dists": {"inseguro": [0.97, 0.03], "se_puede_guardar": [0.09999999999999998, 0.9], "categoria": [0.01, 0.96, 0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-3521550643", "teacher": "jev-1.14.0", "dists": {"inseguro": [0.97, 0.03], "se_puede_guardar": [0.09999999999999998, 0.9], "categoria": [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-a9e41d651e", "teacher": "jev-1.14.0", "dists": {"inseguro": [0.97, 0.03], "se_puede_guardar": [0.10999999999999999, 0.89], "categoria": [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-63fbd4ba43", "teacher": "jev-1.14.0", "dists": {"inseguro": [0.95, 0.05], "se_puede_guardar": [0.050000000000000044, 0.95], "categoria": [0.0, 0.0, 0.03, 0.0, 0.0, 0.0, 0.0, 0.97, 0.0, 0.0]}}
+{"id": "ext-991117a5b9", "teacher": "jev-1.14.0", "dists": {"inseguro": [0.97, 0.03], "se_puede_guardar": [0.19999999999999996, 0.8], "categoria": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0]}}
+{"id": "ext-761ee64313", "teacher": "jev-1.14.0", "dists": {"inseguro": [0.94, 0.06], "se_puede_guardar": [0.07999999999999996, 0.92], "categoria": [0.91, 0.09, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}}
+{"id": "ext-eff4e56f7e", "teacher": "jev-1.14.0", "dists": {"inseguro": [0.98, 0.02], "se_puede_guardar": [0.5800000000000001, 0.42], "categoria": [0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.02, 0.0, 0.0, 0.97]}}
+{"id": "ext-eede9e4a65", "teacher": "jev-1.14.0", "dists": {"inseguro": [0.97, 0.03], "se_puede_guardar": [0.64, 0.36], "categoria": [0.0, 0.01, 0.0, 0.0, 0.0, 0.88, 0.0, 0.02, 0.0, 0.09]}}
+{"id": "ext-746064081f", "teacher": "jev-1.14.0", "dists": {"inseguro": [0.97, 0.03], "se_puede_guardar": [0.38, 0.62], "categoria": [0.0, 0.0, 0.0, 0.0, 0.81, 0.04, 0.0, 0.0, 0.0, 0.15]}}
+{"id": "ext-ced0154bf5", "teacher": "jev-1.14.0", "dists": {"inseguro": [0.98, 0.02], "se_puede_guardar": [0.55, 0.45], "categoria": [0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.04, 0.0, 0.0, 0.95]}}
+{"id": "ext-21f3f948e8", "teacher": "jev-1.14.0", "dists": {"inseguro": [0.040000000000000036, 0.96], "se_puede_guardar": [0.5800000000000001, 0.42], "categoria": [0.01, 0.0, 0.0, 0.0, 0.01, 0.0, 0.96, 0.0, 0.0, 0.02]}}
+{"id": "ext-31f166b62c", "teacher": "jev-1.14.0", "dists": {"inseguro": [0.08999999999999997, 0.91], "se_puede_guardar": [0.32999999999999996, 0.67], "categoria": [0.86, 0.0, 0.0, 0.04, 0.01, 0.0, 0.08, 0.0, 0.0, 0.01]}}
+{"id": "ext-4707de61b0", "teacher": "jev-1.14.0", "dists": {"inseguro": [0.050000000000000044, 0.95], "se_puede_guardar": [0.77, 0.23], "categoria": [0.06, 0.01, 0.0, 0.83, 0.03, 0.0, 0.0, 0.0, 0.0, 0.07]}}
+{"id": "ext-2fcb73eef3", "teacher": "jev-1.14.0", "dists": {"lugar": [1.0, 0.0, 0.0]}}
+{"id": "ext-191b76c8d8", "teacher": "jev-1.14.0", "dists": {"lugar": [0.37, 0.0, 0.63]}}
+{"id": "ext-bcf768069a", "teacher": "jev-1.14.0", "dists": {"lugar": [0.9, 0.1, 0.0]}}
+{"id": "ext-7d182168b5", "teacher": "jev-1.14.0", "dists": {"lugar": [0.0, 1.0, 0.0]}}
+{"id": "ext-d6c79ba8cf", "teacher": "jev-1.14.0", "dists": {"lugar": [0.3, 0.0, 0.7]}}
+{"id": "ext-bef9b931ad", "teacher": "jev-1.14.0", "dists": {"lugar": [0.01, 0.98, 0.01]}}
+{"id": "ext-ec193a2b68", "teacher": "jev-1.14.0", "dists": {"lugar": [0.05, 0.0, 0.95]}}
+{"id": "ext-385463f39c", "teacher": "jev-1.14.0", "dists": {"lugar": [0.58, 0.42, 0.0]}}
+{"id": "ext-afb808b91b", "teacher": "jev-1.14.0", "dists": {"lugar": [0.01, 0.99, 0.0]}}
+{"id": "ext-bea56f14eb", "teacher": "jev-1.14.0", "dists": {"lugar": [0.99, 0.0, 0.01]}}
+{"id": "ext-fbbe41ee90", "teacher": "jev-1.14.0", "dists": {"lugar": [0.0, 1.0, 0.0]}}
+{"id": "ext-7499f9cf98", "teacher": "jev-1.14.0", "dists": {"lugar": [1.0, 0.0, 0.0]}}
+{"id": "ext-13646cafff", "teacher": "jev-1.14.0", "dists": {"lugar": [0.01, 0.0, 0.99]}}
+{"id": "ext-76ddac5748", "teacher": "jev-1.14.0", "dists": {"lugar": [0.08, 0.9, 0.02]}}
+{"id": "ext-f7ee7371c9", "teacher": "jev-1.14.0", "dists": {"lugar": [1.0, 0.0, 0.0]}}
+{"id": "ext-c991de7ef1", "teacher": "jev-1.14.0", "dists": {"lugar": [0.28, 0.01, 0.71]}}
+{"id": "ext-5756b5cb35", "teacher": "jev-1.14.0", "dists": {"read": [0.06999999999999995, 0.93], "bash": [0.5800000000000001, 0.42], "find": [0.17000000000000004, 0.83], "ls": [0.27, 0.73], "memory_save": [0.8200000000000001, 0.18], "necesita_memoria": [0.64, 0.36]}}
+{"id": "ext-b7cd1565ec", "teacher": "jev-1.14.0", "dists": {"lugar": [0.01, 0.99, 0.0]}}
+{"id": "ext-a6e3543be1", "teacher": "jev-1.14.0", "dists": {"read": [0.07999999999999996, 0.92], "write": [0.19999999999999996, 0.8], "find": [0.53, 0.47], "ls": [0.5900000000000001, 0.41], "memory_timeline": [0.75, 0.25], "necesita_memoria": [0.81, 0.19]}}
+{"id": "ext-b82ea77c08", "teacher": "jev-1.14.0", "dists": {"read": [0.07999999999999996, 0.92], "find": [0.14, 0.86], "ls": [0.07999999999999996, 0.92], "memory_search": [0.8, 0.2], "memory_save": [0.85, 0.15], "necesita_memoria": [0.5900000000000001, 0.41]}}
+{"id": "ext-1c6dbc44d7", "teacher": "jev-1.14.0", "dists": {"read": [0.08999999999999997, 0.91], "find": [0.18000000000000005, 0.82], "ls": [0.30000000000000004, 0.7], "memory_save": [0.81, 0.19], "memory_consolidate": [0.89, 0.11], "necesita_memoria": [0.62, 0.38]}}
+{"id": "ext-afcdde4e06", "teacher": "jev-1.14.0", "dists": {"read": [0.10999999999999999, 0.89], "write": [0.44999999999999996, 0.55], "find": [0.39, 0.61], "ls": [0.39, 0.61], "memory_context": [0.8200000000000001, 0.18], "necesita_memoria": [0.83, 0.17]}}
+{"id": "ext-fee0f372f3", "teacher": "jev-1.14.0", "dists": {"read": [0.06000000000000005, 0.94], "write": [0.09999999999999998, 0.9], "edit": [0.78, 0.22], "find": [0.36, 0.64], "ls": [0.45999999999999996, 0.54], "necesita_memoria": [0.5800000000000001, 0.42]}}
+{"id": "ext-768fc01d42", "teacher": "jev-1.14.0", "dists": {"read": [0.08999999999999997, 0.91], "bash": [0.47, 0.53], "find": [0.16000000000000003, 0.84], "ls": [0.41000000000000003, 0.59], "memory_update": [0.83, 0.17], "necesita_memoria": [0.43999999999999995, 0.56]}}
+{"id": "ext-9ee429ea46", "teacher": "jev-1.14.0", "dists": {"read": [0.17000000000000004, 0.83], "find": [0.30000000000000004, 0.7], "ls": [0.54, 0.46], "memory_timeline": [0.52, 0.48], "memory_pin": [0.86, 0.14], "necesita_memoria": [0.52, 0.48]}}
+{"id": "ext-5c67b38b85", "teacher": "jev-1.14.0", "dists": {"read": [0.08999999999999997, 0.91], "write": [0.18000000000000005, 0.82], "find": [0.42000000000000004, 0.58], "ls": [0.49, 0.51], "memory_revert": [0.94, 0.06], "necesita_memoria": [0.75, 0.25]}}
+{"id": "ext-79480e46f1", "teacher": "jev-1.14.0", "dists": {"read": [0.06000000000000005, 0.94], "bash": [0.56, 0.44], "find": [0.16000000000000003, 0.84], "ls": [0.16000000000000003, 0.84], "memory_session_summary": [0.73, 0.27], "necesita_memoria": [0.41000000000000003, 0.59]}}
+{"id": "ext-a8000b98a0", "teacher": "jev-1.14.0", "dists": {"read": [0.06000000000000005, 0.94], "write": [0.17000000000000004, 0.83], "find": [0.32999999999999996, 0.67], "ls": [0.37, 0.63], "memory_get": [0.92, 0.08], "necesita_memoria": [0.74, 0.26]}}
+{"id": "ext-391f5a2a16", "teacher": "jev-1.14.0", "dists": {"read": [0.12, 0.88], "edit": [0.85, 0.15], "bash": [0.36, 0.64], "ls": [0.26, 0.74], "memory_session_summary": [0.7, 0.3], "necesita_memoria": [0.43000000000000005, 0.57]}}
+{"id": "ext-f80d9bb586", "teacher": "jev-1.14.0", "dists": {"read": [0.07999999999999996, 0.92], "write": [0.28, 0.72], "find": [0.32999999999999996, 0.67], "ls": [0.51, 0.49], "memory_timeline": [0.74, 0.26], "necesita_memoria": [0.76, 0.24]}}
+{"id": "ext-791ac7d5da", "teacher": "jev-1.14.0", "dists": {"read": [0.17000000000000004, 0.83], "find": [0.39, 0.61], "ls": [0.30000000000000004, 0.7], "memory_consolidate": [0.88, 0.12], "memory_forget": [0.92, 0.08], "necesita_memoria": [0.55, 0.45]}}
+{"id": "ext-a368a5abe8", "teacher": "jev-1.14.0", "dists": {"read": [0.06999999999999995, 0.93], "write": [0.4, 0.6], "find": [0.37, 0.63], "ls": [0.51, 0.49], "memory_revert": [0.91, 0.09], "necesita_memoria": [0.52, 0.48]}}
+{"id": "ext-be9627f904", "teacher": "jev-1.14.0", "dists": {"read": [0.06000000000000005, 0.94], "bash": [0.30000000000000004, 0.7], "find": [0.24, 0.76], "ls": [0.51, 0.49], "memory_timeline": [0.6799999999999999, 0.32], "necesita_memoria": [0.45999999999999996, 0.54]}}
+{"id": "ext-e256d4f16f", "teacher": "jev-1.14.0", "dists": {"read": [0.07999999999999996, 0.92], "write": [0.21999999999999997, 0.78], "edit": [0.78, 0.22], "find": [0.31000000000000005, 0.69], "ls": [0.43000000000000005, 0.57], "necesita_memoria": [0.75, 0.25]}}
+{"id": "ext-7a95b4d0e2", "teacher": "jev-1.14.0", "dists": {"read": [0.07999999999999996, 0.92], "edit": [0.88, 0.12], "ls": [0.5, 0.5], "memory_search": [0.62, 0.38], "memory_update": [0.85, 0.15], "necesita_memoria": [0.5700000000000001, 0.43]}}
+{"id": "ext-e7769d107e", "teacher": "jev-1.14.0", "dists": {"read": [0.09999999999999998, 0.9], "write": [0.8, 0.2], "edit": [0.61, 0.39], "find": [0.25, 0.75], "ls": [0.35, 0.65], "necesita_memoria": [0.55, 0.45]}}
+{"id": "ext-118396244c", "teacher": "jev-1.14.0", "dists": {"read": [0.20999999999999996, 0.79], "write": [0.87, 0.13], "find": [0.33999999999999997, 0.66], "ls": [0.25, 0.75], "memory_context": [0.65, 0.35], "necesita_memoria": [0.69, 0.31]}}
+{"id": "ext-21231af1b7", "teacher": "jev-1.14.0", "dists": {"read": [0.050000000000000044, 0.95], "write": [0.26, 0.74], "edit": [0.77, 0.23], "find": [0.44999999999999996, 0.55], "ls": [0.5, 0.5], "necesita_memoria": [0.6699999999999999, 0.33]}}
+{"id": "ext-561b3f7db5", "teacher": "jev-1.14.0", "dists": {"read": [0.08999999999999997, 0.91], "edit": [0.91, 0.09], "find": [0.29000000000000004, 0.71], "ls": [0.27, 0.73], "memory_forget": [0.92, 0.08], "necesita_memoria": [0.53, 0.47]}}
+{"id": "ext-4347a55e0e", "teacher": "jev-1.14.0", "dists": {"read": [0.09999999999999998, 0.9], "write": [0.09999999999999998, 0.9], "find": [0.31000000000000005, 0.69], "ls": [0.41000000000000003, 0.59], "memory_search": [0.76, 0.24], "necesita_memoria": [0.86, 0.14]}}
+{"id": "ext-6fb6983d76", "teacher": "jev-1.14.0", "dists": {"read": [0.10999999999999999, 0.89], "edit": [0.87, 0.13], "bash": [0.6, 0.4], "find": [0.16000000000000003, 0.84], "ls": [0.43999999999999995, 0.56], "necesita_memoria": [0.75, 0.25]}}
+{"id": "ext-4959d5df19", "teacher": "jev-1.14.0", "dists": {"read": [0.07999999999999996, 0.92], "write": [0.36, 0.64], "find": [0.54, 0.46], "ls": [0.55, 0.45], "memory_consolidate": [0.92, 0.08], "necesita_memoria": [0.8200000000000001, 0.18]}}
+{"id": "ext-f097259160", "teacher": "jev-1.14.0", "dists": {"read": [0.06999999999999995, 0.93], "write": [0.91, 0.09], "find": [0.13, 0.87], "ls": [0.48, 0.52], "memory_search": [0.6599999999999999, 0.34], "necesita_memoria": [0.53, 0.47]}}
+{"id": "ext-09e31d7394", "teacher": "jev-1.14.0", "dists": {"read": [0.040000000000000036, 0.96], "write": [0.18999999999999995, 0.81], "find": [0.31999999999999995, 0.68], "ls": [0.43000000000000005, 0.57], "memory_update": [0.91, 0.09], "necesita_memoria": [0.77, 0.23]}}
+{"id": "ext-d9b27976b7", "teacher": "jev-1.14.0", "dists": {"read": [0.06999999999999995, 0.93], "find": [0.18999999999999995, 0.81], "ls": [0.17000000000000004, 0.83], "memory_save": [0.87, 0.13], "memory_session_summary": [0.73, 0.27], "necesita_memoria": [0.72, 0.28]}}
+{"id": "ext-d30f86081f", "teacher": "jev-1.14.0", "dists": {"read": [0.050000000000000044, 0.95], "write": [0.35, 0.65], "find": [0.41000000000000003, 0.59], "ls": [0.51, 0.49], "memory_save": [0.65, 0.35], "necesita_memoria": [0.83, 0.17]}}
+{"id": "ext-c88b379fdd", "teacher": "jev-1.14.0", "dists": {"read": [0.95, 0.05], "memory_get": [0.97, 0.03], "memory_context": [0.96, 0.04], "memory_session_summary": [0.88, 0.12], "memory_revert": [0.9, 0.1], "necesita_memoria": [0.96, 0.04]}}
+{"id": "ext-b6e79f2f9f", "teacher": "jev-1.14.0", "dists": {"memory_search": [0.06999999999999995, 0.93], "memory_get": [0.41000000000000003, 0.59], "memory_context": [0.21999999999999997, 0.78], "memory_consolidate": [0.74, 0.26], "memory_pin": [0.48, 0.52], "necesita_memoria": [0.030000000000000027, 0.97]}}
+{"id": "ext-9c6a305e87", "teacher": "jev-1.14.0", "dists": {"find": [0.81, 0.19], "memory_search": [0.09999999999999998, 0.9], "memory_get": [0.53, 0.47], "memory_context": [0.72, 0.28], "memory_save": [0.13, 0.87], "necesita_memoria": [0.030000000000000027, 0.97]}}
+{"id": "ext-48c7ad2f13", "teacher": "jev-1.14.0", "dists": {"bash": [0.97, 0.03], "memory_search": [0.9299999999999999, 0.07], "memory_get": [0.97, 0.03], "memory_timeline": [0.87, 0.13], "memory_session_summary": [0.86, 0.14], "necesita_memoria": [0.92, 0.08]}}
+{"id": "ext-faae9c34c8", "teacher": "jev-1.14.0", "dists": {"read": [0.97, 0.03], "write": [0.94, 0.06], "memory_get": [0.9299999999999999, 0.07], "memory_consolidate": [0.88, 0.12], "memory_pin": [0.88, 0.12], "necesita_memoria": [0.83, 0.17]}}
+{"id": "ext-4b989b63f1", "teacher": "jev-1.14.0", "dists": {"write": [0.9299999999999999, 0.07], "bash": [0.97, 0.03], "memory_timeline": [0.9299999999999999, 0.07], "memory_context": [0.96, 0.04], "memory_pin": [0.85, 0.15], "necesita_memoria": [0.95, 0.05]}}
+{"id": "ext-a4a03003bc", "teacher": "jev-1.14.0", "dists": {"read": [0.55, 0.45], "edit": [0.72, 0.28], "memory_search": [0.07999999999999996, 0.92], "memory_get": [0.48, 0.52], "memory_context": [0.39, 0.61], "necesita_memoria": [0.020000000000000018, 0.98]}}
+{"id": "ext-ecb6102b67", "teacher": "jev-1.14.0", "dists": {"read": [0.79, 0.21], "memory_search": [0.10999999999999999, 0.89], "memory_get": [0.56, 0.44], "memory_context": [0.44999999999999996, 0.55], "memory_revert": [0.85, 0.15], "necesita_memoria": [0.040000000000000036, 0.96]}}
+{"id": "ext-2630c86126", "teacher": "jev-1.14.0", "dists": {"edit": [0.91, 0.09], "memory_search": [0.9299999999999999, 0.07], "memory_session_summary": [0.9, 0.1], "memory_consolidate": [0.92, 0.08], "memory_forget": [0.95, 0.05], "necesita_memoria": [0.92, 0.08]}}
+{"id": "ext-b65d709e71", "teacher": "jev-1.14.0", "dists": {"find": [0.54, 0.46], "memory_search": [0.06999999999999995, 0.93], "memory_get": [0.39, 0.61], "memory_context": [0.24, 0.76], "memory_update": [0.61, 0.39], "necesita_memoria": [0.030000000000000027, 0.97]}}
+{"id": "ext-221b362faa", "teacher": "jev-1.14.0", "dists": {"write": [0.89, 0.11], "bash": [0.79, 0.21], "memory_search": [0.06999999999999995, 0.93], "memory_get": [0.51, 0.49], "memory_context": [0.18000000000000005, 0.82], "necesita_memoria": [0.030000000000000027, 0.97]}}
+{"id": "ext-5abac3b515", "teacher": "jev-1.14.0", "dists": {"read": [0.94, 0.06], "write": [0.9299999999999999, 0.07], "edit": [0.92, 0.08], "bash": [0.96, 0.04], "memory_search": [0.42000000000000004, 0.58], "necesita_memoria": [0.87, 0.13]}}
+{"id": "ext-b86f0196ad", "teacher": "jev-1.14.0", "dists": {"read": [0.94, 0.06], "write": [0.9, 0.1], "edit": [0.89, 0.11], "memory_search": [0.9, 0.1], "memory_update": [0.83, 0.17], "necesita_memoria": [0.95, 0.05]}}
+{"id": "ext-c231ed0593", "teacher": "jev-1.14.0", "dists": {"write": [0.89, 0.11], "memory_search": [0.06000000000000005, 0.94], "memory_get": [0.42000000000000004, 0.58], "memory_context": [0.29000000000000004, 0.71], "memory_forget": [0.8200000000000001, 0.18], "necesita_memoria": [0.030000000000000027, 0.97]}}
+{"id": "ext-bf79a270e3", "teacher": "jev-1.14.0", "dists": {"memory_search": [0.14, 0.86], "memory_get": [0.55, 0.45], "memory_context": [0.30000000000000004, 0.7], "memory_session_summary": [0.6599999999999999, 0.34], "memory_pin": [0.5800000000000001, 0.42], "necesita_memoria": [0.050000000000000044, 0.95]}}
+{"id": "ext-6342e3fd91", "teacher": "jev-1.14.0", "dists": {"read": [0.96, 0.04], "find": [0.91, 0.09], "memory_search": [0.96, 0.04], "memory_timeline": [0.92, 0.08], "memory_save": [0.87, 0.13], "necesita_memoria": [0.96, 0.04]}}
+{"id": "ext-78880c988f", "teacher": "jev-1.14.0", "dists": {"memory_search": [0.14, 0.86], "memory_get": [0.48, 0.52], "memory_context": [0.6599999999999999, 0.34], "memory_save": [0.31999999999999995, 0.68], "memory_update": [0.78, 0.22], "necesita_memoria": [0.040000000000000036, 0.96]}}
+{"id": "ext-ff9667a4a2", "teacher": "jev-1.14.0", "dists": {"bash": [0.96, 0.04], "find": [0.9, 0.1], "memory_get": [0.96, 0.04], "memory_consolidate": [0.88, 0.12], "memory_pin": [0.88, 0.12], "necesita_memoria": [0.94, 0.06]}}
+{"id": "ext-1d6460b11a", "teacher": "jev-1.14.0", "dists": {"bash": [0.84, 0.16], "memory_search": [0.09999999999999998, 0.9], "memory_get": [0.53, 0.47], "memory_context": [0.42000000000000004, 0.58], "memory_forget": [0.83, 0.17], "necesita_memoria": [0.030000000000000027, 0.97]}}
+{"id": "ext-b805ea5a8d", "teacher": "jev-1.14.0", "dists": {"write": [0.95, 0.05], "memory_session_summary": [0.86, 0.14], "memory_update": [0.76, 0.24], "memory_consolidate": [0.84, 0.16], "memory_revert": [0.87, 0.13], "necesita_memoria": [0.45999999999999996, 0.54]}}
+{"id": "ext-53406fadca", "teacher": "jev-1.14.0", "dists": {"read": [0.39, 0.61], "edit": [0.78, 0.22], "memory_search": [0.06999999999999995, 0.93], "memory_get": [0.4, 0.6], "memory_context": [0.16000000000000003, 0.84], "necesita_memoria": [0.030000000000000027, 0.97]}}
+{"id": "ext-167a718451", "teacher": "jev-1.14.0", "dists": {"memory_search": [0.08999999999999997, 0.91], "memory_get": [0.45999999999999996, 0.54], "memory_timeline": [0.43000000000000005, 0.57], "memory_context": [0.86, 0.14], "memory_update": [0.69, 0.31], "necesita_memoria": [0.030000000000000027, 0.97]}}
+{"id": "ext-3a919a7021", "teacher": "jev-1.14.0", "dists": {"read": [0.9299999999999999, 0.07], "edit": [0.88, 0.12], "memory_get": [0.96, 0.04], "memory_session_summary": [0.83, 0.17], "memory_update": [0.89, 0.11], "necesita_memoria": [0.94, 0.06]}}
+{"id": "ext-446f146ec8", "teacher": "jev-1.14.0", "dists": {"ls": [0.97, 0.03], "memory_context": [0.96, 0.04], "memory_save": [0.87, 0.13], "memory_session_summary": [0.9, 0.1], "memory_pin": [0.87, 0.13], "necesita_memoria": [0.96, 0.04]}}
+{"id": "ext-86e73d1ef0", "teacher": "jev-1.14.0", "dists": {"edit": [0.81, 0.19], "memory_search": [0.040000000000000036, 0.96], "memory_get": [0.49, 0.51], "memory_context": [0.24, 0.76], "memory_update": [0.72, 0.28], "necesita_memoria": [0.020000000000000018, 0.98]}}
+{"id": "ext-b2b825c547", "teacher": "jev-1.14.0", "dists": {"memory_search": [0.050000000000000044, 0.95], "memory_get": [0.4, 0.6], "memory_context": [0.30000000000000004, 0.7], "memory_update": [0.73, 0.27], "memory_revert": [0.83, 0.17], "necesita_memoria": [0.020000000000000018, 0.98]}}
+{"id": "ext-dfd138ae11", "teacher": "jev-1.14.0", "dists": {"read": [0.95, 0.05], "edit": [0.9, 0.1], "bash": [0.97, 0.03], "memory_search": [0.7, 0.3], "memory_revert": [0.8200000000000001, 0.18], "necesita_memoria": [0.6799999999999999, 0.32]}}
+{"id": "ext-5e9aba72bd", "teacher": "jev-1.14.0", "dists": {"write": [0.91, 0.09], "memory_search": [0.91, 0.09], "memory_timeline": [0.92, 0.08], "memory_context": [0.96, 0.04], "memory_pin": [0.88, 0.12], "necesita_memoria": [0.96, 0.04]}}
+{"id": "ext-1c822f35f9", "teacher": "jev-1.14.0", "dists": {"read": [0.97, 0.03], "memory_search": [0.92, 0.08], "memory_get": [0.84, 0.16], "memory_session_summary": [0.91, 0.09], "memory_update": [0.87, 0.13], "necesita_memoria": [0.94, 0.06]}}
+{"id": "ext-cea69e8ead", "teacher": "jev-1.14.0", "dists": {"read": [0.24, 0.76], "memory_search": [0.06000000000000005, 0.94], "memory_get": [0.5700000000000001, 0.43], "memory_context": [0.18999999999999995, 0.81], "memory_revert": [0.87, 0.13], "necesita_memoria": [0.020000000000000018, 0.98]}}
+{"id": "ext-bfddb47d00", "teacher": "jev-1.14.0", "dists": {"edit": [0.94, 0.06], "bash": [0.97, 0.03], "memory_search": [0.94, 0.06], "memory_get": [0.96, 0.04], "memory_revert": [0.9, 0.1], "necesita_memoria": [0.95, 0.05]}}
+{"id": "ext-685b135b71", "teacher": "jev-1.14.0", "dists": {"write": [0.9, 0.1], "memory_search": [0.06999999999999995, 0.93], "memory_get": [0.52, 0.48], "memory_context": [0.5900000000000001, 0.41], "memory_consolidate": [0.8, 0.2], "necesita_memoria": [0.040000000000000036, 0.96]}}
+{"id": "ext-796fc97ad2", "teacher": "jev-1.14.0", "dists": {"se_conserva": [0.8, 0.2]}}
+{"id": "ext-44a97f8f8f", "teacher": "jev-1.14.0", "dists": {"se_conserva": [0.13, 0.87]}}
+{"id": "ext-cd440ecaba", "teacher": "jev-1.14.0", "dists": {"se_conserva": [0.75, 0.25]}}
+{"id": "ext-7f3c7b12a3", "teacher": "jev-1.14.0", "dists": {"se_conserva": [0.030000000000000027, 0.97]}}
+{"id": "ext-21d95059c0", "teacher": "jev-1.14.0", "dists": {"se_conserva": [0.95, 0.05]}}
+{"id": "ext-4046bce016", "teacher": "jev-1.14.0", "dists": {"se_conserva": [0.19999999999999996, 0.8]}}
+{"id": "ext-2ef1bc3dfa", "teacher": "jev-1.14.0", "dists": {"se_conserva": [0.08999999999999997, 0.91]}}
+{"id": "ext-4fc012c887", "teacher": "jev-1.14.0", "dists": {"se_conserva": [0.6799999999999999, 0.32]}}
+{"id": "ext-13897a7834", "teacher": "jev-1.14.0", "dists": {"se_conserva": [0.9, 0.1]}}
+{"id": "ext-5e9efe1768", "teacher": "jev-1.14.0", "dists": {"m27": [0.88, 0.12], "m311": [0.030000000000000027, 0.97], "m199": [0.98, 0.02], "m84": [0.07999999999999996, 0.92]}}
+{"id": "ext-960b4f872c", "teacher": "jev-1.14.0", "dists": {"m3": [0.9, 0.1], "m402": [0.010000000000000009, 0.99], "m17": [0.97, 0.03]}}
+{"id": "ext-6c25f8b12f", "teacher": "jev-1.14.0", "dists": {"m55": [0.95, 0.05], "m128": [0.9299999999999999, 0.07], "m31": [0.9299999999999999, 0.07]}}
+{"id": "ext-ee9e708888", "teacher": "jev-1.14.0", "dists": {"m270": [0.95, 0.05], "m48": [0.89, 0.11], "m133": [0.06999999999999995, 0.93]}}
+{"id": "ext-1362b6e5d4", "teacher": "jev-1.14.0", "dists": {"m91": [0.09999999999999998, 0.9], "m604": [0.85, 0.15], "m338": [0.06000000000000005, 0.94], "m22": [0.73, 0.27]}}
+{"id": "ext-b0225c31e0", "teacher": "jev-1.14.0", "dists": {"m218": [0.79, 0.21], "m15": [0.77, 0.23], "m73": [0.030000000000000027, 0.97]}}
+{"id": "ext-4cb5a16342", "teacher": "jev-1.14.0", "dists": {"m167": [0.53, 0.47], "m20": [0.88, 0.12], "m300": [0.49, 0.51]}}
+{"id": "ext-39607c39fd", "teacher": "jev-1.14.0", "dists": {"m36": [0.96, 0.04], "m512": [0.010000000000000009, 0.99], "m81": [0.96, 0.04]}}
+{"id": "ext-ae4f87da1d", "teacher": "jev-1.14.0", "dists": {"m255": [0.010000000000000009, 0.99], "m12": [0.98, 0.02], "m371": [0.020000000000000018, 0.98]}}
+{"id": "ext-4b98e01e40", "teacher": "jev-1.14.0", "dists": {"m64": [0.87, 0.13], "m229": [0.84, 0.16], "m188": [0.050000000000000044, 0.95]}}
+{"id": "ext-36e678c123", "teacher": "jev-1.14.0", "dists": {"m420": [0.050000000000000044, 0.95], "m18": [0.9299999999999999, 0.07], "m95": [0.050000000000000044, 0.95]}}
+{"id": "ext-278e80f119", "teacher": "jev-1.14.0", "dists": {"m400": [0.73, 0.27], "m130": [0.040000000000000036, 0.96], "m62": [0.97, 0.03]}}
+{"id": "ext-b3855acbfe", "teacher": "jev-1.14.0", "dists": {"m39": [0.94, 0.06], "m78": [0.95, 0.05], "m415": [0.020000000000000018, 0.98]}}
+{"id": "ext-b1a0462cf6", "teacher": "jev-1.14.0", "dists": {"m501": [0.98, 0.02], "m144": [0.010000000000000009, 0.99], "m30": [0.97, 0.03]}}
+{"id": "ext-d7c2a8875b", "teacher": "jev-1.14.0", "dists": {"m162": [0.020000000000000018, 0.98], "m4": [0.99, 0.01], "m390": [0.5900000000000001, 0.41], "m75": [0.030000000000000027, 0.97]}}
+{"id": "ext-3df2df6c64", "teacher": "jev-1.14.0", "dists": {"m146": [0.15000000000000002, 0.85], "m25": [0.87, 0.13], "m318": [0.92, 0.08]}}
+{"id": "ext-2826b28c7c", "teacher": "jev-1.14.0", "dists": {"m555": [0.39, 0.61], "m13": [0.53, 0.47], "m246": [0.040000000000000036, 0.96]}}
