@@ -169,9 +169,9 @@ full numbers.
   top of 2.4.0's data; three seeds per recipe against three of 2.4.0's, compared question by
   question with a 95 % case bootstrap): both lift the held-out short sets (+0.6 and
   +0.9 points, 95 % intervals above zero) and tools that are needed (0.786 → 0.884 and 0.895), but
-  Clio's benchmark drops beyond the seed noise (0.928 → 0.861 with batch 10, 0.917 with 10b) and
-  10b also lowers hard-like (0.547 → 0.521). The cases stay in `data/synth/external.jsonl`;
-  `data/targets.jsonl` keeps 2.4.0's.
+  Clio's benchmark drops beyond the seed noise (0.928 → 0.861 with batch 10, 0.917 with 10 + 10b)
+  and 10b also lowers hard-like (0.547 → 0.521). The cases were not added to the repo; they live
+  only in the history of the `feat/lote10-patrones` branch.
 - **LayerNorm before the head** (`--head-norm`, [#7](https://github.com/i-montes/temis/pull/7)):
   written for the head saturating with MrBERT-es; lowering `--head-lr` to 5e-5 fixed that without
   touching the model.
