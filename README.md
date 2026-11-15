@@ -165,9 +165,9 @@ full numbers.
   to imitate a benchmark) plus typed-decisions `train` in Spanish. JevBench stays in the same place
   (131 → 132 of 231: better on long policies, worse on short standard items) and everything Clio
   uses drops 1–2 points (held-out short set 0.967 → 0.958, Clio's benchmark 0.927 → 0.914).
-- **Short cases written around 2.4.0's failure patterns** (batches 10 and 10b, 374 + 151 cases on
+- **Short cases written around 2.4.0's failure patterns** (batches 10 and 10b, 374 + 152 cases on
   top of 2.4.0's data; three seeds per recipe against three of 2.4.0's, compared question by
-  question with `runs/_scripts/compare_seeds.py`): both lift the held-out short sets (+0.6 and
+  question with a 95 % case bootstrap): both lift the held-out short sets (+0.6 and
   +0.9 points, 95 % intervals above zero) and tools that are needed (0.786 → 0.884 and 0.895), but
   Clio's benchmark drops beyond the seed noise (0.928 → 0.861 with batch 10, 0.917 with 10b) and
   10b also lowers hard-like (0.547 → 0.521). The cases stay in `data/synth/external.jsonl`;
