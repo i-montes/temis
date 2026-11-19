@@ -77,12 +77,29 @@ version (Temis 2.0.0).
 | Temis 1.0.11 · v1108-2307 | + 200 external cases, 484 reviewer answers | 0.766 / 0.098 / 0.054 | 77 / 94 / 93 / 81 % (mean 0.86) | 309 MB |
 | Temis 2.0.0 · v1109-1028 | MrBERT-es, from scratch, same data as 1.0.11 | 0.772 / 0.104 / 0.057 | 90 / 94 / 86 / 81 % (mean 0.88) | 152 MB |
 | Temis 2.2.0 · v1111-mrbert-td2 | MrBERT-es + extra typed-decisions training data | 0.780 / — / — | 87 / 88 / 86 / 83 % (mean 0.86) | 161 MB |
-| **Temis 2.4.0 · v1112-mrbert-cortos (active)** | td2's recipe + 1,375 short cases, from scratch | **0.772 / — / —** | **97 / 88 / 79 / 94 %** (mean 0.89) | **161 MB** |
+| Temis 2.4.0 · v1112-mrbert-cortos | td2's recipe + 1,375 short cases, from scratch | 0.772 / — / — | 97 / 88 / 79 / 94 % (mean 0.89) | 161 MB |
+| **Temis 2.4.1 · v1119-cortos-review-c (active)** | 2.4.0 fine-tuned one epoch + 4,000 `needs_review` cases | **0.770 / — / —** | **97 / 88 / 79 / 90 %** (mean 0.88) | **161 MB** |
 | Jev (API, reference) | — | 0.727 / 1.442 / 0.148 | 93 / 100 / 100 / 88 % | — |
 
 - The typed-decisions test split was never used for training. Clio's benchmark
   (`external/clio/testing/decisiones`) wasn't either, but it is used to pick which version goes
   live, so its numbers are somewhat optimistic.
+- **2.4.1 adds one question, Clio's `needs_review`** ("the work in `done` needs an independent check"):
+  2.4.0 scored 14 of the 15 turns that need a review under Clio's 0.8 threshold. It is a one-epoch
+  fine-tune of 2.4.0 (`--init v1112-mrbert-cortos --lr 1e-5 --head-lr 1e-5`, replaying every target)
+  with 4,000 cases from `scripts/build_review.py`. On Clio's 30 test turns (`data/review_test.jsonl`,
+  never trained on) every yes scores 0.96 or more and every no 0.05 or less. Three blind sets written
+  without seeing the generator (`data/review_blind*.jsonl`) hold it to account: on the last one (80
+  turns, half of them with request and work disagreeing) 2.4.0 misses 43 and 2.4.1 misses 12, mostly
+  turns asked to change something that only simulated it. Everything else stays where it was, int8 on
+  the same x86 CPU: held-out short set 0.962 → 0.965 (tools 0.970 → 0.972), `patrones` 0.939 → 0.938,
+  typed-decisions 0.766 → 0.770, hard-like 0.548 → 0.545, Clio's benchmark 0.891 → 0.881 (fp32:
+  0.927 → 0.932).
+- Clio's benchmark in int8 depends on the CPU: 2.4.0 gets 0.891 on x86 and 0.927 on the ARM VPS that
+  serves it, 2.4.1 gets 0.881 and 0.899. Three answers of its 72 cases sit that close to 0.5, so a
+  one-point gate on it cannot tell a regression from the quantization.
+- Training from scratch with 2.4.0's recipe and data did not give 2.4.0 back (Clio's benchmark 0.88
+  in fp32, with or without the new cases), which is why 2.4.1 starts from 2.4.0's weights.
 - Held-out short set (`data/cliolike.jsonl`, 2,045 questions shaped like Clio's calls): 2.2.0 gets
   0.779 (tools: yes 0.66 / no 0.80); 2.4.0 gets 0.966 (yes 0.86 / no 0.98), and hard-like goes from
   0.507 to 0.550. Typed-decisions and JevBench (58.4 → 57.1 %) move within their noise.
@@ -121,7 +138,7 @@ also needs the sealed and judge items.
 | GLiNER2 (gliner2.5-base) | 98 % | 64 % | 37 % | 58.0 % |
 | **Temis 2.0.0 (MrBERT-es, int8)** | **94 %** | **57 %** | **41 %** | **57.1 % (#40 of 53)** |
 | Temis 1.0.11 (mmBERT-base, int8) | 100 % | 65 % | 33 % | 57.1 % |
-| Temis 2.4.0 (active, MrBERT-es, int8) | 92 % | 61 % | 39 % | 56.7 % (#40 of 53, tied with GLiNER2 large) |
+| Temis 2.4.0 (MrBERT-es, int8) | 92 % | 61 % | 39 % | 56.7 % (#40 of 53, tied with GLiNER2 large) |
 | Verdict (ModernBERT-base, 151M) | 85 % | 62 % | 38 % | 55.4 % |
 
 - Temis sits with the other encoders of its size; the systems above it are 4B–27B-parameter LLMs.
@@ -294,6 +311,8 @@ python -m scripts.evaluate --model runs/v1/onnx              # typed-decisions t
 python -m scripts.build_hardlike                            # internal hard-like set (procedural, held-out tasks)
 python -m scripts.eval_hardlike --model runs/v1/onnx         # part of the promotion gate
 python -m scripts.eval_cliolike --model runs/v1/onnx         # held-out short set, scored as Clio uses the answers
+python -m scripts.build_review                               # needs_review training cases -> data/review_targets.jsonl (pass with --extra)
+python -m scripts.eval_review --model runs/v1/onnx           # Clio's needs_review test (--data data/review_blind3.jsonl --name ... for a blind set)
 python -m scripts.eval_jevbench --model runs/v1/onnx --fetch --probes  # JevBench public items, local (reported only)
 python -m scripts.bench_cpu --model runs/v1/onnx --precision int8,fp32  # CPU only, over td/hard-like/JevBench/cliolike: speed, accuracy, ECE, stability
 TEMIS_BACKEND=torch python -m scripts.eval_hardlike --model runs/v1/onnx  # any eval on the GPU (fp32 model.pt, ~10x faster): results go to eval_*.torch.json
