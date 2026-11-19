@@ -23,3 +23,6 @@ data/procedural/
 
 # backups of casos.json (casos.json is a superset)
 casos.backup-*.json
+
+# Temis periodista: notas, perfiles y etiquetas bajados del WordPress de La Silla (se regeneran con scripts.periodista_fetch)
+data/periodista/raw/

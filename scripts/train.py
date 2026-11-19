@@ -4,6 +4,8 @@
 
 Saves runs/<name>/{model.pt, meta.json}. meta.json holds per-kind temperatures and val metrics.
 Extra labeled data (user labels, replay) can be passed with --extra data/user_targets.jsonl.
+TEMIS_TARGETS=<path> trains on another targets file instead of data/targets.jsonl (Temis periodista:
+data/periodista/targets.jsonl); calibrate.py and export_onnx.py read the same variable for their val split.
 
 Twin batches (default): every question is encoded twice, with different option shuffles and
 different dropout, and a symmetric KL between the two answers (in option order) is added to the
@@ -23,6 +25,7 @@ import dataclasses
 import hashlib
 import json
 import math
+import os
 import random
 import time
 from collections import defaultdict
@@ -50,7 +53,7 @@ def is_val(key: str) -> bool:
 
 def load_examples(extra: list[str]) -> tuple[list[dict], list[dict]]:
     cases = {c["id"]: c for c in load_td("train") + load_synth() + read_procedural_cases()}
-    rows = list(read_jsonl(Path("data/targets.jsonl")))
+    rows = list(read_jsonl(Path(os.environ.get("TEMIS_TARGETS", "data/targets.jsonl"))))
     for e in extra:
         rows += list(read_jsonl(Path(e)))
     for r in rows:
