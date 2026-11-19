@@ -1,0 +1,12 @@
+{
+  "sin_correcto": {
+    "n": 246,
+    "acierto_jev": 0.996,
+    "confianza_media": 0.93
+  },
+  "apellido_solo": {
+    "n": 90,
+    "acierto_jev": 0.9,
+    "confianza_media": 0.82
+  }
+}

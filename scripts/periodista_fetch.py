@@ -2,6 +2,7 @@
 
   python -m scripts.periodista_fetch                 # todo (unas 60 peticiones, ~2 minutos)
   python -m scripts.periodista_fetch --solo notas    # solo una parte: perfiles | etiquetas | notas
+  python -m scripts.periodista_fetch --solo set2     # set 2: más notas de Nacional y otras secciones (raw/notas_set2.jsonl)
 
 Deja en data/periodista/raw/ (no se sube al repo; se regenera con este script):
   perfiles.json   perfiles del «Quién es quién» (categoría 5027): id, slug, link, nombre, descripción, fecha
@@ -124,9 +125,63 @@ def notas(desde: int, hasta: int, por_anio: int) -> None:
                     break
 
 
+# --- set 2: más estilos -------------------------------------------------------------------------------------
+# sección -> (categorías padre, páginas de 100 por año, desde qué página, mínimo de párrafos)
+# Nacional sigue desde la página 4: las páginas 1-3 de cada año son las del set 1.
+SECCIONES = {
+    "nacional": (NACIONAL, 2, 4, 4),
+    "en_vivo": ([4932], 1, 1, 2),
+    "opinion": ([4952], 1, 1, 4),
+    "red_de_expertos": ([4933], 1, 1, 4),
+    "detector": ([4984], 1, 1, 3),
+    "silla_academica": ([5008], 1, 1, 3),
+    "amazonia": ([137184], 1, 1, 3),
+}
+
+
+def con_hijas(padres: list[int]) -> list[int]:
+    """Las categorías y sus subcategorías (la API no incluye las hijas sola)."""
+    ids = list(padres)
+    for p in padres:
+        d, _ = get(f"categories?parent={p}&per_page=100&_fields=id")
+        ids += [c["id"] for c in d]
+    return ids
+
+
+def secciones(desde: int, hasta: int, solo: list[str] | None = None) -> None:
+    """data/periodista/raw/notas_set2.jsonl: notas de varias secciones, cada una con su `seccion`."""
+    vistos = {json.loads(l)["id"] for l in (RAW / "notas.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()}
+    n = 0
+    with (RAW / "notas_set2.jsonl").open("w", encoding="utf-8") as f:
+        for sec, (padres, paginas, primera, min_p) in SECCIONES.items():
+            if solo and sec not in solo:
+                continue
+            cats = ",".join(map(str, padres if sec == "nacional" else con_hijas(padres)))
+            for anio in range(hasta, desde - 1, -1):
+                for page in range(primera, primera + paginas):
+                    d, _ = get(f"posts?categories={cats}&categories_exclude={QUIEN}&per_page=100&page={page}"
+                               f"&after={anio}-01-01T00:00:00&before={anio + 1}-01-01T00:00:00"
+                               "&_fields=id,date,link,title,excerpt,tags,categories,content")
+                    for p in d:
+                        if p["id"] in vistos:
+                            continue
+                        vistos.add(p["id"])
+                        ps = parrafos(p["content"]["rendered"])
+                        if len(ps) < min_p:
+                            continue
+                        f.write(json.dumps({"id": p["id"], "fecha": p["date"][:10], "link": p["link"], "seccion": sec,
+                                            "titulo": texto(p["title"]["rendered"]), "bajada": texto(p["excerpt"]["rendered"]),
+                                            "etiquetas": p["tags"], "categorias": p["categories"], "parrafos": ps},
+                                           ensure_ascii=False) + "\n")
+                        n += 1
+                    print(f"[set2] {sec} {anio} p{page}: {n}", flush=True)
+                    if len(d) < 100:
+                        break
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--solo", choices=["perfiles", "etiquetas", "notas"])
+    ap.add_argument("--solo", choices=["perfiles", "etiquetas", "notas", "set2"])
     ap.add_argument("--desde", type=int, default=2019)
     ap.add_argument("--hasta", type=int, default=2026)
     ap.add_argument("--por-anio", type=int, default=300, help="notas por año (múltiplo de 100)")
@@ -138,6 +193,8 @@ def main() -> None:
         etiquetas()
     if a.solo in (None, "notas"):
         notas(a.desde, a.hasta, a.por_anio)
+    if a.solo == "set2":
+        secciones(a.desde, a.hasta)
 
 
 if __name__ == "__main__":

@@ -16,8 +16,90 @@ del WordPress, bajados de su API pública.
 | `bench_cases.jsonl` | 111 casos del benchmark (20 notas de 2025–2026), 1.122 preguntas. **Nunca se entrenan**: son otras notas. |
 | `labels/jev.jsonl` | Respuestas de Jev a todos los casos (`{id, teacher, dists}`, como `data/labels/jev.jsonl`). |
 | `bench_gold.jsonl` | Respuesta de referencia del benchmark: la opción más probable de Jev y su confianza. `revisado: false` hasta que alguien de la redacción la confirme o la cambie. |
-| `targets.jsonl` | Objetivos de entrenamiento (sale de `scripts.periodista_targets`). |
+| `set2/cases.jsonl` | **Set 2**: 8.316 casos, 77.557 preguntas, de 900 notas de 7 secciones, con casos raros y difíciles (abajo). |
+| `set2/bench_estilos_cases.jsonl` | Benchmark de estilos: 207 casos de 36 notas de 2025–2026 (6 por sección nueva). **Nunca se entrenan**. |
+| `set2/bench_estilos_gold.jsonl` | Referencia de Jev del benchmark de estilos (como `bench_gold.jsonl`). |
+| `trazas/cases.jsonl` | Casos de las trazas del verificador (cuando se exporten: `scripts.periodista_trazas`). |
+| `revision/` | Revisión a mano de Jev en los casos difíciles (`scripts.periodista_revision`). |
+| `targets.jsonl` | Objetivos de entrenamiento de todos los lotes. **No se sube** (88 MB): `python -m scripts.periodista_targets` lo arma en segundos. |
+| `held_back.jsonl` | Preguntas difíciles donde Jev duda (confianza < 0,7): no se entrenan, van a revisión. |
 | `raw/` | Lo bajado del WordPress (no se sube al repo; `scripts.periodista_fetch` lo regenera). |
+
+## Set 2: más estilos, casos raros y difíciles
+
+```sh
+python -m scripts.periodista_fetch --solo set2        # 4.747 notas nuevas de 7 secciones -> raw/notas_set2.jsonl
+python -m scripts.periodista_build2                    # set2/cases.jsonl y set2/bench_estilos_cases.jsonl
+python -m scripts.periodista_label --casos data/periodista/set2/cases.jsonl \
+    --bench data/periodista/set2/bench_estilos_cases.jsonl --oro data/periodista/set2/bench_estilos_gold.jsonl
+python -m scripts.periodista_revision                  # ¿Jev resuelve los difíciles? (antes de entrenar con ellos)
+python -m scripts.periodista_targets                   # junta set 1, set 2 y trazas, con balance
+```
+
+| Sección (`meta.seccion`) | Notas | Casos | `documento.tipo` |
+|---|---|---|---|
+| Nacional (otras que las del set 1) | 300 | 3.025 | nota |
+| En Vivo | 150 | 1.254 | nota corta de En Vivo |
+| Opinión | 120 | 1.129 | columna de opinión |
+| Red de Expertos | 120 | 1.067 | columna de un experto |
+| Detector de Mentiras | 120 | 1.107 | chequeo del Detector |
+| Silla Académica | 45 | 421 | resumen de una investigación |
+| Amazonía | 45 | 385 | nota de Silla Amazonía |
+
+- **Casos raros**: al elegir entidades pesan más las de oraciones con roles poco frecuentes (acusados, víctimas,
+  fuerza pública, grupos armados, jueces, empresarios, líderes sociales); `ent_misma_mencion` usa la mitad de las
+  veces el cargo más cercano a la entidad; más candidatos dudosos para `ent_es_entidad`.
+- **Casos difíciles** (`meta.dificil`):
+  - `sin_correcto` (246): se quita el perfil con el nombre exacto y quedan homónimos; la respuesta es «ninguno».
+  - `apellido_solo` (401): la entidad solo por su apellido, con todos los perfiles que lo comparten.
+  - `vigencia` (2.760 casos): pasajes de hace 2+ años con `ent_fuente_vigente_fN` (¿sigue vigente su cargo?).
+- **Sin fugas**: ningún pasaje sale de una nota de un benchmark; `scripts.periodista_targets` además saca del
+  set 1 los 20 casos que traían un pasaje de una nota del benchmark.
+- **Reproducible**: los armados son deterministas desde el 2026-11-19 (antes, el orden de los cargos dependía de
+  `PYTHONHASHSEED`). Los archivos del repo son los que respondió Jev; rearmar hoy cambia el cargo de
+  `ent_misma_mencion` en 154 casos del set 2. Cada respuesta de Jev guarda la huella de sus preguntas (`qhash`):
+  `scripts.periodista_label` vuelve a preguntar los casos que cambiaron y `scripts.periodista_targets` descarta las
+  respuestas que no coinciden.
+- **Balance por copias** en `scripts.periodista_targets` (como `temis/data/balance.py`: `scripts.train` no usa
+  `weight`): la respuesta que pase del 35 % (60 % en noul) entra solo esa parte de las veces y la que no llegue
+  al 8 % entra dos veces. En `ent_candidato` y `ent_oracion_clave` se balancea «ninguno» contra «alguno».
+
+## ¿Sirve Jev de profesor en los difíciles? (revisión del 2026-11-19)
+
+Si ni Jev resuelve un caso difícil, entrenar con su respuesta le enseña a Temis el error. `scripts.periodista_revision`
+lo mide:
+
+- **Automático**, donde la respuesta se sabe por construcción:
+
+  | Caso difícil | n | Jev acierta | con confianza ≥ 0,7 | con confianza < 0,7 |
+  |---|---|---|---|---|
+  | `sin_correcto` (respuesta: ninguno) | 246 | 100 % | 238 de 238 | 7 de 8 |
+  | `apellido_solo` (el perfil del nombre completo) | 90 | 90 % | 97 % (62 de 64) | 73 % (19 de 26) |
+
+  Al revisar los fallos salieron 72 casos **mal armados** (no eran errores de Jev): en 66 `sin_correcto` quedaba
+  otro perfil de la misma persona con el nombre más largo («Ana Teresa Bernal» → «Ana Teresa Bernal Montañez») y
+  en 6 `apellido_solo` el apellido quedaba fuera del trozo visible. `scripts.periodista_build2` ya los quita.
+- **Regla para entrenar**: en un caso difícil, la pregunta difícil solo entra si Jev la responde con confianza
+  ≥ 0,7; si no, va a `held_back.jsonl` (2.404 preguntas, casi todas de vigencia).
+- **A mano**: `revision/revision_jev.csv`, 130 filas (20 por categoría: vigencia, «misma mención» sí y no, roles
+  raros del documento y de la persona, entidades descartadas, y los 10 fallos que quedan de la parte automática).
+  Se llenan `jev_acierta` (si / no / dudoso), `respuesta_correcta` y `comentario`, y
+  `python -m scripts.periodista_revision --calificar` da el acierto de Jev por categoría. Una categoría donde Jev
+  acierte poco se saca del entrenamiento o se entrena solo con lo revisado.
+
+## Trazas del verificador
+
+En el verificador: opciones → «Modo depuración», navegar (redes, notas de otros medios, PDF), abrir la página de
+depuración y «Descargar todo». Después:
+
+```sh
+python -m scripts.periodista_trazas ~/Downloads/depuracion-verificador-*.json   # -> trazas/cases.jsonl
+python -m scripts.periodista_label --casos data/periodista/trazas/cases.jsonl --bench ''
+```
+
+Cada candidato de una petición de entidades a Jev se vuelve un caso con las preguntas de Temis periodista. Son
+otros estilos (posts, notas de otros medios, páginas). Las respuestas originales de Jev al verificador quedan en
+`meta.jev_verificador`.
 
 Cada caso tiene la forma de `data/synth/cases.jsonl` (`id`, `schema_id`, `family`, `workflow`, `language`,
 `state`, `questions`) más `meta`, que no va al modelo: la nota (`post_id`, `link`, `fecha`), la pista de tipo
@@ -50,6 +132,7 @@ veces, una dudosa para que `ent_es_entidad` tenga casos de «no») y trae hasta 
 ## Entrenar
 
 ```sh
+python -m scripts.periodista_targets          # primero: arma data/periodista/targets.jsonl (no está en el repo)
 export TEMIS_TARGETS=data/periodista/targets.jsonl
 
 # A) desde Temis 2.4.0 (ya sabe leer peticiones tipadas). Necesita runs/v1112-mrbert-cortos/model.pt.

@@ -25,4 +25,6 @@ data/procedural/
 casos.backup-*.json
 
 # Temis periodista: notas, perfiles y etiquetas bajados del WordPress de La Silla (se regeneran con scripts.periodista_fetch)
+# y los objetivos de entrenamiento (88 MB; se regeneran en segundos con scripts.periodista_targets)
 data/periodista/raw/
+data/periodista/targets.jsonl

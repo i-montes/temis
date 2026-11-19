@@ -372,7 +372,8 @@ def casos_de_nota(nota: dict, idx: Indices, archivo: Archivo, rng: random.Random
     dudosos = [g for g in grupos[max_ent:] if g["puntos"] <= 0]
     if dudosos and rng.random() < 0.5:
         elegidos.append(rng.choice(dudosos))
-    cargos = sorted({m.group(0) for o in ors for m in CARGO.finditer(o)}, key=len, reverse=True)
+    cargos = sorted({m.group(0) for o in ors for m in CARGO.finditer(o)},
+                    key=lambda s: (-len(s), s))   # desempate por texto: sin él el orden dependía de PYTHONHASHSEED
     sal = []
     for j, g in enumerate(elegidos):
         ks = g["oraciones"][:MAX_ORACIONES]
