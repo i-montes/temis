@@ -1,0 +1,63 @@
+{
+  "preguntas": 1122,
+  "acierto_total": 0.404,
+  "acierto_medio_por_pregunta": 0.414,
+  "por_pregunta": {
+    "ent_candidato": {
+      "n": 90,
+      "acierto": 0.778
+    },
+    "ent_cargo_explicito": {
+      "n": 33,
+      "acierto": 0.303
+    },
+    "ent_centralidad": {
+      "n": 111,
+      "acierto": 0.405,
+      "mae": 0.714
+    },
+    "ent_es_entidad": {
+      "n": 111,
+      "acierto": 0.586
+    },
+    "ent_fuente": {
+      "n": 293,
+      "acierto": 0.348
+    },
+    "ent_misma_mencion": {
+      "n": 49,
+      "acierto": 0.939
+    },
+    "ent_oracion_clave": {
+      "n": 111,
+      "acierto": 0.387
+    },
+    "ent_postura": {
+      "n": 51,
+      "acierto": 0.333
+    },
+    "ent_rol_documento": {
+      "n": 111,
+      "acierto": 0.144
+    },
+    "ent_rol_organizacion": {
+      "n": 18,
+      "acierto": 0.222
+    },
+    "ent_rol_persona": {
+      "n": 33,
+      "acierto": 0.303
+    },
+    "ent_tipo": {
+      "n": 111,
+      "acierto": 0.225
+    }
+  },
+  "modelo": "temis-2.4.0",
+  "casos": 111,
+  "con_oro": 111,
+  "respondidos": 111,
+  "tokens_entrada_mediana": 7926,
+  "tokens_entrada_max": 12243,
+  "ms_mediana": 19033
+}

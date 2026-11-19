@@ -74,6 +74,31 @@ Califica choice y noul por acierto, score por acierto del nivel y error absoluto
 juntan en `ent_fuente`. Los resultados quedan en `benchmarks/periodista/`. Mide el **acuerdo con Jev** hasta que
 la redacción revise `bench_gold.jsonl`.
 
+### Línea base: Temis 2.4.0 (el de Clio, sin entrenar en esto)
+
+API alojada, 2026-11-19, 111 casos. Acuerdo con Jev frente a responder siempre lo más común:
+
+| Pregunta | n | Temis 2.4.0 | Siempre lo más común |
+|---|---|---|---|
+| `ent_es_entidad` | 111 | 0,59 | 0,89 |
+| `ent_tipo` | 111 | 0,23 | 0,53 |
+| `ent_candidato` | 90 | **0,78** | 0,62 |
+| `ent_oracion_clave` | 111 | **0,39** | 0,14 |
+| `ent_fuente` | 293 | 0,35 | 0,64 |
+| `ent_misma_mencion` | 49 | 0,94 | 0,96 |
+| `ent_rol_documento` | 111 | 0,14 | 0,23 |
+| `ent_centralidad` | 111 | 0,41 (error medio 0,71 niveles) | 0,49 |
+| `ent_postura` | 51 | 0,33 | 0,43 |
+| `ent_rol_persona` | 33 | 0,30 | 0,42 |
+| `ent_rol_organizacion` | 18 | 0,22 | 0,28 |
+| `ent_cargo_explicito` | 33 | 0,30 | 0,70 |
+| **Total** | 1.122 | **0,40** | |
+
+Solo supera a la respuesta fija en `ent_candidato` y `ent_oracion_clave`. En el resto cae en respuestas
+casi fijas: dice «organización» en 105 de 111 casos de `ent_tipo` (también a personas) y «no» en 289 de 293
+pasajes de `ent_fuente`. Lee una mediana de 7.926 tokens por caso (unos 800 por pregunta) y tarda una
+mediana de 19 s por caso en la API alojada. Resultados por caso: `benchmarks/periodista/`.
+
 ## Limitaciones conocidas
 
 - La referencia es Jev, no una persona. `senalado` y `afectado` son delicados: conviene que la redacción revise
