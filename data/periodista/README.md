@@ -50,15 +50,35 @@ veces, una dudosa para que `ent_es_entidad` tenga casos de «no») y trae hasta 
 ## Entrenar
 
 ```sh
-# desde Temis 2.4.0 (ya sabe leer peticiones tipadas)
-TEMIS_TARGETS=data/periodista/targets.jsonl python -m scripts.train --name per-v1 --init v1112-mrbert-cortos --epochs 3
-TEMIS_TARGETS=data/periodista/targets.jsonl python -m scripts.calibrate --name per-v1
-TEMIS_TARGETS=data/periodista/targets.jsonl python -m scripts.export_onnx --name per-v1
+export TEMIS_TARGETS=data/periodista/targets.jsonl
+
+# A) desde Temis 2.4.0 (ya sabe leer peticiones tipadas). Necesita runs/v1112-mrbert-cortos/model.pt.
+#    Receta de afinado de scripts/retrain.py, con más épocas porque las preguntas son nuevas.
+python -m scripts.train --name per-v1 --init v1112-mrbert-cortos --base BSC-LT/MrBERT-es \
+  --epochs 3 --lr 2.5e-5 --head-lr 2e-4 --bs 8 --accum 2 --max-len 1024 --long-max-len 1536 --long-bs 4
+
+# B) para comparar: desde MrBERT-es en blanco (el README de Temis: con MrBERT-es, --head-lr 5e-5)
+python -m scripts.train --name per-v1-cero --base BSC-LT/MrBERT-es \
+  --epochs 5 --lr 3e-5 --head-lr 5e-5 --bs 8 --accum 2 --max-len 1024 --long-max-len 1536 --long-bs 4
+
+# después, en este orden (como scripts/retrain.py): exportar y luego calibrar
+python -m scripts.export_onnx --name per-v1
+python -m scripts.calibrate --name per-v1
 ```
 
-`TEMIS_TARGETS` cambia el archivo de objetivos de `scripts.train`, `scripts.calibrate` y `scripts.export_onnx`
-(sin la variable, todo sigue igual que antes). La validación de `scripts.train` aparta el 10 % de las notas (el
-`schema_id` de cada fila es la nota). Vale la pena comparar con un entrenamiento desde MrBERT-es en blanco.
+- `--base BSC-LT/MrBERT-es` es obligatorio con `--init`: `--init` solo carga los pesos, y el `--base` por
+  defecto de `scripts.train` es mmBERT-small (no cargarían).
+- `--max-len 1024`: medido con el tokenizador de MrBERT-es, cada pregunta ocupa una mediana de 745 tokens
+  (p90 919, máx. 1.173). Con 640, el 75 % iría al camino de estados largos (más lento); con 1.536 no se corta
+  ninguna.
+- `TEMIS_TARGETS` cambia el archivo de objetivos de `scripts.train`, `scripts.calibrate` y `scripts.export_onnx`
+  (sin la variable, todo sigue igual que antes). Las filas td-train del repaso necesitan el dataset
+  `LocalLLaMA/typed-decisions` (lo baja `load_td`, como siempre).
+- La validación de `scripts.train` aparta 2.246 preguntas de 27 notas enteras (el `schema_id` de cada fila es
+  la nota); el entrenamiento queda con 22.257 preguntas propias más el repaso.
+- En Windows, `PYTHONUTF8=1`: el código del repo abre archivos sin decir la codificación.
+- La API alojada lee hasta 1.024 tokens por pregunta (`long_max_len`): unas pocas preguntas largas se cortan
+  ahí. Para servir este modelo conviene subirlo a 1.536.
 
 El benchmark de Clio no cuenta para esta línea: la versión que queda activa la decide `scripts.periodista_bench`.
 
