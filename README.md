@@ -79,6 +79,7 @@ version (Temis 2.0.0).
 | Temis 2.2.0 · v1111-mrbert-td2 | MrBERT-es + extra typed-decisions training data | 0.780 / — / — | 87 / 88 / 86 / 83 % (mean 0.86) | 161 MB |
 | Temis 2.4.0 · v1112-mrbert-cortos | td2's recipe + 1,375 short cases, from scratch | 0.772 / — / — | 97 / 88 / 79 / 94 % (mean 0.89) | 161 MB |
 | **Temis 2.4.1 · v1119-cortos-review-c (active)** | 2.4.0 fine-tuned one epoch + 4,000 `needs_review` cases | **0.770 / — / —** | **97 / 88 / 79 / 90 %** (mean 0.88) | **161 MB** |
+| Temis 2.4.2 · v1120-entidades-olvido (candidate, not deployed) | 2.4.1 fine-tuned on every target + newsroom entity sets + 2,000 forget cases | 0.764 / — / — | 100 / 81 / 93 / 94 % (mean 0.92) | 161 MB |
 | Jev (API, reference) | — | 0.727 / 1.442 / 0.148 | 93 / 100 / 100 / 88 % | — |
 
 - The typed-decisions test split was never used for training. Clio's benchmark
@@ -95,6 +96,23 @@ version (Temis 2.0.0).
   the same x86 CPU: held-out short set 0.962 → 0.965 (tools 0.970 → 0.972), `patrones` 0.939 → 0.938,
   typed-decisions 0.766 → 0.770, hard-like 0.548 → 0.545, Clio's benchmark 0.891 → 0.881 (fp32:
   0.927 → 0.932).
+- **2.4.2 (candidate, not deployed) is one model for Clio and for the newsroom.** Two steps from
+  2.4.1. First, two epochs on every Temis target plus the newsroom entity sets (`ent_*` questions
+  over La Silla Vacía notes, labelled by Jev; their data and scripts live on the branch
+  `data/entidades-periodista`). That step lost `pide_olvidar` (10 of Clio's 14 forget cases right,
+  2.4.1 gets 12), so a second one adds 2,000 cases from `scripts/build_forget.py` for one epoch at
+  1e-5, replaying everything. Agreement with Jev on the two entity benchmarks: 0.866 / 0.842 in int8
+  and 0.868 / 0.852 in fp32 (2.4.0: 0.39 / 0.46). Clio's benchmark in int8: 0.881 → 0.920 on x86 and
+  0.899 → 0.953 on the ARM VPS, all 14 forget cases right there (fp32: 0.932 → 0.948). A blind forget
+  set (`data/forget_blind.jsonl`, 80 cases with facts and phrasings the generator never uses) goes
+  from 0.79 to 0.95 on ARM: requests recognised 54 % → 89 %, no false alarm before or after.
+  `needs_review` still passes 30 of 30 and its third blind set goes from 12 misses to 9. Short sets
+  in int8: 0.965 → 0.966 (tools 0.972 → 0.977), `patrones` 0.938 → 0.948. What it costs:
+  typed-decisions 0.770 → 0.764 and hard-like 0.545 → 0.533 in int8 (fp32: 0.776 → 0.771 and
+  0.555 → 0.545, with hard-like KL 0.89 → 0.99). Both are inside the noise between seeds below, and
+  both are 0.1–0.2 points past the promotion gate of `scripts/retrain.py`. On the 40-text injection
+  probe (ARM) injections scored 0.9 or more go from 7 to 12 of 20, and two harmless texts now reach
+  0.9 where none did.
 - Clio's benchmark in int8 depends on the CPU: 2.4.0 gets 0.891 on x86 and 0.927 on the ARM VPS that
   serves it, 2.4.1 gets 0.881 and 0.899. Three answers of its 72 cases sit that close to 0.5, so a
   one-point gate on it cannot tell a regression from the quantization.
@@ -313,6 +331,8 @@ python -m scripts.eval_hardlike --model runs/v1/onnx         # part of the promo
 python -m scripts.eval_cliolike --model runs/v1/onnx         # held-out short set, scored as Clio uses the answers
 python -m scripts.build_review                               # needs_review training cases -> data/review_targets.jsonl (pass with --extra)
 python -m scripts.eval_review --model runs/v1/onnx           # Clio's needs_review test (--data data/review_blind3.jsonl --name ... for a blind set)
+python -m scripts.build_forget                               # pide_olvidar training cases -> data/forget_targets.jsonl (pass with --extra) and the blind set data/forget_blind.jsonl
+python -m scripts.eval_cliolike --model runs/v1/onnx --data data/forget_blind.jsonl --name eval_forget_blind  # the blind forget set
 python -m scripts.eval_jevbench --model runs/v1/onnx --fetch --probes  # JevBench public items, local (reported only)
 python -m scripts.bench_cpu --model runs/v1/onnx --precision int8,fp32  # CPU only, over td/hard-like/JevBench/cliolike: speed, accuracy, ECE, stability
 TEMIS_BACKEND=torch python -m scripts.eval_hardlike --model runs/v1/onnx  # any eval on the GPU (fp32 model.pt, ~10x faster): results go to eval_*.torch.json
